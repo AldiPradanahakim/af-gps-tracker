@@ -9,16 +9,19 @@ use Illuminate\View\View;
 
 class HomeController extends Controller
 {
-    public function __construct(protected HomeService $homeService) {}
+    public function __construct(
+        protected HomeService $homeService
+    ) {}
 
     public function index(): View
     {
         $user = Auth::user();
+
         assert($user instanceof User);
 
         return view(
             'home.index',
-            $this->homeService->getHomeData($user)
+            $this->homeService->index($user)
         );
     }
 }

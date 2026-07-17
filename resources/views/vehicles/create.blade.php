@@ -1,53 +1,107 @@
-<x-app-layout>
-    <div class="max-w-xl mx-auto py-8">
-        <h1 class="text-2xl font-bold mb-6">
-            Lengkapi Kendaraan
-        </h1>
+<x-guest-layout>
 
-        <form method="POST" action="{{ route('vehicles.store') }}">
-            @csrf
+    <div class="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-6">
 
-            <div class="mb-4">
-                <label class="block font-medium text-sm text-gray-700">Nama Kendaraan</label>
-                <input
-                    type="text"
-                    name="vehicle_name"
-                    value="{{ old('vehicle_name') }}"
-                    class="w-full rounded border px-3 py-2"
-                >
-                <x-input-error :messages="$errors->get('vehicle_name')" class="mt-2" />
+        <div
+             class="mx-auto
+           w-full
+           max-w-[1600px]
+           rounded-[32px]
+           bg-white
+           border border-[#E5E7EB]
+           shadow-xl
+           overflow-hidden">
+
+            <div class="grid h-full lg:grid-cols-[60%_40%]">
+
+                {{-- LEFT PANEL --}}
+                <div class="hidden lg:flex bg-[#F8FAFC] p-8 xl:p-10">
+
+                    <div class="flex h-full w-full flex-col">
+
+                        {{-- HEADER --}}
+                        <div class="max-w-[670px]">
+
+                            <div class="flex items-center gap-5">
+
+                                <img
+                                    src="{{ asset('images/LOGO GPS.png') }}"
+                                    alt="GPS TRACKER"
+                                    class="h-16 w-16 object-contain">
+
+                                <div>
+
+                                    <div class="text-sm font-semibold uppercase tracking-[0.38em] text-[#2563EB]">
+                                        GPS TRACKER
+                                    </div>
+
+                                    <div class="mt-1 text-sm text-slate-500">
+                                        Monitoring System
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="mt-10">
+
+                                <h1 class="text-[64px] leading-[1.02] font-extrabold tracking-[-0.04em] text-slate-950">
+
+                                    Informasi
+
+                                    <span class="text-[#2563EB]">
+                                        Kendaraan
+                                    </span>
+
+                                </h1>
+
+                                <p class="mt-8 max-w-[640px] text-[22px] leading-10 text-slate-600">
+
+                                    Lengkapi data kendaraan yang akan dihubungkan
+                                    dengan perangkat GPS Tracker Anda untuk mulai
+                                    melakukan monitoring kendaraan secara real-time.
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        {{-- ILLUSTRATION --}}
+                        <div class="mt-auto flex w-full flex-col items-center">
+
+                            <div class="w-full max-w-[820px] rounded-[30px] bg-white p-6 shadow-sm">
+
+                                <img
+                                    src="{{ asset('images/illustrator login.png') }}"
+                                    alt="Illustration"
+                                    class="mx-auto w-[115%] max-w-none object-contain">
+
+                            </div>
+
+                            <p class="mt-6 text-sm text-slate-500">
+
+                                © 2026 GPS Tracking System. All Rights Reserved.
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {{-- RIGHT PANEL --}}
+                <div class="flex items-center justify-center bg-[#F8FAFC] p-8">
+
+                    <x-vehicle.vehicle-card />
+
+                </div>
+
             </div>
 
-            <div class="mb-4">
-                <label class="block font-medium text-sm text-gray-700">Jenis Kendaraan</label>
-                <select
-                    name="vehicle_type"
-                    class="w-full rounded border px-3 py-2"
-                >
-                    <option value="motor" {{ old('vehicle_type') === 'motor' ? 'selected' : '' }}>
-                        Motor
-                    </option>
-                    <option value="mobil" {{ old('vehicle_type') === 'mobil' ? 'selected' : '' }}>
-                        Mobil
-                    </option>
-                </select>
-                <x-input-error :messages="$errors->get('vehicle_type')" class="mt-2" />
-            </div>
+        </div>
 
-            <div class="mb-4">
-                <label class="block font-medium text-sm text-gray-700">Nomor Polisi</label>
-                <input
-                    type="text"
-                    name="plate_number"
-                    value="{{ old('plate_number') }}"
-                    class="w-full rounded border px-3 py-2"
-                >
-                <x-input-error :messages="$errors->get('plate_number')" class="mt-2" />
-            </div>
-
-            <button class="bg-blue-600 text-white px-5 py-2 rounded">
-                Simpan
-            </button>
-        </form>
     </div>
-</x-app-layout>
+
+</x-guest-layout>

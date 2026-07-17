@@ -1,14 +1,82 @@
-<x-app-layout>
-    <div class="p-6 pb-20">
-        @include('home.partials.navbar')
+@extends('layouts.app')
 
-        <div class="grid gap-6">
-            @include('home.partials.device-card')
-            @include('home.partials.status-card')
-            @include('home.partials.shortcut')
-            @include('home.partials.notifications')
+@section('title', 'Dashboard')
+
+@section('content')
+
+<div class="h-[calc(100vh-72px)] overflow-hidden bg-[#F8FAFC]">
+
+    <div class="flex h-full">
+
+        {{-- SIDEBAR --}}
+        @include('home.partials.sidebar')
+
+        {{-- CONTENT --}}
+        <div class="flex flex-1 flex-col">
+
+            {{-- TOPBAR --}}
+            @include('home.partials.topbar')
+
+            {{-- MAP --}}
+            <main class="relative flex-1 overflow-hidden">
+
+                @include('home.partials.map')
+
+            </main>
+
         </div>
+
     </div>
 
-    @include('home.partials.bottom-nav')
-</x-app-layout>
+</div>
+
+{{-- MODALS --}}
+@include('home.modals.add-geofence')
+
+@endsection
+
+
+@push('styles')
+
+<link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+<link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css"/>
+
+<style>
+
+html,
+body{
+    height:100%;
+}
+
+#map{
+    width:100%;
+    height:100%;
+}
+
+.leaflet-control-attribution{
+    display:none;
+}
+
+.leaflet-popup-content-wrapper{
+    border-radius:14px;
+}
+
+</style>
+
+@endpush
+
+
+@push('scripts')
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
+
+@include('home.partials.scripts')
+
+@endpush

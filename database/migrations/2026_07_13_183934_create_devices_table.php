@@ -15,10 +15,12 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('user_id')
+                ->nullable()
                 ->constrained()
-                ->cascadeOnDelete();
+                ->nullOnDelete();
 
             $table->string('device_id', 50)->unique();
+
             $table->string('device_password', 255);
 
             $table->json('home_location')->nullable();
@@ -27,7 +29,7 @@ return new class extends Migration
 
             $table->json('notification_setting')->nullable();
 
-            $table->boolean('is_active')->default(true);
+            $table->boolean('is_active')->default(false);
 
             $table->timestamp('last_heartbeat')->nullable();
 

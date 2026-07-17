@@ -9,24 +9,32 @@ use Illuminate\View\View;
 
 class VehicleController extends Controller
 {
-    public function __construct(protected VehicleService $vehicleService) {}
+    public function __construct(
+        protected VehicleService $vehicleService
+    ) {}
 
+    /**
+     * Menampilkan halaman informasi kendaraan
+     */
     public function create(): View
     {
         return view('vehicles.create');
     }
 
+    /**
+     * Menyimpan informasi kendaraan
+     */
     public function store(StoreVehicleRequest $request): RedirectResponse
     {
-        $device = $request->user()->devices()->first();
-
-        $this->vehicleService->create(
-            $device,
+        $this->vehicleService->store(
             $request->validated()
         );
 
         return redirect()
-            ->route('dashboard')
-            ->with('success', 'Kendaraan berhasil ditambahkan.');
+            ->route('home')
+            ->with(
+                'success',
+                'Informasi kendaraan berhasil disimpan.'
+            );
     }
 }

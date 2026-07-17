@@ -3,29 +3,87 @@
 namespace App\Http\Requests;
 
 use App\Models\User;
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 
 class ProfileUpdateRequest extends FormRequest
 {
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
+
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+
     public function rules(): array
     {
+
+        if ($this->isMethod('post')) {
+            return [
+
+                'name' => [
+                    'required',
+                    'string',
+                    'max:100',
+                ],
+
+                'email' => [
+                    'required',
+                    'email',
+                    'max:255',
+                    'unique:users,email',
+                ],
+
+                'phone' => [
+                    'required',
+                    'string',
+                    'max:20',
+                ],
+
+                'password' => [
+                    'required',
+                    'confirmed',
+                    Password::min(8),
+                ],
+
+            ];
+        }
+
+
+
+
+
+        /** @var User $user */
+        $user = $this->user();
+
         return [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => [
+
+            'name' => [
                 'required',
                 'string',
-                'lowercase',
+                'max:100',
+            ],
+
+            'email' => [
+                'required',
                 'email',
                 'max:255',
-                Rule::unique(User::class)->ignore($this->user()->id),
+                Rule::unique(User::class)->ignore($user->id),
             ],
+
+            'phone' => [
+                'required',
+                'string',
+                'max:20',
+            ],
+
+            'password' => [
+                'nullable',
+                'confirmed',
+                Password::min(8),
+            ],
+
         ];
     }
 }

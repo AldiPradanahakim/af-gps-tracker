@@ -1,7 +1,14 @@
 <x-guest-layout>
-    <div class="min-h-screen flex items-center justify-center px-4 py-6 sm:px-6 lg:px-8">
-        <div class="w-full max-w-[1500px] min-h-[calc(100vh-48px)] rounded-[32px] bg-[#F8FAFC] shadow-none border-0 grid gap-6 lg:grid-cols-[58%_42%] overflow-visible">
-            <div class="hidden lg:flex min-h-0 h-full w-full flex-col justify-between bg-[#F8FAFC] p-6 xl:p-8">
+    <div class="mx-auto
+           w-full
+           max-w-[1600px]
+           rounded-[32px]
+           bg-white
+           border border-[#E5E7EB]
+           shadow-xl
+           overflow-hidden">
+           <div class="grid h-full lg:grid-cols-[60%_40%]">
+               <div class="hidden lg:flex min-h-0 h-full w-full flex-col justify-between bg-[#F8FAFC] p-6 xl:p-8">
                 <div class="space-y-6 max-w-[560px]">
                     <div class="flex items-center gap-4">
                         <img src="{{ asset('images/LOGO GPS.png') }}" alt="GPS TRACKER" class="h-14 w-14 object-contain" />

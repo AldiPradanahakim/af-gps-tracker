@@ -2,33 +2,49 @@
 
 namespace App\Models;
 
-use App\Models\Device;
-use App\Models\Notification;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Geofence extends Model
 {
+    use HasFactory;
+
+    /**
+     * The attributes that are mass assignable.
+     */
     protected $fillable = [
+
         'device_id',
+
         'name',
+
         'description',
+
         'type',
+
         'config',
+
         'status',
+
     ];
 
+    /**
+     * Attribute Casting
+     */
     protected $casts = [
+
         'config' => 'array',
+
         'status' => 'boolean',
+
     ];
 
-    public function device()
+    /**
+     * Device Relationship
+     */
+    public function device(): BelongsTo
     {
         return $this->belongsTo(Device::class);
-    }
-
-    public function notifications()
-    {
-        return $this->hasMany(Notification::class);
     }
 }

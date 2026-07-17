@@ -3,58 +3,83 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\User;
+use App\Services\Profile\ProfileService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
+    public function __construct(
+        protected ProfileService $profileService
+    ) {}
+
     /**
-     * Display the user's profile form.
+     * Menampilkan halaman Lengkapi Profil
      */
-    public function edit(Request $request): View
+    public function edit(): View
     {
-        return view('profile.edit', [
-            'user' => $request->user(),
-        ]);
+        abort_unless(session()->has('activated_device_id'), 403);
+
+        return view('profile.edit');
     }
 
     /**
-     * Update the user's profile information.
+     * Menyimpan akun baru setelah aktivasi device
+     */
+    public function store(ProfileUpdateRequest $request): RedirectResponse
+    {
+        abort_unless(session()->has('activated_device_id'), 403);
+
+        $user = $this->profileService->createUser(
+            $request->validated(),
+            session('activated_device_id')
+        );
+
+        Auth::login($user);
+
+        session()->forget('activated_device_id');
+
+        return redirect()->route('vehicles.create');
+    }
+
+    /**
+     * Update profil setelah user login
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = Auth::user();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
-        }
+        assert($user instanceof User);
 
-        $request->user()->save();
+        $this->profileService->update(
+            $user,
+            $request->validated()
+        );
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        return back()->with(
+            'success',
+            'Profil berhasil diperbarui.'
+        );
     }
 
     /**
-     * Delete the user's account.
+     * Hapus akun
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(): RedirectResponse
     {
-        $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password'],
-        ]);
+        $user = Auth::user();
 
-        $user = $request->user();
+        if ($user instanceof User) {
+            Auth::logout();
 
-        Auth::logout();
+            $user->delete();
 
-        $user->delete();
+            request()->session()->invalidate();
+            request()->session()->regenerateToken();
+        }
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return Redirect::to('/');
+        return redirect()->route('login');
     }
 }

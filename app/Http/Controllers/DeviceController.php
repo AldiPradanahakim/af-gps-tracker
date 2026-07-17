@@ -9,7 +9,9 @@ use Illuminate\View\View;
 
 class DeviceController extends Controller
 {
-    public function __construct(private DeviceService $deviceService) {}
+    public function __construct(
+        private DeviceService $deviceService
+    ) {}
 
     public function create(): View
     {
@@ -18,9 +20,12 @@ class DeviceController extends Controller
 
     public function store(StoreDeviceRequest $request): RedirectResponse
     {
-        $this->deviceService->activateDevice($request->user(), $request->validated());
+        $this->deviceService->activateDevice(
+            $request->validated()
+        );
 
-        return redirect()->route('dashboard')
-            ->with('success', __('Device berhasil diaktifkan.'));
+        return redirect()
+            ->route('profile.edit')
+            ->with('success', 'Perangkat berhasil diverifikasi. Silakan lengkapi informasi profil.');
     }
 }

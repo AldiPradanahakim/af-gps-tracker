@@ -1,29 +1,52 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Profile') }}
-        </h2>
-    </x-slot>
+<x-guest-layout>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-profile-information-form')
-                </div>
+    <div class="h-full flex items-center justify-center w-full">
+
+        <div
+            class="w-full
+            max-w-[1500px]
+            min-h-[calc(100vh-48px)]
+            rounded-[32px]
+            bg-white
+            shadow-2xl
+            border
+            border-slate-200
+            grid
+            lg:grid-cols-[55%_45%]
+            overflow-hidden">
+
+            {{-- LEFT PANEL --}}
+            <div
+                class="hidden
+                lg:flex
+                min-h-0
+                h-full
+                w-full
+                items-center
+                justify-center
+                bg-[#F8FAFC]
+                p-6">
+
+                <x-auth.left-panel />
+
             </div>
 
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-password-form')
-                </div>
+            {{-- RIGHT PANEL --}}
+            <div
+                class="flex
+                min-h-0
+                h-full
+                items-center
+                justify-center
+                bg-[#F8FAFC]
+                p-6">
+
+                <x-profile.profile-card />
+
             </div>
 
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.delete-user-form')
-                </div>
-            </div>
         </div>
+
     </div>
-</x-app-layout>
+
+</x-guest-layout>
