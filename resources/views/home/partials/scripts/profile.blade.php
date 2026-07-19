@@ -7,14 +7,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const dropdown = document.getElementById('profileDropdown');
 
     if (!button || !dropdown) {
-        return;
-    }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Render Profile Dropdown
-    |--------------------------------------------------------------------------
-    */
+        return;
+
+    }
 
     function renderProfile() {
 
@@ -61,34 +57,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 </a>
 
-                <a
-                    href="{{ route('settings.index') }}"
-                    class="flex items-center gap-3 px-5 py-3 text-sm text-slate-700 transition hover:bg-slate-50">
-
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-5 w-5 text-[#2563EB]"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        stroke-width="2">
-
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M10.325 4.317a1.724 1.724 0 0 1 3.35 0a1.724 1.724 0 0 0 2.573 1.066a1.724 1.724 0 0 1 2.898 1.673a1.724 1.724 0 0 0 .862 2.432a1.724 1.724 0 0 1 0 3.024a1.724 1.724 0 0 0-.862 2.432a1.724 1.724 0 0 1-2.898 1.673a1.724 1.724 0 0 0-2.573 1.066a1.724 1.724 0 0 1-3.35 0a1.724 1.724 0 0 0-2.573-1.066a1.724 1.724 0 0 1-2.898-1.673a1.724 1.724 0 0 0-.862-2.432a1.724 1.724 0 0 1 0-3.024a1.724 1.724 0 0 0 .862-2.432a1.724 1.724 0 0 1 2.898-1.673a1.724 1.724 0 0 0 2.573-1.066Z"/>
-
-                        <circle
-                            cx="12"
-                            cy="12"
-                            r="3"/>
-
-                    </svg>
-
-                    Pengaturan
-
-                </a>
-
             </div>
 
             <div class="border-t border-slate-200 p-2">
@@ -130,27 +98,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Toggle Dropdown
-    |--------------------------------------------------------------------------
-    */
-
     button.addEventListener('click', function (event) {
 
         event.stopPropagation();
 
         renderProfile();
 
-        dropdown.classList.toggle('hidden');
+        const opened = !dropdown.classList.contains('hidden');
+
+        GPSTracker.closeDropdowns();
+
+        if (!opened) {
+
+            dropdown.classList.remove('hidden');
+
+            document
+                .getElementById('profileArrow')
+                ?.classList.add('rotate-180');
+
+        }
 
     });
-
-    /*
-    |--------------------------------------------------------------------------
-    | Close Outside
-    |--------------------------------------------------------------------------
-    */
 
     document.addEventListener('click', function (event) {
 
@@ -162,7 +130,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         ) {
 
-            dropdown.classList.add('hidden');
+            GPSTracker.closeDropdowns();
 
         }
 

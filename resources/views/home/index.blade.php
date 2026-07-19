@@ -4,7 +4,7 @@
 
 @section('content')
 
-<div class="h-[calc(100vh-72px)] overflow-hidden bg-[#F8FAFC]">
+<div class="h-screen overflow-hidden bg-[#F8FAFC]">
 
     <div class="flex h-full">
 
@@ -12,13 +12,13 @@
         @include('home.partials.sidebar')
 
         {{-- CONTENT --}}
-        <div class="flex flex-1 flex-col">
+        <div class="relative z-10 flex flex-1 flex-col">
 
             {{-- TOPBAR --}}
             @include('home.partials.topbar')
 
             {{-- MAP --}}
-            <main class="relative flex-1 overflow-hidden">
+            <main class="relative flex-1 min-h-0 overflow-hidden">
 
                 @include('home.partials.map')
 
@@ -32,6 +32,10 @@
 
 {{-- MODALS --}}
 @include('home.modals.add-geofence')
+
+@include('home.modals.activate-device')
+
+@include('home.modals.vehicle-information')
 
 @endsection
 
@@ -54,6 +58,13 @@ body{
 }
 
 #map{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+}
+
+.leaflet-container{
     width:100%;
     height:100%;
 }
@@ -65,6 +76,80 @@ body{
 .leaflet-popup-content-wrapper{
     border-radius:14px;
 }
+/* ===========================================
+| Layer Button
+=========================================== */
+
+.gps-layer-control{
+    box-shadow:none !important;
+    background:transparent !important;
+    border:none !important;
+}
+
+.gps-layer-control .leaflet-control-layers-toggle{
+
+    width:70px !important;
+
+    height:70px !important;
+
+    background-size:cover !important;
+
+    border-radius:18px;
+
+    background-image:url('/images/map-layer.png');
+
+}
+
+.gps-layer-control.leaflet-control-layers-expanded{
+
+    background:white;
+
+    border-radius:18px;
+
+    padding:10px;
+
+    box-shadow:0 15px 40px rgba(0,0,0,.18);
+
+}
+
+/* posisi */
+
+.leaflet-bottom.leaflet-right{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:flex-end;
+
+}
+
+.leaflet-control-zoom{
+
+    margin-bottom:10px !important;
+
+}
+
+.gps-layer-control{
+
+    margin-bottom:18px !important;
+
+}
+
+.leaflet-bottom.leaflet-right{
+
+    bottom:120px !important;
+
+    right:16px !important;
+
+}
+
+.leaflet-control-zoom{
+
+    margin:0 !important;
+
+}
+
 
 </style>
 

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 
 class ProfileService
 {
-    
+
     public function createUser(array $data, int $deviceId): User
     {
         return DB::transaction(function () use ($data, $deviceId) {
@@ -33,7 +33,7 @@ class ProfileService
         });
     }
 
-  
+
     public function update(User $user, array $data): User
     {
         $payload = [

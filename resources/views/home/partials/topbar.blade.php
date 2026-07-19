@@ -1,4 +1,4 @@
-<div class="border-b border-slate-200 bg-white">
+<div class="relative z-[3000] border-b border-slate-200 bg-white">
 
     <div class="flex h-[72px] items-center justify-between px-8">
 
@@ -73,9 +73,10 @@
 
                     Geofence
 
-                    <svg
+                   <svg
+                        id="geofenceArrow"
                         xmlns="http://www.w3.org/2000/svg"
-                        class="h-4 w-4"
+                        class="h-4 w-4 transition-transform duration-200"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -90,9 +91,9 @@
 
                 </button>
 
-                <div
+               <div
                     id="geofenceDropdown"
-                    class="absolute right-0 mt-3 hidden w-72 rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl">
+                    class="absolute right-0 mt-3 z-[99999] hidden w-72 rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl">
 
                     <label class="flex cursor-pointer items-center justify-between">
 
@@ -164,20 +165,16 @@
 
                     </svg>
 
-                    @if(count($notifications))
-
-                        <span
-                            class="absolute right-2 top-2 h-2.5 w-2.5 rounded-full bg-red-500">
-
-                        </span>
-
-                    @endif
+                    <span
+                            id="notificationBadge"
+                            class="absolute -right-1 -top-1 hidden flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+                    </span> 
 
                 </button>
 
                 <div
                     id="notificationDropdown"
-                    class="absolute right-0 mt-3 hidden w-[360px] rounded-2xl border border-slate-200 bg-white shadow-2xl">
+                    class="absolute right-0 mt-3 z-[99999] hidden w-72 rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl">
 
                 </div>
 
@@ -213,9 +210,10 @@
 
                     </div>
 
-                    <svg
+                  <svg
+                        id="profileArrow"
                         xmlns="http://www.w3.org/2000/svg"
-                        class="h-4 w-4 text-slate-500"
+                        class="h-4 w-4 text-slate-500 transition-transform duration-200"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -243,3 +241,5 @@
     </div>
 
 </div>
+
+

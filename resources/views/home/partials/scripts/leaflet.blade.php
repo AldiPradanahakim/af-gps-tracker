@@ -1,4 +1,4 @@
-<script>
+{{-- <script>
 
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -340,4 +340,4 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 
-</script>
+</script> --}}

@@ -5,7 +5,7 @@
     class="fixed inset-0 z-[9999] hidden items-center justify-center bg-slate-950/50 backdrop-blur-sm">
 
     <div
-        class="relative w-full max-w-2xl rounded-3xl bg-white shadow-2xl">
+    class="relative flex max-h-[90vh] w-full max-w-2xl flex-col rounded-3xl bg-white shadow-2xl">
 
         {{-- Header --}}
         <div
@@ -55,7 +55,7 @@
         <form
             method="POST"
             action="{{ route('geofences.store') }}"
-            class="space-y-6 px-8 py-8">
+            class="flex-1 space-y-6 overflow-y-auto px-8 py-8">
 
             @csrf
 

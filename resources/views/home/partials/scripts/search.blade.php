@@ -1,231 +1,2051 @@
 <script>
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('gpstracker:map-ready', () => {
 
-    const input = document.getElementById('searchVehicle');
+    /*
+    |--------------------------------------------------------------------------
+    | Search State
+    |--------------------------------------------------------------------------
+    */
 
-    const resultBox = document.getElementById('searchResult');
+    GPSTracker.search ??= {
 
-    let debounceTimer = null;
+        initialized: false,
 
-    if (!input || !resultBox) {
+        loading: false,
 
-        return;
+        opened: false,
 
-    }
+        keyword: '',
 
-    input.addEventListener('input', function () {
+        selectedIndex: -1,
 
-        clearTimeout(debounceTimer);
+        debounceTimer: null,
 
-        const keyword = this.value.trim();
+        results: [],
 
-        if (keyword.length < 2) {
+        vehicleResults: [],
 
-            resultBox.innerHTML = '';
+        placeResults: [],
 
-            resultBox.classList.add('hidden');
+        input: null,
 
-            return;
+        resultBox: null,
 
-        }
+    };
 
-        debounceTimer = setTimeout(() => {
+    /*
+    |--------------------------------------------------------------------------
+    | Search Configuration
+    |--------------------------------------------------------------------------
+    */
 
-            search(keyword);
+    GPSTracker.searchConfig = {
 
-        }, 400);
+        inputId: 'searchVehicle',
 
-    });
+        resultId: 'searchResult',
 
-    async function search(keyword) {
+        minimumKeyword: 2,
 
-        try {
+        debounceDelay: 400,
 
-            resultBox.classList.remove('hidden');
+        maximumVehicleResult: 5,
 
-            resultBox.innerHTML = `
+        maximumPlaceResult: 5,
 
-                <div class="px-4 py-3 text-sm text-slate-500">
+        maximumResult: 10,
 
-                    Mencari...
+    };
 
-                </div>
+    /*
+    |--------------------------------------------------------------------------
+    | Getter
+    |--------------------------------------------------------------------------
+    */
 
-            `;
+    GPSTracker.getSearchState = function () {
 
-            const response = await fetch(
+        return this.search;
 
-                `/api/search?keyword=${encodeURIComponent(keyword)}`,
+    };
 
-                {
+    GPSTracker.getSearchConfig = function () {
 
-                    headers: {
+        return this.searchConfig;
 
-                        'Accept': 'application/json',
+    };
 
-                        'X-Requested-With': 'XMLHttpRequest',
+    GPSTracker.getSearchInput = function () {
 
-                    },
+        if (
 
-                    credentials: 'same-origin'
+            !this.search.input
 
-                }
+        ) {
+
+            this.search.input = document.getElementById(
+
+                this.searchConfig.inputId
 
             );
 
-            if (!response.ok) {
+        }
 
-                throw new Error();
+        return this.search.input;
 
-            }
+    };
 
-            const data = await response.json();
+    GPSTracker.getSearchResult = function () {
 
-            render(data);
+        if (
 
-        } catch (error) {
+            !this.search.resultBox
 
-            resultBox.innerHTML = `
+        ) {
 
-                <div class="px-4 py-3 text-sm text-red-500">
+            this.search.resultBox = document.getElementById(
 
-                    Gagal mengambil data.
+                this.searchConfig.resultId
 
-                </div>
-
-            `;
+            );
 
         }
 
-    }
+        return this.search.resultBox;
 
-    function render(results) {
+    };
 
-        resultBox.innerHTML = '';
+    GPSTracker.getSearchKeyword = function () {
 
-        if (results.length === 0) {
+        return this.search.keyword;
 
-            resultBox.innerHTML = `
+    };
 
-                <div class="px-4 py-3 text-sm text-slate-500">
+    GPSTracker.getSearchResults = function () {
 
-                    Data tidak ditemukan.
+        return this.search.results;
+
+    };
+
+    GPSTracker.getVehicleSearchResults = function () {
+
+        return this.search.vehicleResults;
+
+    };
+
+    GPSTracker.getPlaceSearchResults = function () {
+
+        return this.search.placeResults;
+
+    };
+
+    GPSTracker.getSelectedSearchIndex = function () {
+
+        return this.search.selectedIndex;
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Setter
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.setSearchInitialized = function (
+
+        status = true
+
+    ) {
+
+        this.search.initialized = Boolean(
+
+            status
+
+        );
+
+    };
+
+    GPSTracker.setSearchLoading = function (
+
+        status = true
+
+    ) {
+
+        this.search.loading = Boolean(
+
+            status
+
+        );
+
+    };
+
+    GPSTracker.setSearchOpened = function (
+
+        status = true
+
+    ) {
+
+        this.search.opened = Boolean(
+
+            status
+
+        );
+
+    };
+
+    GPSTracker.setSearchKeyword = function (
+
+        keyword = ''
+
+    ) {
+
+        this.search.keyword = String(
+
+            keyword
+
+        ).trim();
+
+    };
+
+    GPSTracker.setSearchResults = function (
+
+        results = []
+
+    ) {
+
+        this.search.results = Array.isArray(
+
+            results
+
+        )
+
+            ? results
+
+            : [];
+
+    };
+
+    GPSTracker.setVehicleSearchResults = function (
+
+        results = []
+
+    ) {
+
+        this.search.vehicleResults = Array.isArray(
+
+            results
+
+        )
+
+            ? results
+
+            : [];
+
+    };
+
+    GPSTracker.setPlaceSearchResults = function (
+
+        results = []
+
+    ) {
+
+        this.search.placeResults = Array.isArray(
+
+            results
+
+        )
+
+            ? results
+
+            : [];
+
+    };
+
+    GPSTracker.setSelectedSearchIndex = function (
+
+        index = -1
+
+    ) {
+
+        this.search.selectedIndex = Number(
+
+            index
+
+        );
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Checker
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.isSearchInitialized = function () {
+
+        return this.search.initialized;
+
+    };
+
+    GPSTracker.isSearchLoading = function () {
+
+        return this.search.loading;
+
+    };
+
+    GPSTracker.isSearchOpened = function () {
+
+        return this.search.opened;
+
+    };
+
+    GPSTracker.hasSearchKeyword = function () {
+
+        return (
+
+            this.search.keyword.length >=
+
+            this.searchConfig.minimumKeyword
+
+        );
+
+    };
+
+    GPSTracker.hasSearchResults = function () {
+
+        return (
+
+            this.search.results.length > 0
+
+        );
+
+    };
+
+    GPSTracker.hasVehicleSearchResults = function () {
+
+        return (
+
+            this.search.vehicleResults.length > 0
+
+        );
+
+    };
+
+    GPSTracker.hasPlaceSearchResults = function () {
+
+        return (
+
+            this.search.placeResults.length > 0
+
+        );
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cache
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.cacheSearchElement = function () {
+
+        this.search.input = document.getElementById(
+
+            this.searchConfig.inputId
+
+        );
+
+        this.search.resultBox = document.getElementById(
+
+            this.searchConfig.resultId
+
+        );
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Helper
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.clearSearch = function () {
+
+        this.setSearchLoading(
+
+            false
+
+        );
+
+        this.setSearchOpened(
+
+            false
+
+        );
+
+        this.setSearchKeyword(
+
+            ''
+
+        );
+
+        this.setSelectedSearchIndex(
+
+            -1
+
+        );
+
+        this.setSearchResults(
+
+            []
+
+        );
+
+        this.setVehicleSearchResults(
+
+            []
+
+        );
+
+        this.setPlaceSearchResults(
+
+            []
+
+        );
+
+    };
+
+    GPSTracker.runSearchDebounce = function (
+
+        callback
+
+    ) {
+
+        clearTimeout(
+
+            this.search.debounceTimer
+
+        );
+
+        this.search.debounceTimer = setTimeout(
+
+            callback,
+
+            this.searchConfig.debounceDelay
+
+        );
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Logger
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.searchLog = function (
+
+        ...message
+
+    ) {
+
+        console.log(
+
+            '[Search]',
+
+            ...message
+
+        );
+
+    };
+
+    GPSTracker.searchWarn = function (
+
+        ...message
+
+    ) {
+
+        console.warn(
+
+            '[Search]',
+
+            ...message
+
+        );
+
+    };
+
+    GPSTracker.searchError = function (
+
+        ...message
+
+    ) {
+
+        console.error(
+
+            '[Search]',
+
+            ...message
+
+        );
+
+    };
+        /*
+    |--------------------------------------------------------------------------
+    | Vehicle Search Helper
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.normalizeVehicleKeyword = function (
+
+        keyword = ''
+
+    ) {
+
+        return String(
+
+            keyword
+
+        )
+
+            .trim()
+
+            .toLowerCase();
+
+    };
+
+    GPSTracker.getSearchVehicles = function () {
+
+        if (
+
+            typeof this.getVehicles === 'function'
+
+        ) {
+
+            return this.getVehicles();
+
+        }
+
+        return [];
+
+    };
+
+    GPSTracker.buildVehicleSearchResult = function (
+
+        vehicle
+
+    ) {
+
+        return {
+
+            type: 'vehicle',
+
+            id: vehicle.device_id,
+
+            device_id: vehicle.device_id,
+
+            title:
+
+                vehicle.vehicle_name ??
+
+                vehicle.device_id,
+
+            subtitle:
+
+                vehicle.plate_number ??
+
+                '-',
+
+            latitude:
+
+                vehicle.latitude,
+
+            longitude:
+
+                vehicle.longitude,
+
+            vehicle,
+
+        };
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Filter Vehicle
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.filterVehicles = function (
+
+        keyword
+
+    ) {
+
+        keyword = this.normalizeVehicleKeyword(
+
+            keyword
+
+        );
+
+        if (
+
+            !keyword
+
+        ) {
+
+            return [];
+
+        }
+
+        return this.getSearchVehicles().filter(
+
+            vehicle => {
+
+                const vehicleName = String(
+
+                    vehicle.vehicle_name ??
+
+                    ''
+
+                ).toLowerCase();
+
+                const plateNumber = String(
+
+                    vehicle.plate_number ??
+
+                    ''
+
+                ).toLowerCase();
+
+                const deviceId = String(
+
+                    vehicle.device_id ??
+
+                    ''
+
+                ).toLowerCase();
+
+                return (
+
+                    vehicleName.includes(
+
+                        keyword
+
+                    ) ||
+
+                    plateNumber.includes(
+
+                        keyword
+
+                    ) ||
+
+                    deviceId.includes(
+
+                        keyword
+
+                    )
+
+                );
+
+            }
+
+        );
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Sort Vehicle
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.sortVehicleSearchResult = function (
+
+        vehicles = []
+
+    ) {
+
+        return [
+
+            ...vehicles,
+
+        ].sort(
+
+            (
+
+                first,
+
+                second
+
+            ) => {
+
+                return String(
+
+                    first.vehicle_name ??
+
+                    ''
+
+                ).localeCompare(
+
+                    String(
+
+                        second.vehicle_name ??
+
+                        ''
+
+                    )
+
+                );
+
+            }
+
+        );
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Search Vehicle
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.searchVehicle = function (
+
+        keyword
+
+    ) {
+
+        const vehicles =
+
+            this.sortVehicleSearchResult(
+
+                this.filterVehicles(
+
+                    keyword
+
+                )
+
+            );
+
+        const results = vehicles
+
+            .slice(
+
+                0,
+
+                this.getSearchConfig()
+
+                    .maximumVehicleResult
+
+            )
+
+            .map(
+
+                vehicle =>
+
+                    this.buildVehicleSearchResult(
+
+                        vehicle
+
+                    )
+
+            );
+
+        this.setVehicleSearchResults(
+
+            results
+
+        );
+
+        return results;
+
+    };
+        /*
+    |--------------------------------------------------------------------------
+    | Place Search Helper
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.normalizePlaceKeyword = function (
+
+        keyword = ''
+
+    ) {
+
+        return String(
+
+            keyword
+
+        )
+
+            .trim();
+
+    };
+
+    GPSTracker.buildPlaceSearchResult = function (
+
+        place
+
+    ) {
+
+        return {
+
+            type: 'place',
+
+            id:
+
+                place.place_id ??
+
+                crypto.randomUUID(),
+
+            title:
+
+                place.display_name ??
+
+                '-',
+
+            subtitle:
+
+                place.address ??
+
+                '',
+
+            latitude:
+
+                Number(
+
+                    place.latitude ??
+
+                    place.lat
+
+                ),
+
+            longitude:
+
+                Number(
+
+                    place.longitude ??
+
+                    place.lon
+
+                ),
+
+            place,
+
+        };
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Search Place
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.searchPlaces = async function (
+
+        keyword
+
+    ) {
+
+        keyword = this.normalizePlaceKeyword(
+
+            keyword
+
+        );
+
+        if (
+
+            !keyword
+
+        ) {
+
+            this.setPlaceSearchResults(
+
+                []
+
+            );
+
+            return [];
+
+        }
+
+        try {
+
+            const places = await this.searchPlace(
+
+                keyword
+
+            );
+
+            const results = (
+
+                Array.isArray(
+
+                    places
+
+                )
+
+                    ? places
+
+                    : []
+
+            )
+
+                .slice(
+
+                    0,
+
+                    this.getSearchConfig()
+
+                        .maximumPlaceResult
+
+                )
+
+                .map(
+
+                    place =>
+
+                        this.buildPlaceSearchResult(
+
+                            place
+
+                        )
+
+                );
+
+            this.setPlaceSearchResults(
+
+                results
+
+            );
+
+            return results;
+
+        }
+
+        catch (
+
+            error
+
+        ) {
+
+            this.searchError(
+
+                error
+
+            );
+
+            this.setPlaceSearchResults(
+
+                []
+
+            );
+
+            return [];
+
+        }
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Merge Search Result
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.mergeSearchResults = function () {
+
+        const results = [
+
+            ...this.getVehicleSearchResults(),
+
+            ...this.getPlaceSearchResults(),
+
+        ].slice(
+
+            0,
+
+            this.getSearchConfig()
+
+                .maximumResult
+
+        );
+
+        this.setSearchResults(
+
+            results
+
+        );
+
+        return results;
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Execute Search
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.executeSearch = async function (
+
+        keyword
+
+    ) {
+
+        this.setSearchKeyword(
+
+            keyword
+
+        );
+
+        if (
+
+            !this.hasSearchKeyword()
+
+        ) {
+
+            this.clearSearch();
+
+            return [];
+
+        }
+
+        this.setSearchLoading(
+
+            true
+
+        );
+
+        try {
+
+            this.searchVehicle(
+
+                keyword
+
+            );
+
+            await this.searchPlaces(
+
+                keyword
+
+            );
+
+            return this.mergeSearchResults();
+
+        }
+
+        catch (
+
+            error
+
+        ) {
+
+            this.searchError(
+
+                error
+
+            );
+
+            this.setSearchResults(
+
+                []
+
+            );
+
+            return [];
+
+        }
+
+        finally {
+
+            this.setSearchLoading(
+
+                false
+
+            );
+
+        }
+
+    };
+        /*
+    |--------------------------------------------------------------------------
+    | Search Icon
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.getSearchIcon = function (
+
+        type
+
+    ) {
+
+        switch (
+
+            type
+
+        ) {
+
+            case 'vehicle':
+
+                return '🚗';
+
+            case 'place':
+
+                return '📍';
+
+            default:
+
+                return '📍';
+
+        }
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Highlight Keyword
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.highlightSearchKeyword = function (
+
+        text = ''
+
+    ) {
+
+        const keyword =
+
+            this.getSearchKeyword();
+
+        if (
+
+            !keyword
+
+        ) {
+
+            return String(
+
+                text
+
+            );
+
+        }
+
+        const escapeKeyword = keyword.replace(
+
+            /[.*+?^${}()|[\]\\]/g,
+
+            '\\$&'
+
+        );
+
+        return String(
+
+            text
+
+        ).replace(
+
+            new RegExp(
+
+                `(${escapeKeyword})`,
+
+                'ig'
+
+            ),
+
+            '<mark class="rounded bg-yellow-200 px-1">$1</mark>'
+
+        );
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Create Search Item
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.createSearchItem = function (
+
+        result
+
+    ) {
+
+        const item =
+
+            document.createElement(
+
+                'button'
+
+            );
+
+        item.type = 'button';
+
+        item.dataset.type =
+
+            result.type;
+
+        item.className =
+            'flex w-full items-start gap-3 border-b border-slate-100 px-4 py-3 text-left transition hover:bg-slate-50';
+
+        item.innerHTML = `
+
+            <div class="mt-1 text-lg">
+
+                ${this.getSearchIcon(
+
+                    result.type
+
+                )}
+
+            </div>
+
+            <div class="min-w-0 flex-1">
+
+                <div class="truncate font-medium text-slate-900">
+
+                    ${this.highlightSearchKeyword(
+
+                        result.title
+
+                    )}
 
                 </div>
 
-            `;
+                <div class="mt-1 truncate text-xs text-slate-500">
+
+                    ${result.subtitle ?? ''}
+
+                </div>
+
+            </div>
+
+        `;
+
+        item.dataset.index =
+
+            this.getSearchResult()
+
+                .children.length;
+
+        return item;
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Render Result
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.renderSearchResults = function (
+
+        results = []
+
+    ) {
+
+        const resultBox =
+
+            this.getSearchResult();
+
+        if (
+
+            !resultBox
+
+        ) {
 
             return;
 
         }
 
-        results.forEach(item => {
+        resultBox.innerHTML = '';
 
-            const button = document.createElement('button');
+        this.setSelectedSearchIndex(
 
-            button.type = 'button';
+            -1
 
-            button.className = 'flex w-full items-start gap-3 border-b border-slate-100 px-4 py-3 text-left transition hover:bg-slate-50';
+        );
 
-            let icon = '📍';
+        if (
 
-            if (item.type === 'vehicle') {
+            !results.length
 
-                icon = '🚗';
+        ) {
+
+            this.showSearchEmpty();
+
+            return;
+
+        }
+
+        results.forEach(
+
+            result => {
+
+                resultBox.appendChild(
+
+                    this.createSearchItem(
+
+                        result
+
+                    )
+
+                );
 
             }
 
-            if (item.type === 'administrative') {
+        );
 
-                icon = '🗺️';
+        this.openSearchResult();
 
-            }
+    };
 
-            button.innerHTML = `
+    /*
+    |--------------------------------------------------------------------------
+    | Loading
+    |--------------------------------------------------------------------------
+    */
 
-                <div class="text-lg">
+    GPSTracker.showSearchLoading = function () {
 
-                    ${icon}
+        const resultBox =
 
-                </div>
+            this.getSearchResult();
 
-                <div class="flex-1">
+        if (
 
-                    <div class="font-medium text-slate-900">
+            !resultBox
 
-                        ${item.title}
+        ) {
 
-                    </div>
+            return;
 
-                    <div class="mt-1 text-xs text-slate-500">
+        }
 
-                        ${item.subtitle ?? ''}
+        resultBox.innerHTML = `
 
-                    </div>
+            <div class="px-4 py-3 text-sm text-slate-500">
 
-                </div>
+                Mencari...
 
-            `;
+            </div>
 
-            button.addEventListener('click', function () {
+        `;
 
-                resultBox.classList.add('hidden');
+        this.openSearchResult();
 
-                input.value = item.title;
+    };
 
-                if (item.type === 'vehicle') {
+    /*
+    |--------------------------------------------------------------------------
+    | Empty
+    |--------------------------------------------------------------------------
+    */
 
-                    focusVehicle(item.id);
+    GPSTracker.showSearchEmpty = function () {
 
-                    return;
+        const resultBox =
 
-                }
+            this.getSearchResult();
+
+        if (
+
+            !resultBox
+
+        ) {
+
+            return;
+
+        }
+
+        resultBox.innerHTML = `
+
+            <div class="px-4 py-3 text-sm text-slate-500">
+
+                Data tidak ditemukan.
+
+            </div>
+
+        `;
+
+        this.openSearchResult();
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Error
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.showSearchError = function () {
+
+        const resultBox =
+
+            this.getSearchResult();
+
+        if (
+
+            !resultBox
+
+        ) {
+
+            return;
+
+        }
+
+        resultBox.innerHTML = `
+
+            <div class="px-4 py-3 text-sm text-red-500">
+
+                Gagal melakukan pencarian.
+
+            </div>
+
+        `;
+
+        this.openSearchResult();
+
+    };
+        /*
+    |--------------------------------------------------------------------------
+    | Open / Close Result
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.openSearchResult = function () {
+
+        const resultBox = this.getSearchResult();
+
+        if (!resultBox) {
+
+            return;
+
+        }
+
+        resultBox.classList.remove(
+
+            'hidden'
+
+        );
+
+        this.setSearchOpened(
+
+            true
+
+        );
+
+    };
+
+    GPSTracker.closeSearchResult = function () {
+
+        const resultBox = this.getSearchResult();
+
+        if (!resultBox) {
+
+            return;
+
+        }
+
+        resultBox.classList.add(
+
+            'hidden'
+
+        );
+
+        this.setSearchOpened(
+
+            false
+
+        );
+
+        this.setSelectedSearchIndex(
+
+            -1
+
+        );
+
+    };
+
+    GPSTracker.clearSearchResult = function () {
+
+        const resultBox =
+
+            this.getSearchResult();
+
+        if (!resultBox) {
+
+            return;
+
+        }
+
+        resultBox.innerHTML = '';
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Select Result
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.selectSearchResult = function (
+
+        result
+
+    ) {
+
+        if (!result) {
+
+            return;
+
+        }
+
+        const input =
+
+            this.getSearchInput();
+
+        if (input) {
+
+            input.value =
+
+                result.title ?? '';
+
+        }
+
+        this.closeSearchResult();
+
+        switch (
+
+            result.type
+
+        ) {
+
+            case 'vehicle':
 
                 if (
 
-                    item.type === 'location' ||
-
-                    item.type === 'administrative'
+                    typeof this.focusVehicle === 'function'
 
                 ) {
 
-                    GPSTracker.flyToLocation(
+                    this.focusVehicle(
 
-                        item.latitude,
-
-                        item.longitude,
-
-                        17
+                        result.device_id
 
                     );
 
                 }
 
-            });
+                break;
 
-            resultBox.appendChild(button);
+            case 'place':
 
-        });
+                if (
 
-    }
+                    typeof this.previewAddress === 'function'
 
-    document.addEventListener('click', function (event) {
+                ) {
 
-        if (
+                    this.previewAddress(
 
-            !resultBox.contains(event.target) &&
+                        result.place
 
-            event.target !== input
+                    );
 
-        ) {
+                }
 
-            resultBox.classList.add('hidden');
+                break;
 
         }
 
-    });
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Input Handler
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.handleSearchInput = function () {
+
+        const input =
+
+            this.getSearchInput();
+
+        if (!input) {
+
+            return;
+
+        }
+
+        this.runSearchDebounce(
+
+            async () => {
+
+                this.showSearchLoading();
+
+                const results =
+
+                    await this.executeSearch(
+
+                        input.value
+
+                    );
+
+                this.renderSearchResults(
+
+                    results
+
+                );
+
+            }
+
+        );
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Keyboard Navigation
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.moveSearchSelection = function (
+
+        direction,
+
+        items
+
+    ) {
+
+        let index =
+
+            this.getSelectedSearchIndex();
+
+        index += direction;
+
+        if (
+
+            index < 0
+
+        ) {
+
+            index =
+
+                items.length - 1;
+
+        }
+
+        if (
+
+            index >= items.length
+
+        ) {
+
+            index = 0;
+
+        }
+
+        items.forEach(
+
+            (
+
+                item,
+
+                current
+
+            ) => {
+
+                item.classList.toggle(
+
+                    'bg-blue-50',
+
+                    current === index
+
+                );
+
+            }
+
+        );
+
+        this.setSelectedSearchIndex(
+
+            index
+
+        );
+
+    };
+
+    GPSTracker.selectCurrentSearchItem = function (
+
+        items
+
+    ) {
+
+        const index =
+
+            this.getSelectedSearchIndex();
+
+        if (
+
+            index < 0 ||
+
+            !items[index]
+
+        ) {
+
+            return;
+
+        }
+
+        items[index].click();
+
+    };
+
+    GPSTracker.handleSearchKeyboard = function (
+
+        event
+
+    ) {
+
+        if (
+
+            !this.isSearchOpened()
+
+        ) {
+
+            return;
+
+        }
+
+        const items =
+
+            this.getSearchResult()
+
+                ?.querySelectorAll(
+
+                    'button'
+
+                );
+
+        if (
+
+            !items ||
+
+            !items.length
+
+        ) {
+
+            return;
+
+        }
+
+        switch (
+
+            event.key
+
+        ) {
+
+            case 'ArrowDown':
+
+                event.preventDefault();
+
+                this.moveSearchSelection(
+
+                    1,
+
+                    items
+
+                );
+
+                break;
+
+            case 'ArrowUp':
+
+                event.preventDefault();
+
+                this.moveSearchSelection(
+
+                    -1,
+
+                    items
+
+                );
+
+                break;
+
+            case 'Enter':
+
+                event.preventDefault();
+
+                this.selectCurrentSearchItem(
+
+                    items
+
+                );
+
+                break;
+
+            case 'Escape':
+
+                this.closeSearchResult();
+
+                break;
+
+        }
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Event Binding
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.bindSearchEvents = function () {
+
+        const input =
+
+            this.getSearchInput();
+
+        const resultBox =
+
+            this.getSearchResult();
+
+        if (
+
+            !input ||
+
+            !resultBox
+
+        ) {
+
+            return;
+
+        }
+
+        input.addEventListener(
+
+            'input',
+
+            () => this.handleSearchInput()
+
+        );
+
+        input.addEventListener(
+
+            'keydown',
+
+            event => this.handleSearchKeyboard(
+
+                event
+
+            )
+
+        );
+
+        input.addEventListener(
+
+            'focus',
+
+            () => {
+
+                if (
+
+                    this.hasSearchResults()
+
+                ) {
+
+                    this.openSearchResult();
+
+                }
+
+            }
+
+        );
+
+        input.addEventListener(
+
+            'blur',
+
+            () => {
+
+                setTimeout(
+
+                    () => {
+
+                        this.closeSearchResult();
+
+                    },
+
+                    150
+
+                );
+
+            }
+
+        );
+
+        resultBox.addEventListener(
+
+            'click',
+
+            event => {
+
+                const item =
+
+                    event.target.closest(
+
+                        'button'
+
+                    );
+
+                if (!item) {
+
+                    return;
+
+                }
+
+                const index = Number(
+
+                    item.dataset.index
+
+                );
+
+                this.selectSearchResult(
+
+                    this.getSearchResults()[
+
+                        index
+
+                    ]
+
+                );
+
+            }
+
+        );
+
+        document.addEventListener(
+
+            'click',
+
+            event => {
+
+                if (
+
+                    input.contains(
+
+                        event.target
+
+                    ) ||
+
+                    resultBox.contains(
+
+                        event.target
+
+                    )
+
+                ) {
+
+                    return;
+
+                }
+
+                this.closeSearchResult();
+
+            }
+
+        );
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Lifecycle
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.initializeSearch = function () {
+
+        if (
+
+            this.isSearchInitialized()
+
+        ) {
+
+            return;
+
+        }
+
+        this.cacheSearchElement();
+
+        if (
+
+            !this.getSearchInput() ||
+
+            !this.getSearchResult()
+
+        ) {
+
+            return;
+
+        }
+
+        this.bindSearchEvents();
+
+        this.setSearchInitialized(
+
+            true
+
+        );
+
+        this.searchLog(
+
+            'Search initialized.'
+
+        );
+
+    };
+
+    GPSTracker.destroySearch = function () {
+
+        this.clearSearch();
+
+        this.clearSearchResult();
+
+        this.closeSearchResult();
+
+        this.setSearchInitialized(
+
+            false
+
+        );
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Ready
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.initializeSearch();
+
+    document.dispatchEvent(
+
+        new CustomEvent(
+
+            'gpstracker:search-ready'
+
+        )
+
+    );
 
 });
-
 </script>

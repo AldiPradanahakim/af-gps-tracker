@@ -1,884 +1,1205 @@
 <script>
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener(
 
-    if (typeof GPSTracker === 'undefined') {
+    'gpstracker:map-ready',
 
-        return;
+    () => {
 
-    }
+        /*
+        |--------------------------------------------------------------------------
+        | Marker State
+        |--------------------------------------------------------------------------
+        */
 
-    /*
-    |--------------------------------------------------------------------------
-    | Marker State
-    |--------------------------------------------------------------------------
-    */
+        GPSTracker.marker ??= {
 
-    GPSTracker.markers = GPSTracker.markers || {};
+            initialized: false,
 
-    GPSTracker.markerGroup = GPSTracker.markerGroup || L.layerGroup().addTo(GPSTracker.map);
+            selectedVehicle: null,
 
-    /*
-    |--------------------------------------------------------------------------
-    | Marker Configuration
-    |--------------------------------------------------------------------------
-    */
+            selectedMarker: null,
 
-    GPSTracker.markerConfig = {
+            markers: {},
 
-        defaultZoom: 17,
+            markerLayer: null,
 
-        fitZoom: 16,
+            activePopup: null,
 
-        animationDuration: 1.2,
+        };
 
-        fitPadding: [60, 60],
+        /*
+        |--------------------------------------------------------------------------
+        | Marker Configuration
+        |--------------------------------------------------------------------------
+        */
 
-        iconSize: [48, 48],
+        GPSTracker.markerConfig = {
 
-        iconAnchor: [24, 24],
+            iconSize: [48, 48],
 
-        popupAnchor: [0, -22],
+            iconAnchor: [24, 24],
 
-    };
+            popupAnchor: [0, -22],
 
-    /*
-    |--------------------------------------------------------------------------
-    | Utilities
-    |--------------------------------------------------------------------------
-    */
+            rotationOrigin: 'center center',
 
-    GPSTracker.hasMarker = function (deviceId) {
+            defaultZoom: 17,
 
-        return !!this.markers[deviceId];
+            animationDuration: 500,
 
-    };
+        };
 
-    GPSTracker.getMarker = function (deviceId) {
+        /*
+        |--------------------------------------------------------------------------
+        | Getter
+        |--------------------------------------------------------------------------
+        */
 
-        return this.markers[deviceId] ?? null;
+        GPSTracker.getMarkerState = function () {
 
-    };
+            return this.marker;
 
-    GPSTracker.setMarker = function (deviceId, marker) {
+        };
 
-        this.markers[deviceId] = marker;
+        GPSTracker.getMarkerConfig = function () {
 
-        return marker;
+            return this.markerConfig;
 
-    };
+        };
 
-    GPSTracker.deleteMarker = function (deviceId) {
+        GPSTracker.getMarkers = function () {
 
-        delete this.markers[deviceId];
+            return this.marker.markers;
 
-    };
+        };
 
-    GPSTracker.getLatLng = function (vehicle) {
+        GPSTracker.getMarker = function (deviceId) {
 
-        return [
+            return this.marker.markers[deviceId] ?? null;
 
-            Number(vehicle.latitude),
+        };
 
-            Number(vehicle.longitude),
+        GPSTracker.getSelectedMarker = function () {
 
-        ];
+            return this.marker.selectedMarker;
 
-    };
+        };
 
-    GPSTracker.isValidCoordinate = function (vehicle) {
+        GPSTracker.getSelectedVehicle = function () {
 
-        return (
+            return this.marker.selectedVehicle;
 
-            vehicle &&
+        };
 
-            vehicle.latitude !== null &&
+        GPSTracker.getMarkerLayer = function () {
 
-            vehicle.longitude !== null &&
+            return this.markerLayer;
 
-            !isNaN(vehicle.latitude) &&
+        };
 
-            !isNaN(vehicle.longitude)
+        /*
+        |--------------------------------------------------------------------------
+        | Setter
+        |--------------------------------------------------------------------------
+        */
 
-        );
+        GPSTracker.setMarker = function (
 
-    };
-
-    GPSTracker.getStatusText = function (vehicle) {
-
-        return vehicle.is_active
-
-            ? 'Online'
-
-            : 'Offline';
-
-    };
-
-    GPSTracker.getStatusColor = function (vehicle) {
-
-        return vehicle.is_active
-
-            ? 'text-green-600'
-
-            : 'text-red-600';
-
-    };
-
-    GPSTracker.getSpeed = function (vehicle) {
-
-        return Number(vehicle.speed ?? 0);
-
-    };
-
-    GPSTracker.getBattery = function (vehicle) {
-
-        return Number(vehicle.battery ?? 0);
-
-    };
-
-    /*
-    |--------------------------------------------------------------------------
-    | Vehicle Icon
-    |--------------------------------------------------------------------------
-    */
-
-    GPSTracker.createVehicleIcon = function (vehicle) {
-
-        return L.divIcon({
-
-            className: '',
-
-            html: `
-
-                <div class="relative">
-
-                    <div
-                        class="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white shadow-lg">
-
-                        <img
-                            src="/images/marker/car.png"
-                            class="h-7 w-7"
-                            draggable="false">
-
-                    </div>
-
-                    <span
-                        class="absolute -right-1 -top-1 h-3.5 w-3.5 rounded-full border-2 border-white ${vehicle.is_active ? 'bg-green-500' : 'bg-red-500'}">
-
-                    </span>
-
-                </div>
-
-            `,
-
-            iconSize: this.markerConfig.iconSize,
-
-            iconAnchor: this.markerConfig.iconAnchor,
-
-            popupAnchor: this.markerConfig.popupAnchor,
-
-        });
-
-    };
-
-    /*
-    |--------------------------------------------------------------------------
-    | Vehicle Popup
-    |--------------------------------------------------------------------------
-    */
-
-    GPSTracker.createPopup = function (vehicle) {
-
-        return `
-
-            <div class="w-[240px]">
-
-                <div class="border-b border-slate-200 pb-3">
-
-                    <div class="text-base font-bold text-slate-900">
-
-                        ${vehicle.vehicle_name ?? '-'}
-
-                    </div>
-
-                    <div class="mt-1 text-sm text-slate-500">
-
-                        ${vehicle.plate_number ?? '-'}
-
-                    </div>
-
-                </div>
-
-                <div class="mt-4 space-y-2">
-
-                    <div class="flex justify-between">
-
-                        <span>Status</span>
-
-                        <span class="${this.getStatusColor(vehicle)} font-semibold">
-
-                            ${this.getStatusText(vehicle)}
-
-                        </span>
-
-                    </div>
-
-                    <div class="flex justify-between">
-
-                        <span>Kecepatan</span>
-
-                        <span>
-
-                            ${this.getSpeed(vehicle)} km/jam
-
-                        </span>
-
-                    </div>
-
-                    <div class="flex justify-between">
-
-                        <span>Baterai</span>
-
-                        <span>
-
-                            ${this.getBattery(vehicle)} %
-
-                        </span>
-
-                    </div>
-
-                </div>
-
-                <a
-                    href="${GPSTracker.routes.vehicle}/${vehicle.device_id}"
-                    class="mt-5 flex w-full items-center justify-center rounded-xl bg-[#2563EB] px-4 py-2 text-sm font-semibold text-white">
-
-                    Detail Kendaraan
-
-                </a>
-
-            </div>
-
-        `;
-
-    };
-
-    /*
-    |--------------------------------------------------------------------------
-    | Create Marker
-    |--------------------------------------------------------------------------
-    */
-
-    GPSTracker.createMarker = function (vehicle) {
-
-        if (!this.isValidCoordinate(vehicle)) {
-
-            return null;
-
-        }
-
-        if (this.hasMarker(vehicle.device_id)) {
-
-            return this.getMarker(vehicle.device_id);
-
-        }
-
-        const marker = L.marker(
-
-            this.getLatLng(vehicle),
-
-            {
-
-                icon: this.createVehicleIcon(vehicle),
-
-                rotationAngle: vehicle.heading ?? 0,
-
-            }
-
-        );
-
-        marker.bindPopup(
-
-            this.createPopup(vehicle)
-
-        );
-                marker.addTo(
-
-            this.markerGroup
-
-        );
-
-        this.setMarker(
-
-            vehicle.device_id,
+            deviceId,
 
             marker
 
-        );
+        ) {
 
-        return marker;
+            this.marker.markers[deviceId] = marker;
 
-    };
+        };
 
-    /*
-    |--------------------------------------------------------------------------
-    | Render Markers
-    |--------------------------------------------------------------------------
-    */
+        GPSTracker.setSelectedMarker = function (
 
-    GPSTracker.renderMarkers = function () {
-
-        if (!Array.isArray(this.vehicles)) {
-
-            return;
-
-        }
-
-        this.vehicles.forEach(vehicle => {
-
-            this.createMarker(vehicle);
-
-        });
-
-    };
-
-    /*
-    |--------------------------------------------------------------------------
-    | Update Marker Position
-    |--------------------------------------------------------------------------
-    */
-
-    GPSTracker.updateMarkerPosition = function (marker, vehicle) {
-
-        marker.setLatLng(
-
-            this.getLatLng(vehicle)
-
-        );
-
-        if (
-
-            typeof marker.setRotationAngle === 'function'
+            marker
 
         ) {
 
-            marker.setRotationAngle(
+            this.marker.selectedMarker = marker;
+
+        };
+
+        GPSTracker.setSelectedVehicle = function (
+
+            deviceId
+
+        ) {
+
+            this.marker.selectedVehicle = deviceId;
+
+        };
+
+        GPSTracker.setActivePopup = function (
+
+            popup
+
+        ) {
+
+            this.marker.activePopup = popup;
+
+        };
+
+        GPSTracker.setMarkerInitialized = function (
+
+            status = true
+
+        ) {
+
+            this.marker.initialized = status;
+
+        };
+
+        /*
+        |--------------------------------------------------------------------------
+        | Checker
+        |--------------------------------------------------------------------------
+        */
+
+        GPSTracker.hasMarker = function (
+
+            deviceId
+
+        ) {
+
+            return this.getMarker(
+
+                deviceId
+
+            ) !== null;
+
+        };
+
+        GPSTracker.hasSelectedMarker = function () {
+
+            return this.getSelectedMarker() !== null;
+
+        };
+
+        GPSTracker.hasSelectedVehicle = function () {
+
+            return this.getSelectedVehicle() !== null;
+
+        };
+
+        GPSTracker.isMarkerInitialized = function () {
+
+            return this.marker.initialized;
+
+        };
+
+        /*
+        |--------------------------------------------------------------------------
+        | Logger
+        |--------------------------------------------------------------------------
+        */
+
+        GPSTracker.markerLog = function (
+
+            ...message
+
+        ) {
+
+            console.log(
+
+                '[Marker]',
+
+                ...message
+
+            );
+
+        };
+
+        GPSTracker.markerWarn = function (
+
+            ...message
+
+        ) {
+
+            console.warn(
+
+                '[Marker]',
+
+                ...message
+
+            );
+
+        };
+
+        GPSTracker.markerError = function (
+
+            ...message
+
+        ) {
+
+            console.error(
+
+                '[Marker]',
+
+                ...message
+
+            );
+
+        };
+
+        /*
+        |--------------------------------------------------------------------------
+        | Helper
+        |--------------------------------------------------------------------------
+        */
+
+        GPSTracker.getVehicleLatLng = function (
+
+            vehicle
+
+        ) {
+
+            return [
+
+                Number(
+
+                    vehicle.latitude
+
+                ),
+
+                Number(
+
+                    vehicle.longitude
+
+                ),
+
+            ];
+
+        };
+
+        GPSTracker.hasVehicleCoordinate = function (
+
+            vehicle
+
+        ) {
+
+            if (!vehicle) {
+
+                return false;
+
+            }
+
+            return this.isValidCoordinate(
+
+                vehicle.latitude,
+
+                vehicle.longitude
+
+            );
+
+        };
+
+        GPSTracker.getVehicleHeading = function (
+
+            vehicle
+
+        ) {
+
+            return Number(
 
                 vehicle.heading ?? 0
 
             );
 
-        }
+        };
 
-    };
-
-    /*
-    |--------------------------------------------------------------------------
-    | Update Marker Icon
-    |--------------------------------------------------------------------------
-    */
-
-    GPSTracker.updateMarkerIcon = function (marker, vehicle) {
-
-        marker.setIcon(
-
-            this.createVehicleIcon(vehicle)
-
-        );
-
-    };
-
-    /*
-    |--------------------------------------------------------------------------
-    | Update Marker Popup
-    |--------------------------------------------------------------------------
-    */
-
-    GPSTracker.updateMarkerPopup = function (marker, vehicle) {
-
-        marker.setPopupContent(
-
-            this.createPopup(vehicle)
-
-        );
-
-    };
-
-    /*
-    |--------------------------------------------------------------------------
-    | Update Marker
-    |--------------------------------------------------------------------------
-    */
-
-    GPSTracker.updateMarker = function (vehicle) {
-
-        if (!this.isValidCoordinate(vehicle)) {
-
-            return;
-
-        }
-
-        let marker = this.getMarker(
-
-            vehicle.device_id
-
-        );
-
-        if (!marker) {
-
-            marker = this.createMarker(vehicle);
-
-            return;
-
-        }
-
-        this.updateMarkerPosition(
-
-            marker,
+        GPSTracker.getVehicleSpeed = function (
 
             vehicle
 
-        );
+        ) {
 
-        this.updateMarkerIcon(
+            return Number(
 
-            marker,
-
-            vehicle
-
-        );
-
-        this.updateMarkerPopup(
-
-            marker,
-
-            vehicle
-
-        );
-
-    };
-
-    /*
-    |--------------------------------------------------------------------------
-    | Refresh All Marker
-    |--------------------------------------------------------------------------
-    */
-
-    GPSTracker.refreshMarkers = function () {
-
-        if (!Array.isArray(this.vehicles)) {
-
-            return;
-
-        }
-
-        this.vehicles.forEach(vehicle => {
-
-            this.updateMarker(vehicle);
-
-        });
-
-    };
-
-    /*
-    |--------------------------------------------------------------------------
-    | Remove Marker
-    |--------------------------------------------------------------------------
-    */
-
-    GPSTracker.removeMarker = function (deviceId) {
-
-        const marker = this.getMarker(
-
-            deviceId
-
-        );
-
-        if (!marker) {
-
-            return;
-
-        }
-
-        this.markerGroup.removeLayer(
-
-            marker
-
-        );
-
-        this.deleteMarker(
-
-            deviceId
-
-        );
-
-    };
-
-    /*
-    |--------------------------------------------------------------------------
-    | Remove All Marker
-    |--------------------------------------------------------------------------
-    */
-
-    GPSTracker.clearMarkers = function () {
-
-        Object.values(
-
-            this.markers
-
-        ).forEach(marker => {
-
-            this.markerGroup.removeLayer(
-
-                marker
+                vehicle.speed ?? 0
 
             );
 
-        });
+        };
 
-        this.markers = {};
+        GPSTracker.getVehicleBattery = function (
 
-    };
+            vehicle
 
-    /*
-    |--------------------------------------------------------------------------
-    | Close Popup
-    |--------------------------------------------------------------------------
-    */
+        ) {
 
-    GPSTracker.closeAllPopup = function () {
+            return Number(
 
-        Object.values(
-
-            this.markers
-
-        ).forEach(marker => {
-
-            marker.closePopup();
-
-        });
-
-    };
-
-    /*
-    |--------------------------------------------------------------------------
-    | Focus Marker
-    |--------------------------------------------------------------------------
-    */
-
-    GPSTracker.focusMarker = function (deviceId) {
-
-        const marker = this.getMarker(
-
-            deviceId
-
-        );
-
-        if (!marker) {
-
-            return;
-
-        }
-
-        this.closeAllPopup();
-
-        this.map.flyTo(
-
-            marker.getLatLng(),
-
-            this.markerConfig.defaultZoom,
-
-            {
-
-                animate: true,
-
-                duration: this.markerConfig.animationDuration,
-
-            }
-
-        );
-
-        marker.openPopup();
-
-    };
-
-    /*
-    |--------------------------------------------------------------------------
-    | Fit Vehicle Bounds
-    |--------------------------------------------------------------------------
-    */
-    GPSTracker.fitVehicles = function () {
-
-        const markers = Object.values(
-
-            this.markers
-
-        );
-
-        if (!markers.length) {
-
-            return;
-
-        }
-
-        if (markers.length === 1) {
-
-            this.map.setView(
-
-                markers[0].getLatLng(),
-
-                this.markerConfig.fitZoom
+                vehicle.battery ?? 0
 
             );
 
-            return;
+        };
+                /*
+        |--------------------------------------------------------------------------
+        | Create Marker Icon
+        |--------------------------------------------------------------------------
+        */
 
-        }
+        GPSTracker.createMarkerIcon = function (vehicle) {
 
-        const group = L.featureGroup(
+            return L.divIcon({
 
-            markers
+                className: '',
 
-        );
+                html: `
 
-        this.map.fitBounds(
+                    <div class="relative">
 
-            group.getBounds(),
+                        <div
+                            class="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white shadow-lg">
 
-            {
+                            <img
 
-                padding: this.markerConfig.fitPadding,
+                                src="/images/marker/car.png"
 
-                animate: true,
+                                class="h-7 w-7"
+
+                                draggable="false"
+
+                            >
+
+                        </div>
+
+                        <span
+
+                            class="absolute -right-1 -top-1 h-3.5 w-3.5 rounded-full border-2 border-white
+
+                            ${vehicle.is_active
+
+                                ? 'bg-green-500'
+
+                                : 'bg-red-500'}
+
+                            ">
+
+                        </span>
+
+                    </div>
+
+                `,
+
+                iconSize:
+
+                    this.markerConfig.iconSize,
+
+                iconAnchor:
+
+                    this.markerConfig.iconAnchor,
+
+                popupAnchor:
+
+                    this.markerConfig.popupAnchor,
+
+            });
+
+        };
+
+        /*
+        |--------------------------------------------------------------------------
+        | Create Marker
+        |--------------------------------------------------------------------------
+        */
+
+        GPSTracker.createMarker = function (vehicle) {
+
+            if (
+
+                !this.hasVehicleCoordinate(
+
+                    vehicle
+
+                )
+
+            ) {
+
+                return null;
 
             }
 
-        );
+            const marker = L.marker(
 
-    };
+                this.getVehicleLatLng(
 
-    /*
-    |--------------------------------------------------------------------------
-    | Replace Vehicle
-    |--------------------------------------------------------------------------
-    */
+                    vehicle
 
-    GPSTracker.replaceVehicle = function (vehicle) {
+                ),
 
-        const index = this.vehicles.findIndex(item => {
+                {
 
-            return item.device_id === vehicle.device_id;
+                    icon: this.createMarkerIcon(
 
-        });
+                        vehicle
 
-        if (index === -1) {
+                    ),
 
-            this.vehicles.push(
+                    rotationAngle: this.getVehicleHeading(
+
+                        vehicle
+
+                    ),
+
+                }
+
+            );
+
+            return marker;
+
+        };
+
+        /*
+        |--------------------------------------------------------------------------
+        | Add Marker
+        |--------------------------------------------------------------------------
+        */
+
+        GPSTracker.addMarker = function (vehicle) {
+
+            if (
+
+                this.hasMarker(
+
+                    vehicle.device_id
+
+                )
+
+            ) {
+
+                return this.getMarker(
+
+                    vehicle.device_id
+
+                );
+
+            }
+
+            const marker = this.createMarker(
+    vehicle
+);
+
+if (!marker) {
+
+    return null;
+
+}
+
+if (
+
+    typeof this.bindMarkerPopup === 'function'
+
+) {
+
+    this.bindMarkerPopup(
+
+        marker,
+
+        vehicle
+
+    );
+
+}
+
+marker.addTo(
+
+    this.getMarkerLayer()
+
+);
+
+this.setMarker(
+
+    vehicle.device_id,
+
+    marker
+
+);
+
+return marker;
+
+        };
+
+        /*
+        |--------------------------------------------------------------------------
+        | Remove Marker
+        |--------------------------------------------------------------------------
+        */
+
+        GPSTracker.removeMarker = function (deviceId) {
+
+            const marker = this.getMarker(
+
+                deviceId
+
+            );
+
+            if (!marker) {
+
+                return;
+
+            }
+
+            this.getMarkerLayer()
+
+                .removeLayer(
+
+                    marker
+
+                );
+
+            delete this.marker.markers[deviceId];
+
+        };
+
+        /*
+        |--------------------------------------------------------------------------
+        | Clear Markers
+        |--------------------------------------------------------------------------
+        */
+
+        GPSTracker.clearMarkers = function () {
+
+            Object.values(
+
+                this.getMarkers()
+
+            ).forEach(marker => {
+
+                this.getMarkerLayer()
+
+                    .removeLayer(
+
+                        marker
+
+                    );
+
+            });
+
+            this.marker.markers = {};
+
+        };
+
+        /*
+        |--------------------------------------------------------------------------
+        | Marker Count
+        |--------------------------------------------------------------------------
+        */
+
+        GPSTracker.getMarkerCount = function () {
+
+            return Object.keys(
+
+                this.getMarkers()
+
+            ).length;
+
+        };
+
+        /*
+        |--------------------------------------------------------------------------
+        | Marker Exists
+        |--------------------------------------------------------------------------
+        */
+
+        GPSTracker.findMarker = function (deviceId) {
+
+            return this.getMarker(
+
+                deviceId
+
+            );
+
+        };
+
+        /*
+        |--------------------------------------------------------------------------
+        | Create Or Add Marker
+        |--------------------------------------------------------------------------
+        */
+
+        GPSTracker.getOrCreateMarker = function (vehicle) {
+
+            let marker = this.findMarker(
+
+                vehicle.device_id
+
+            );
+
+            if (marker) {
+
+                return marker;
+
+            }
+
+            return this.addMarker(
 
                 vehicle
 
             );
 
-        } else {
+        };
+                /*
+        |--------------------------------------------------------------------------
+        | Update Marker Position
+        |--------------------------------------------------------------------------
+        */
 
-            this.vehicles[index] = {
+        GPSTracker.updateMarkerPosition = function (
 
-                ...this.vehicles[index],
-
-                ...vehicle,
-
-            };
-
-        }
-
-        this.updateMarker(
+            marker,
 
             vehicle
 
-        );
+        ) {
 
-    };
+            if (
 
-    /*
-    |--------------------------------------------------------------------------
-    | Add Vehicle
-    |--------------------------------------------------------------------------
-    */
+                !marker ||
 
-    GPSTracker.addVehicle = function (vehicle) {
+                !this.hasVehicleCoordinate(
 
-        const exists = this.vehicles.some(item => {
+                    vehicle
 
-            return item.device_id === vehicle.device_id;
+                )
 
-        });
+            ) {
 
-        if (exists) {
+                return;
 
-            this.replaceVehicle(
+            }
+
+            marker.setLatLng(
+
+                this.getVehicleLatLng(
+
+                    vehicle
+
+                )
+
+            );
+
+        };
+
+        /*
+        |--------------------------------------------------------------------------
+        | Update Marker Rotation
+        |--------------------------------------------------------------------------
+        */
+
+        GPSTracker.updateMarkerRotation = function (
+
+            marker,
+
+            vehicle
+
+        ) {
+
+            if (
+
+                !marker ||
+
+                typeof marker.setRotationAngle !== 'function'
+
+            ) {
+
+                return;
+
+            }
+
+            marker.setRotationAngle(
+
+                this.getVehicleHeading(
+
+                    vehicle
+
+                )
+
+            );
+
+        };
+
+        /*
+        |--------------------------------------------------------------------------
+        | Update Marker Icon
+        |--------------------------------------------------------------------------
+        */
+
+        GPSTracker.updateMarkerIcon = function (
+
+            marker,
+
+            vehicle
+
+        ) {
+
+            if (!marker) {
+
+                return;
+
+            }
+
+            marker.setIcon(
+
+                this.createMarkerIcon(
+
+                    vehicle
+
+                )
+
+            );
+
+        };
+
+        /*
+        |--------------------------------------------------------------------------
+        | Update Marker Popup
+        |--------------------------------------------------------------------------
+        */
+
+        GPSTracker.updateMarkerPopup = function (
+
+            marker,
+
+            vehicle
+
+        ) {
+
+            if (
+
+                !marker ||
+
+                typeof this.updatePopup !== 'function'
+
+            ) {
+
+                return;
+
+            }
+
+            this.updatePopup(
 
                 vehicle
 
             );
 
-            return;
+        };
 
-        }
+        /*
+        |--------------------------------------------------------------------------
+        | Update Marker
+        |--------------------------------------------------------------------------
+        */
 
-        this.vehicles.push(
-
-            vehicle
-
-        );
-
-        this.createMarker(
+        GPSTracker.updateMarker = function (
 
             vehicle
 
+        ) {
+
+            if (
+
+                !this.hasVehicleCoordinate(
+
+                    vehicle
+
+                )
+
+            ) {
+
+                return;
+
+            }
+
+            const marker = this.getOrCreateMarker(
+
+                vehicle
+
+            );
+
+            if (!marker) {
+
+                return;
+
+            }
+
+            this.updateMarkerPosition(
+
+                marker,
+
+                vehicle
+
+            );
+
+            this.updateMarkerRotation(
+
+                marker,
+
+                vehicle
+
+            );
+
+            this.updateMarkerIcon(
+
+                marker,
+
+                vehicle
+
+            );
+
+            this.updateMarkerPopup(
+
+                marker,
+
+                vehicle
+
+            );
+
+        };
+
+        /*
+        |--------------------------------------------------------------------------
+        | Render Marker
+        |--------------------------------------------------------------------------
+        */
+
+        GPSTracker.renderMarker = function (
+
+            vehicle
+
+        ) {
+
+            this.updateMarker(
+
+                vehicle
+
+            );
+
+        };
+
+        /*
+        |--------------------------------------------------------------------------
+        | Render All Marker
+        |--------------------------------------------------------------------------
+        */
+
+        GPSTracker.renderMarkers = function () {
+
+            if (
+
+                !Array.isArray(
+
+                    this.vehicles
+
+                )
+
+            ) {
+
+                return;
+
+            }
+
+            this.vehicles.forEach(
+
+                vehicle => {
+
+                    this.renderMarker(
+
+                        vehicle
+
+                    );
+
+                }
+
+            );
+
+        };
+
+        /*
+        |--------------------------------------------------------------------------
+        | Refresh Marker
+        |--------------------------------------------------------------------------
+        */
+
+        GPSTracker.refreshMarkers = function () {
+
+            this.renderMarkers();
+
+        };
+
+        /*
+        |--------------------------------------------------------------------------
+        | Rebuild Marker
+        |--------------------------------------------------------------------------
+        */
+
+        GPSTracker.rebuildMarkers = function () {
+
+            this.clearMarkers();
+
+            this.renderMarkers();
+
+        };
+
+        /*
+        |--------------------------------------------------------------------------
+        | Visible Marker
+        |--------------------------------------------------------------------------
+        */
+
+        GPSTracker.getVisibleMarkerCount = function () {
+
+            return this.getMarkerCount();
+
+        };
+        /*
+        |--------------------------------------------------------------------------
+        | Initialize Marker
+        |--------------------------------------------------------------------------
+        */
+
+        GPSTracker.initializeMarker = function () {
+
+            if (this.isMarkerInitialized()) {
+
+                return;
+
+            }
+
+            this.renderMarkers();
+
+            if (typeof this.fitVehicles === 'function') {
+
+                this.fitVehicles();
+
+            }
+
+            if (typeof this.hideMapLoading === 'function') {
+
+                this.hideMapLoading();
+
+            }
+
+            this.markerLog(
+
+                'Marker initialized.'
+
+            );
+
+        };
+
+        /*
+        |--------------------------------------------------------------------------
+        | Reset Marker
+        |--------------------------------------------------------------------------
+        */
+
+        GPSTracker.resetMarker = function () {
+
+            this.clearMarkers();
+
+            this.setSelectedMarker(
+
+                null
+
+            );
+
+            this.setSelectedVehicle(
+
+                null
+
+            );
+
+            this.setActivePopup(
+
+                null
+
+            );
+
+            this.setMarkerInitialized(
+
+                false
+
+            );
+
+        };
+
+        /*
+        |--------------------------------------------------------------------------
+        | Destroy Marker
+        |--------------------------------------------------------------------------
+        */
+
+        GPSTracker.destroyMarker = function () {
+
+            this.resetMarker();
+
+        };
+
+        /*
+        |--------------------------------------------------------------------------
+        | Vehicle Added
+        |--------------------------------------------------------------------------
+        */
+
+        document.addEventListener(
+
+            'gpstracker:vehicle-added',
+
+            event => {
+
+                GPSTracker.syncVehicle(
+
+                    event.detail
+
+                );
+
+            }
+
         );
 
-    };
+        /*
+        |--------------------------------------------------------------------------
+        | Vehicle Updated
+        |--------------------------------------------------------------------------
+        */
 
-    /*
-    |--------------------------------------------------------------------------
-    | Remove Vehicle
-    |--------------------------------------------------------------------------
-    */
+        document.addEventListener(
 
-    GPSTracker.removeVehicle = function (deviceId) {
+            'gpstracker:vehicle-updated',
 
-        this.vehicles = this.vehicles.filter(vehicle => {
+            event => {
 
-            return vehicle.device_id !== deviceId;
+                GPSTracker.syncVehicle(
 
-        });
+                    event.detail
 
-        this.removeMarker(
+                );
+
+            }
+
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Vehicle Removed
+        |--------------------------------------------------------------------------
+        */
+
+        document.addEventListener(
+
+            'gpstracker:vehicle-removed',
+
+            event => {
+
+                if (
+
+                    typeof GPSTracker.destroyPopup === 'function'
+
+                ) {
+
+                    GPSTracker.destroyPopup(
+
+                        event.detail.device_id
+
+                    );
+
+                }
+
+                GPSTracker.removeMarker(
+
+                    event.detail.device_id
+
+                );
+
+            }
+
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Global Helper
+        |--------------------------------------------------------------------------
+        */
+
+        window.focusVehicle = function (
 
             deviceId
 
-        );
+        ) {
 
-    };
+            GPSTracker.focusMarker(
 
-    /*
-    |--------------------------------------------------------------------------
-    | Get Visible Marker Count
-    |--------------------------------------------------------------------------
-    */
+                deviceId
 
-    GPSTracker.getMarkerCount = function () {
+            );
 
-        return Object.keys(
+        };
 
-            this.markers
+        window.refreshMarkers = function () {
 
-        ).length;
+            GPSTracker.refreshMarkers();
 
-    };
+        };
 
-    /*
-    |--------------------------------------------------------------------------
-    | Get Vehicle Count
-    |--------------------------------------------------------------------------
-    */
-
-    GPSTracker.getVehicleCount = function () {
-
-        return this.vehicles.length;
-
-    };
-
-    /*
-    |--------------------------------------------------------------------------
-    | Rebuild Marker
-    |--------------------------------------------------------------------------
-    */
-
-    GPSTracker.rebuildMarkers = function () {
-
-        this.clearMarkers();
-
-        this.renderMarkers();
-
-    };
-
-    /*
-    |--------------------------------------------------------------------------
-    | Refresh Vehicle Collection
-    |--------------------------------------------------------------------------
-    */
-
-    GPSTracker.setVehicles = function (vehicles) {
-
-        this.vehicles = Array.isArray(vehicles)
-
-            ? vehicles
-
-            : [];
-
-        this.rebuildMarkers();
-
-    };
-
-    /*
-    |--------------------------------------------------------------------------
-    | Refresh Single Vehicle
-    |--------------------------------------------------------------------------
-    */
-
-    GPSTracker.syncVehicle = function (vehicle) {
-
-        this.replaceVehicle(
+        window.syncVehicle = function (
 
             vehicle
 
-        );
+        ) {
 
-    };
+            GPSTracker.syncVehicle(
 
-    /*
-    |--------------------------------------------------------------------------
-    | Initial Render
-    |--------------------------------------------------------------------------
-    */
+                vehicle
 
-    GPSTracker.renderMarkers();
+            );
 
-    GPSTracker.fitVehicles();
+        };
 
-    /*
-    |--------------------------------------------------------------------------
-    | Expose Helper
-    |--------------------------------------------------------------------------
-    */
+        /*
+        |--------------------------------------------------------------------------
+        | Marker Ready Event
+        |--------------------------------------------------------------------------
+        */
 
-    window.focusVehicle = function (deviceId) {
+        document.dispatchEvent(
 
-        GPSTracker.focusMarker(
+            new CustomEvent(
 
-            deviceId
+                'gpstracker:markers-ready',
 
-        );
+                {
 
-    };
+                    detail: {
 
-    window.refreshMarkers = function () {
+                        count: GPSTracker.getMarkerCount(),
 
-        GPSTracker.refreshMarkers();
+                    },
 
-    };
+                }
 
-    window.syncVehicle = function (vehicle) {
-
-        GPSTracker.syncVehicle(
-
-            vehicle
+            )
 
         );
 
-    };
+        /*
+        |--------------------------------------------------------------------------
+        | Auto Initialize
+        |--------------------------------------------------------------------------
+        */
 
-});
+        GPSTracker.initializeMarker();
+
+    }
+
+);
 
 </script>
