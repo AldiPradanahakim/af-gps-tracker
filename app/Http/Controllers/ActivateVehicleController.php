@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreVehicleRequest;
-use App\Services\VehicleService;
+use App\Http\Requests\StoreActivateVehicleRequest;
+use App\Services\ActivateVehicleService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
-class VehicleController extends Controller
+class ActivateVehicleController extends Controller
 {
     public function __construct(
-        protected VehicleService $vehicleService
+        protected ActivateVehicleService $vehicleService
     ) {}
 
     /**
-     * Menampilkan halaman informasi kendaraan
+     * Halaman informasi kendaraan.
      */
     public function create(): View
     {
@@ -22,10 +22,12 @@ class VehicleController extends Controller
     }
 
     /**
-     * Menyimpan informasi kendaraan
+     * Simpan kendaraan.
      */
-    public function store(StoreVehicleRequest $request): RedirectResponse
-    {
+    public function store(
+        StoreActivateVehicleRequest $request
+    ): RedirectResponse {
+
         $this->vehicleService->store(
             $request->validated()
         );
@@ -34,7 +36,7 @@ class VehicleController extends Controller
             ->route('home')
             ->with(
                 'success',
-                'Informasi kendaraan berhasil disimpan.'
+                'Aktivasi perangkat berhasil diselesaikan.'
             );
     }
 }

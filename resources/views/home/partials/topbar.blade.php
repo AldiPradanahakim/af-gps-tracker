@@ -93,50 +93,130 @@
 
                <div
                     id="geofenceDropdown"
-                    class="absolute right-0 mt-3 z-[99999] hidden w-72 rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl">
+                    class="absolute right-0 mt-3 z-[99999] hidden w-80 rounded-2xl border border-slate-200 bg-white shadow-2xl">
 
-                    <label class="flex cursor-pointer items-center justify-between">
+                    {{-- QUICK ACTION --}}
+                    <div class="border-b border-slate-200 p-4">
 
-                        <span class="text-sm text-slate-700">
+                        <p class="mb-3 text-xs font-bold uppercase tracking-wider text-slate-400">
+                            Quick Action
+                        </p>
 
-                            Geofence Radius
+                        <div class="space-y-2">
 
-                        </span>
+                            <button
+                                id="setHomeLocation"
+                                type="button"
+                                class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100">
 
-                        <input
-                            id="toggleRadius"
-                            type="checkbox"
-                            checked
-                            class="h-4 w-4 rounded border-slate-300 text-[#2563EB]">
+                                <span>🏠</span>
 
-                    </label>
+                                <span>Set Home Location</span>
 
-                    <label class="mt-4 flex cursor-pointer items-center justify-between">
+                            </button>
 
-                        <span class="text-sm text-slate-700">
+                            <button
+                                id="addGeofence"
+                                type="button"
+                                class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100">
 
-                            Geofence Administratif
+                                <span>➕</span>
 
-                        </span>
+                                <span>Tambah Geofence</span>
 
-                        <input
-                            id="toggleAdministrative"
-                            type="checkbox"
-                            checked
-                            class="h-4 w-4 rounded border-slate-300 text-[#2563EB]">
+                            </button>
 
-                    </label>
+                            <button
+                                id="deleteGeofence"
+                                type="button"
+                                class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-red-600 transition hover:bg-red-50">
 
-                    <div class="my-4 border-t border-slate-200"></div>
+                                <span>🗑</span>
 
-                    <button
-                        id="addGeofence"
-                        type="button"
-                        class="flex w-full items-center justify-center rounded-xl bg-[#2563EB] px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-700">
+                                <span>Hapus Geofence</span>
 
-                        Tambah Geofence
+                            </button>
 
-                    </button>
+                        </div>
+
+                    </div>
+
+                    {{-- DISPLAY --}}
+                    <div class="p-4">
+
+                        <p class="mb-3 text-xs font-bold uppercase tracking-wider text-slate-400">
+                            Tampilkan
+                        </p>
+
+                        <div class="space-y-3">
+
+                            <label class="flex cursor-pointer items-center justify-between">
+
+                                <span class="text-sm text-slate-700">
+
+                                    Semua
+
+                                </span>
+
+                                <input
+                                    id="toggleAllGeofence"
+                                    type="checkbox"
+                                    checked
+                                    class="h-4 w-4 rounded border-slate-300 text-[#2563EB]">
+
+                            </label>
+
+                            <label class="flex cursor-pointer items-center justify-between">
+
+                                <span class="text-sm text-slate-700">
+
+                                    Radius
+
+                                </span>
+
+                                <input
+                                    id="toggleRadius"
+                                    type="checkbox"
+                                    checked
+                                    class="h-4 w-4 rounded border-slate-300 text-[#2563EB]">
+
+                            </label>
+
+                            <label class="flex cursor-pointer items-center justify-between">
+
+                                <span class="text-sm text-slate-700">
+
+                                    Administratif
+
+                                </span>
+
+                                <input
+                                    id="toggleAdministrative"
+                                    type="checkbox"
+                                    checked
+                                    class="h-4 w-4 rounded border-slate-300 text-[#2563EB]">
+
+                            </label>
+
+                            <label class="flex cursor-pointer items-center justify-between">
+
+                                <span class="text-sm text-slate-700">
+
+                                    Custom
+
+                                </span>
+
+                                <input
+                                    id="toggleCustom"
+                                    type="checkbox"
+                                    checked
+                                    class="h-4 w-4 rounded border-slate-300 text-[#2563EB]">
+
+                            </label>
+
+                        </div>
+
+                    </div>
 
                 </div>
 

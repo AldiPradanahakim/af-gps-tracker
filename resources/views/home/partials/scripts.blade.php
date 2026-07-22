@@ -18,4 +18,4 @@
 
 @include('home.partials.scripts.realtime')
 
-@include('home.partials.scripts.vehicle')
+@include('home.partials.scripts.sidebar')

@@ -3,6 +3,7 @@
 namespace App\Services\Home;
 
 use App\Models\User;
+use App\Services\Home\Support\VehicleCardFormatter;
 
 class HomeService
 {
@@ -20,6 +21,11 @@ class HomeService
             },
 
             'devices.deviceLogs' => function ($query) {
+
+                $query->latest()->take(1);
+            },
+
+            'devices.travelHistories' => function ($query) {
 
                 $query->latest()->take(1);
             },
@@ -47,11 +53,10 @@ class HomeService
                 'plate_number' => $device->vehicle?->plate_number,
 
                 /*
-                 | Home Location
-                 | sementara null.
-                 | nanti otomatis terisi setelah fitur
-                 | Home Location dibuat.
-                 */
+                |--------------------------------------------------------------------------
+                | Home Location
+                |--------------------------------------------------------------------------
+                */
 
                 'home_location' => null,
 
@@ -64,46 +69,11 @@ class HomeService
         |--------------------------------------------------------------------------
         */
 
-        $vehicles = $user->devices->map(function ($device) {
+        $vehicles = $user->devices->map(
 
-            $vehicle = $device->vehicle;
+            fn($device) => VehicleCardFormatter::make($device)
 
-            $latestLog = $device->deviceLogs->first();
-
-            $payload = $latestLog?->payload ?? [];
-
-            return [
-
-                'device_id' => $device->id,
-
-                'device_code' => $device->device_id,
-
-                'vehicle_name' => $vehicle?->vehicle_name,
-
-                'vehicle_type' => $vehicle?->vehicle_type,
-
-                'plate_number' => $vehicle?->plate_number,
-
-                'is_active' => $device->is_active,
-
-                'last_heartbeat' => $device->last_heartbeat,
-
-                'activated_at' => $device->activated_at,
-
-                'latitude' => $payload['latitude'] ?? -6.914744,
-
-                'longitude' => $payload['longitude'] ?? 107.609810,
-
-                'speed' => $payload['speed'] ?? 0,
-
-                'heading' => $payload['heading'] ?? 0,
-
-                'battery' => $payload['battery'] ?? 100,
-
-                'received_at' => $latestLog?->received_at,
-
-            ];
-        });
+        )->values();
 
         /*
         |--------------------------------------------------------------------------

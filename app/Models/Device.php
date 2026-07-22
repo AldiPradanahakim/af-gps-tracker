@@ -24,6 +24,8 @@ class Device extends Model
 
         'last_heartbeat',
 
+        'is_inside_geofence',
+
         'activated_at',
 
     ];
@@ -35,6 +37,8 @@ class Device extends Model
         'stop_setting' => 'array',
 
         'notification_setting' => 'array',
+
+        'is_inside_geofence' => 'boolean',
 
         'activated_at' => 'datetime',
 

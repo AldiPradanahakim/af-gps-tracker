@@ -24,11 +24,6 @@
             id="vehicleInformationForm"
             class="space-y-6 p-8">
 
-            <input
-                id="activatedDeviceId"
-                type="hidden"
-                name="device_id">
-
             <div>
 
                 <label class="mb-2 block text-sm font-semibold">
@@ -53,7 +48,7 @@
 
                 <input
                     name="plate_number"
-                    class="w-full rounded-xl border border-slate-300 px-4 py-3">
+                    class="w-full rounded-xl border border-slate-300 px-4 py-3 uppercase">
 
             </div>
 
@@ -70,15 +65,147 @@
                     class="w-full rounded-xl border border-slate-300 px-4 py-3">
 
                     <option value="motor">
-
-                        Motor
-
+                        🏍 Motor
                     </option>
 
                     <option value="mobil">
+                        🚗 Mobil
+                    </option>
 
-                        Mobil
+                    <option value="pickup">
+                        🛻 Pickup
+                    </option>
 
+                    <option value="truck">
+                        🚚 Truk
+                    </option>
+
+                    <option value="bus">
+                        🚌 Bus
+                    </option>
+
+                    <option value="van">
+                        🚐 Van
+                    </option>
+
+                    <option value="taxi">
+                        🚕 Taxi
+                    </option>
+
+                    <option value="ambulance">
+                        🚑 Ambulance
+                    </option>
+
+                    <option value="police">
+                        🚓 Polisi
+                    </option>
+
+                    <option value="bicycle">
+                        🚲 Sepeda
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div>
+
+                <label class="mb-2 block text-sm font-semibold">
+
+                    Icon Marker
+
+                </label>
+
+                <select
+                    name="marker_icon"
+                    class="w-full rounded-xl border border-slate-300 px-4 py-3">
+
+                    <option value="car">
+                        🚗 Mobil
+                    </option>
+
+                    <option value="motorcycle">
+                        🏍 Motor
+                    </option>
+
+                    <option value="pickup">
+                        🛻 Pickup
+                    </option>
+
+                    <option value="truck">
+                        🚚 Truk
+                    </option>
+
+                    <option value="bus">
+                        🚌 Bus
+                    </option>
+
+                    <option value="van">
+                        🚐 Van
+                    </option>
+
+                    <option value="taxi">
+                        🚕 Taxi
+                    </option>
+
+                    <option value="ambulance">
+                        🚑 Ambulance
+                    </option>
+
+                    <option value="police">
+                        🚓 Polisi
+                    </option>
+
+                    <option value="bicycle">
+                        🚲 Sepeda
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div>
+
+                <label class="mb-2 block text-sm font-semibold">
+
+                    Warna Marker
+
+                </label>
+
+                <select
+                    name="marker_color"
+                    class="w-full rounded-xl border border-slate-300 px-4 py-3">
+
+                    <option value="green">
+                        🟢 Hijau
+                    </option>
+
+                    <option value="blue">
+                        🔵 Biru
+                    </option>
+
+                    <option value="red">
+                        🔴 Merah
+                    </option>
+
+                    <option value="orange">
+                        🟠 Orange
+                    </option>
+
+                    <option value="yellow">
+                        🟡 Kuning
+                    </option>
+
+                    <option value="purple">
+                        🟣 Ungu
+                    </option>
+
+                    <option value="black">
+                        ⚫ Hitam
+                    </option>
+
+                    <option value="gray">
+                        ⚪ Abu-abu
                     </option>
 
                 </select>

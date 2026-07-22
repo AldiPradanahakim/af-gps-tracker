@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\DeleteGeofenceRequest;
 use App\Http\Requests\StoreGeofenceRequest;
+use App\Http\Requests\UpdateGeofenceStatusRequest;
 use App\Services\GeofenceService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 
 class GeofenceController extends Controller
 {
@@ -15,82 +15,124 @@ class GeofenceController extends Controller
     ) {}
 
     /**
-     * Mengambil seluruh geofence milik user.
+     * --------------------------------------------------------------------------
+     * Get Geofence By Device
+     * --------------------------------------------------------------------------
      */
-    public function index(Request $request): JsonResponse
-    {
-        return response()->json(
-            $this->geofenceService->getAll(
-                $request->user()->id
-            )
-        );
-    }
-
-    /**
-     * Menyimpan geofence baru.
-     */
-    public function store(
-        StoreGeofenceRequest $request
-    ): RedirectResponse {
-
-        $this->geofenceService->store(
-            $request->validated()
-        );
-
-        return back()->with(
-            'success',
-            'Geofence berhasil ditambahkan.'
-        );
-    }
-
-    /**
-     * Mengaktifkan / Menonaktifkan geofence.
-     */
-    public function updateStatus(
-        Request $request,
-        int $geofence
+    public function index(
+        int $device
     ): JsonResponse {
 
-        $request->validate([
-
-            'status' => [
-
-                'required',
-
-                'boolean',
-
-            ],
-
-        ]);
-
-        $data = $this->geofenceService
-            ->updateStatus(
-                $geofence,
-                (bool) $request->boolean('status')
-            );
+        $geofences = $this->geofenceService->getByDevice(
+            $device
+        );
 
         return response()->json([
 
-            'message' => 'Status geofence berhasil diperbarui.',
+            'success' => true,
 
-            'data' => $data,
+            'message' => 'Daftar geofence berhasil diambil.',
+
+            'data' => $geofences,
 
         ]);
     }
 
     /**
-     * Menghapus geofence.
+     * --------------------------------------------------------------------------
+     * Store
+     * --------------------------------------------------------------------------
+     */
+    public function store(
+        StoreGeofenceRequest $request
+    ): JsonResponse {
+
+        $geofence = $this->geofenceService->store(
+            $request->validated()
+        );
+
+        return response()->json([
+
+            'success' => true,
+
+            'message' => 'Geofence berhasil ditambahkan.',
+
+            'data' => $geofence,
+
+        ], 201);
+    }
+
+    /**
+     * --------------------------------------------------------------------------
+     * Update Status
+     * --------------------------------------------------------------------------
+     */
+    public function updateStatus(
+        UpdateGeofenceStatusRequest $request,
+        int $geofence
+    ): JsonResponse {
+
+        $geofence = $this->geofenceService->updateStatus(
+
+            $geofence,
+
+            $request->validated()['status']
+
+        );
+
+        return response()->json([
+
+            'success' => true,
+
+            'message' => 'Status geofence berhasil diperbarui.',
+
+            'data' => $geofence,
+
+        ]);
+    }
+
+    /**
+     * --------------------------------------------------------------------------
+     * Delete Single
+     * --------------------------------------------------------------------------
      */
     public function destroy(
         int $geofence
     ): JsonResponse {
 
-        $this->geofenceService
-            ->delete($geofence);
+        $this->geofenceService->destroy(
+            $geofence
+        );
 
         return response()->json([
 
+            'success' => true,
+
             'message' => 'Geofence berhasil dihapus.',
+
+        ]);
+    }
+
+    /**
+     * --------------------------------------------------------------------------
+     * Delete Multiple
+     * --------------------------------------------------------------------------
+     */
+    public function destroyMany(
+        DeleteGeofenceRequest $request
+    ): JsonResponse {
+
+        $deleted = $this->geofenceService->destroyMany(
+
+            $request->validated()['geofence_ids']
+
+        );
+
+        return response()->json([
+
+            'success' => true,
+
+            'message' => "{$deleted} geofence berhasil dihapus.",
 
         ]);
     }

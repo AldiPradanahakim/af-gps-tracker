@@ -23,6 +23,10 @@ document.addEventListener('gpstracker:map-ready', () => {
         emptyState: null,
 
         cards: new Map(),
+        
+        activateModal: null,
+
+        vehicleModal: null,
 
     };
 
@@ -51,6 +55,10 @@ document.addEventListener('gpstracker:map-ready', () => {
         scrollBehavior: 'smooth',
 
         scrollBlock: 'center',
+
+        activateUrl: '/home/devices/activate',
+        
+        vehicleUrl: '/home/vehicles',
 
     };
 
@@ -137,6 +145,40 @@ document.addEventListener('gpstracker:map-ready', () => {
     GPSTracker.getSelectedVehicle = function () {
 
         return this.sidebar.selectedVehicle;
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Modal Getter
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.getActivateDeviceModal = function () {
+
+        if (!this.sidebar.activateModal) {
+
+            this.sidebar.activateModal = document.getElementById(
+                'activateDeviceModal'
+            );
+
+        }
+
+        return this.sidebar.activateModal;
+
+    };
+
+    GPSTracker.getVehicleInformationModal = function () {
+
+        if (!this.sidebar.vehicleModal) {
+
+            this.sidebar.vehicleModal = document.getElementById(
+                'vehicleInformationModal'
+            );
+
+        }
+
+        return this.sidebar.vehicleModal;
 
     };
 
@@ -249,6 +291,76 @@ document.addEventListener('gpstracker:map-ready', () => {
             ...vehicle,
 
         };
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Modal Handler
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.openActivateDeviceModal = function () {
+
+        const modal = this.getActivateDeviceModal();
+
+        if (!modal) {
+
+            return;
+
+        }
+
+        modal.classList.remove('hidden');
+
+        modal.classList.add('flex');
+
+    };
+
+    GPSTracker.closeActivateDeviceModal = function () {
+
+        const modal = this.getActivateDeviceModal();
+
+        if (!modal) {
+
+            return;
+
+        }
+
+        modal.classList.add('hidden');
+
+        modal.classList.remove('flex');
+
+    };
+
+    GPSTracker.openVehicleInformationModal = function () {
+
+        const modal = this.getVehicleInformationModal();
+
+        if (!modal) {
+
+            return;
+
+        }
+
+        modal.classList.remove('hidden');
+
+        modal.classList.add('flex');
+
+    };
+
+    GPSTracker.closeVehicleInformationModal = function () {
+
+        const modal = this.getVehicleInformationModal();
+
+        if (!modal) {
+
+            return;
+
+        }
+
+        modal.classList.add('hidden');
+
+        modal.classList.remove('flex');
 
     };
 
@@ -483,53 +595,187 @@ document.addEventListener('gpstracker:map-ready', () => {
 
     GPSTracker.renderVehicleCard = function (vehicle) {
 
+        const online = Boolean(vehicle.is_active);
+
+        const statusClass = online
+            ? 'bg-green-100 text-green-700'
+            : 'bg-red-100 text-red-600';
+
+        const statusText = online
+            ? 'Online'
+            : 'Offline';
+
+        const hasCoordinate =
+            vehicle.latitude !== null &&
+            vehicle.latitude !== undefined &&
+            vehicle.longitude !== null &&
+            vehicle.longitude !== undefined;
+
+        const mapButtonClass = hasCoordinate
+            ? 'bg-[#2563EB] text-white hover:bg-blue-700'
+            : 'cursor-not-allowed bg-slate-300 text-slate-500';
+
+        const mapButtonText = hasCoordinate
+            ? 'Lihat di Peta'
+            : 'Belum Ada GPS';
+
+        const mapButtonDisabled = hasCoordinate
+            ? ''
+            : 'disabled';
+
         return `
-            <div
-                id="vehicle-${vehicle.device_id}"
-                class="vehicle-card rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-200 hover:border-[#2563EB] hover:shadow-lg"
-                data-device="${vehicle.device_id}"
-                data-code="${vehicle.device_code ?? ''}"
-                data-lat="${vehicle.latitude ?? ''}"
-                data-lng="${vehicle.longitude ?? ''}"
-                data-selected="false">
 
-                <div class="flex items-start justify-between">
+        <div
+            id="vehicle-${vehicle.device_id}"
+            class="vehicle-card rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-200 hover:border-[#2563EB] hover:shadow-lg"
+            data-device="${vehicle.device_id}"
+            data-code="${vehicle.device_code ?? ''}"
+            data-lat="${vehicle.latitude ?? ''}"
+            data-lng="${vehicle.longitude ?? ''}"
+            data-selected="false">
 
-                    <div>
+            <div class="flex items-start justify-between">
 
-                        <h4
-                            id="vehicle-name-${vehicle.device_id}"
-                            class="text-lg font-bold text-slate-900">
+                <div>
 
-                            ${vehicle.vehicle_name ?? '-'}
+                    <h4
+                        id="vehicle-name-${vehicle.device_id}"
+                        class="text-lg font-bold text-slate-900">
 
-                        </h4>
+                        ${vehicle.vehicle_name ?? '-'}
 
-                        <p
-                            id="vehicle-plate-${vehicle.device_id}"
-                            class="mt-1 text-sm text-slate-500">
+                    </h4>
 
-                            ${(vehicle.plate_number ?? '-').toUpperCase()}
+                    <p
+                        id="vehicle-plate-${vehicle.device_id}"
+                        class="mt-1 text-sm text-slate-500">
 
-                        </p>
+                        ${(vehicle.plate_number ?? '-').toUpperCase()}
 
-                    </div>
+                    </p>
 
-                    <span
-                        id="vehicle-status-${vehicle.device_id}"
-                        data-status
-                        data-online="${vehicle.is_active ? 1 : 0}"
-                        class="rounded-full px-3 py-1 text-xs font-semibold ${vehicle.is_active
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-red-100 text-red-600'}">
+                </div>
 
-                        ${vehicle.is_active ? 'Online' : 'Offline'}
+                <span
+                    id="vehicle-status-${vehicle.device_id}"
+                    data-status
+                    data-online="${online ? 1 : 0}"
+                    class="rounded-full px-3 py-1 text-xs font-semibold ${statusClass}">
 
-                    </span>
+                    ${statusText}
+
+                </span>
+
+            </div>
+
+            <div class="mt-5 grid grid-cols-2 gap-4">
+
+                <div>
+
+                    <p class="text-xs uppercase tracking-wide text-slate-400">
+
+                        Kecepatan
+
+                    </p>
+
+                    <p
+                        id="vehicle-speed-${vehicle.device_id}"
+                        data-speed
+                        class="mt-1 text-base font-semibold text-slate-900">
+
+                        ${vehicle.speed ?? 0} km/j
+
+                    </p>
+
+                </div>
+
+                <div>
+
+                    <p class="text-xs uppercase tracking-wide text-slate-400">
+
+                        Jenis
+
+                    </p>
+
+                    <p
+                        id="vehicle-type-${vehicle.device_id}"
+                        data-type
+                        class="mt-1 text-base font-semibold text-slate-900">
+
+                        ${vehicle.vehicle_type ?? '-'}
+
+                    </p>
 
                 </div>
 
             </div>
+
+            <div class="mt-5 grid grid-cols-2 gap-4">
+
+                <div>
+
+                    <p class="text-xs uppercase tracking-wide text-slate-400">
+
+                        Baterai
+
+                    </p>
+
+                    <p
+                        id="vehicle-battery-${vehicle.device_id}"
+                        data-battery
+                        class="mt-1 text-base font-semibold text-slate-900">
+
+                        ${vehicle.battery ?? '-'}
+
+                    </p>
+
+                </div>
+
+                <div>
+
+                    <p class="text-xs uppercase tracking-wide text-slate-400">
+
+                        Update
+
+                    </p>
+
+                    <p
+                        id="vehicle-updated-${vehicle.device_id}"
+                        data-updated
+                        class="mt-1 text-sm font-medium text-slate-500">
+
+                        ${vehicle.updated_at ?? '-'}
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="mt-6 flex items-center gap-2">
+
+                <button
+                    type="button"
+                    onclick="GPSTracker.focusVehicle('${vehicle.device_id}')"
+                    ${mapButtonDisabled}
+                    class="flex-1 rounded-xl px-4 py-2.5 text-sm font-semibold transition ${mapButtonClass}">
+
+                    ${mapButtonText}
+
+                </button>
+
+                <a
+                    href="/vehicles/${vehicle.device_id}"
+                    class="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+
+                    Detail
+
+                </a>
+
+            </div>
+
+        </div>
+
         `;
 
     };
@@ -541,48 +787,122 @@ document.addEventListener('gpstracker:map-ready', () => {
 
     GPSTracker.updateVehicleCard = function (vehicle) {
 
-        const card = this.getVehicleCard(
-
-            vehicle.device_id
-
-        );
+        const card = this.getVehicleCard(vehicle.device_id);
 
         if (!card) {
 
-            this.appendVehicleCard(
-
-                vehicle
-
-            );
+            this.appendVehicleCard(vehicle);
 
             return;
+
         }
 
-        this.updateVehicleCardData(
+        /*
+        |--------------------------------------------------------------------------
+        | Dataset
+        |--------------------------------------------------------------------------
+        */
 
-            card,
+        this.updateVehicleCardData(card, vehicle);
 
-            vehicle
+        /*
+        |--------------------------------------------------------------------------
+        | Header
+        |--------------------------------------------------------------------------
+        */
 
+        this.updateVehicleCardHeader(vehicle);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Status
+        |--------------------------------------------------------------------------
+        */
+
+        this.updateVehicleCardStatus(vehicle);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Information
+        |--------------------------------------------------------------------------
+        */
+
+        this.updateVehicleCardInformation(vehicle);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Map Button
+        |--------------------------------------------------------------------------
+        */
+
+        const button = card.querySelector(
+            'button[onclick*="focusVehicle"]'
         );
 
-        this.updateVehicleCardHeader(
+        if (!button) {
 
-            vehicle
+            return;
 
+        }
+
+        const hasCoordinate =
+            vehicle.latitude !== null &&
+            vehicle.latitude !== undefined &&
+            vehicle.longitude !== null &&
+            vehicle.longitude !== undefined;
+
+        /*
+        |--------------------------------------------------------------------------
+        | Dataset Position
+        |--------------------------------------------------------------------------
+        */
+
+        card.dataset.lat = hasCoordinate
+            ? vehicle.latitude
+            : '';
+
+        card.dataset.lng = hasCoordinate
+            ? vehicle.longitude
+            : '';
+
+        /*
+        |--------------------------------------------------------------------------
+        | Enable / Disable
+        |--------------------------------------------------------------------------
+        */
+
+        button.disabled = !hasCoordinate;
+
+        button.textContent = hasCoordinate
+            ? 'Lihat di Peta'
+            : 'Belum Ada GPS';
+
+        button.classList.remove(
+            'bg-[#2563EB]',
+            'hover:bg-blue-700',
+            'text-white',
+            'bg-slate-300',
+            'text-slate-500',
+            'cursor-not-allowed'
         );
 
-        this.updateVehicleCardStatus(
+        if (hasCoordinate) {
 
-            vehicle
+            button.classList.add(
+                'bg-[#2563EB]',
+                'text-white',
+                'hover:bg-blue-700'
+            );
 
-        );
+        } else {
 
-        this.updateVehicleCardInformation(
+            button.classList.add(
+                'bg-slate-300',
+                'text-slate-500',
+                'cursor-not-allowed'
+            );
 
-            vehicle
-
-        );
+        }
 
     };
 
@@ -1118,7 +1438,406 @@ document.addEventListener('gpstracker:map-ready', () => {
         }
 
     };
-        /*
+
+    GPSTracker.handleActivateSuccess = async function (result) {
+
+        document
+            .getElementById('activateDeviceForm')
+            ?.reset();
+
+        this.showToast(
+
+            'success',
+
+            'Aktivasi Berhasil',
+
+            result.message
+
+        );
+
+        await new Promise(resolve => {
+
+            setTimeout(resolve, 1200);
+
+        });
+
+        this.closeActivateDeviceModal();
+
+        this.openVehicleInformationModal();
+
+    };
+
+    GPSTracker.handleActivateValidation = function (result) {
+
+    let message = 'Aktivasi perangkat gagal.';
+
+    if (result.errors) {
+
+        message = Object
+            .values(result.errors)
+            .flat()
+            .join('\n');
+
+    } else if (result.message) {
+
+        message = result.message;
+
+    }
+
+    this.showToast(
+
+            'error',
+
+            'Aktivasi Gagal',
+
+            message
+
+        );
+
+    };
+
+    GPSTracker.handleActivateError = function () {
+
+        this.showToast(
+
+            'error',
+
+            'Server Error',
+
+            'Terjadi kesalahan pada server.'
+
+        );
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Activate Device
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.submitActivateDevice = async function () {
+
+        const form = document.getElementById(
+            'activateDeviceForm'
+        );
+
+        if (!form) {
+
+            return;
+
+        }
+
+        const button = form.querySelector(
+            'button[type="submit"]'
+        );
+
+        const formData = new FormData(form);
+
+        button.disabled = true;
+
+        button.innerHTML = `
+            <div class="flex items-center justify-center gap-2">
+                <svg
+                    class="h-5 w-5 animate-spin"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24">
+
+                    <circle
+                        class="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        stroke-width="4">
+                    </circle>
+
+                    <path
+                        class="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z">
+                    </path>
+
+                </svg>
+
+                <span>Mengaktivasi...</span>
+            </div>
+        `;
+
+        try {
+
+            const response = await fetch(
+
+                this.sidebarConfig.activateUrl,
+
+                {
+
+                    method: 'POST',
+
+                    headers: {
+
+                        'X-CSRF-TOKEN': document
+                            .querySelector('meta[name="csrf-token"]')
+                            .content,
+
+                        'Accept': 'application/json',
+
+                        'X-Requested-With': 'XMLHttpRequest',
+
+                    },
+
+                    body: formData,
+
+                }
+
+            );
+
+            const result = await response.json();
+
+            /*
+            |--------------------------------------------------------------------------
+            | Validation / Business Error
+            |--------------------------------------------------------------------------
+            */
+
+            if (!response.ok || result.success === false) {
+
+                this.handleActivateValidation(result);
+
+                return;
+
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Success
+            |--------------------------------------------------------------------------
+            */
+
+            await this.handleActivateSuccess(result);
+
+        } catch (error) {
+
+            console.error(error);
+
+            this.handleActivateError(error);
+
+        } finally {
+
+            button.disabled = false;
+
+            button.innerHTML = 'Aktivasi';
+
+        }
+
+};
+
+    /*
+    |--------------------------------------------------------------------------
+    | Vehicle Information
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.submitVehicleInformation = async function () {
+
+        const form = document.getElementById(
+            'vehicleInformationForm'
+        );
+
+        if (!form) {
+
+            return;
+
+        }
+
+        const button = form.querySelector(
+            'button[type="submit"]'
+        );
+
+        const formData = new FormData(form);
+
+        button.disabled = true;
+
+        button.innerHTML = `
+            <div class="flex items-center justify-center gap-2">
+                <svg
+                    class="h-5 w-5 animate-spin"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24">
+
+                    <circle
+                        class="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        stroke-width="4">
+                    </circle>
+
+                    <path
+                        class="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z">
+                    </path>
+
+                </svg>
+
+                <span>Menyimpan...</span>
+                </div>
+            `;
+
+            try {
+
+                const response = await fetch(
+
+                    this.sidebarConfig.vehicleUrl,
+
+                    {
+
+                        method: 'POST',
+
+                        headers: {
+
+                            'X-CSRF-TOKEN': document
+                                .querySelector('meta[name="csrf-token"]')
+                                .content,
+
+                            'Accept': 'application/json',
+
+                            'X-Requested-With': 'XMLHttpRequest',
+
+                        },
+
+                        body: formData,
+
+                    }
+
+                );
+
+                const result = await response.json();
+
+                if (!response.ok || result.success === false) {
+
+                    this.handleVehicleValidation(result);
+
+                    return;
+
+                }
+
+                await this.handleVehicleSuccess(result);
+
+            } catch (error) {
+
+                console.error(error);
+
+                this.handleVehicleError(error);
+
+            } finally {
+
+                button.disabled = false;
+
+                button.innerHTML = 'Simpan Kendaraan';
+
+            }
+
+    };
+
+    GPSTracker.handleVehicleSuccess = async function (result) {
+
+    const vehicle = result.vehicle;
+
+    this.showToast(
+
+        'success',
+
+        'Berhasil',
+
+        'Informasi kendaraan berhasil disimpan.'
+
+    );
+
+    await new Promise(resolve => {
+
+        setTimeout(resolve, 1200);
+
+    });
+
+    document
+        .getElementById(
+            'vehicleInformationForm'
+        )
+        ?.reset();
+
+    this.replaceVehicle(
+
+        vehicle
+
+    );
+
+    this.appendVehicleCard(
+
+        vehicle
+
+    );
+
+        this.refreshSidebarEvents();
+
+        this.highlightVehicleCard(
+
+            vehicle.device_id
+
+        );
+
+        this.closeVehicleInformationModal();
+
+    };
+
+    GPSTracker.handleVehicleValidation = function (result) {
+
+        let message = 'Informasi kendaraan gagal disimpan.';
+
+        if (result.errors) {
+
+            message = Object
+                .values(result.errors)
+                .flat()
+                .join('\n');
+
+        } else if (result.message) {
+
+            message = result.message;
+
+        }
+
+        this.showToast(
+
+            'error',
+
+            'Gagal',
+
+            message
+
+        );
+
+    };
+
+    GPSTracker.handleVehicleError = function () {
+
+        this.showToast(
+
+            'error',
+
+            'Server Error',
+
+            'Terjadi kesalahan pada server.'
+
+        );
+
+    };
+
+    /*
     |--------------------------------------------------------------------------
     | Sidebar Click Event
     |--------------------------------------------------------------------------
@@ -1218,6 +1937,88 @@ document.addEventListener('gpstracker:map-ready', () => {
 
     };
 
+    GPSTracker.showToast = function (
+
+        type,
+
+        title,
+
+        message
+
+    ) {
+
+        const toast = document.getElementById('toast');
+
+        const icon = document.getElementById('toast-icon');
+
+        const toastTitle = document.getElementById('toast-title');
+
+        const toastMessage = document.getElementById('toast-message');
+
+        toastTitle.textContent = title;
+
+        toastMessage.textContent = message;
+
+        if (type === 'success') {
+
+            icon.className =
+                'flex h-11 w-11 items-center justify-center rounded-full bg-green-100 text-green-700';
+
+            icon.textContent = '✓';
+
+        } else {
+
+            icon.className =
+                'flex h-11 w-11 items-center justify-center rounded-full bg-red-100 text-red-700';
+
+            icon.textContent = '✕';
+
+        }
+
+        toast.classList.remove(
+
+            'opacity-0',
+
+            'translate-x-8'
+
+        );
+
+        toast.classList.add(
+
+            'opacity-100',
+
+            'translate-x-0'
+
+        );
+
+        clearTimeout(
+
+            this.toastTimer
+
+        );
+
+        this.toastTimer = setTimeout(() => {
+
+            toast.classList.add(
+
+                'opacity-0',
+
+                'translate-x-8'
+
+            );
+
+            toast.classList.remove(
+
+                'opacity-100',
+
+                'translate-x-0'
+
+            );
+
+        }, 3000);
+
+    };
+
     /*
     |--------------------------------------------------------------------------
     | Initialize Sidebar
@@ -1252,7 +2053,79 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         this.toggleSidebarEmptyState();
 
+        const closeButton = document.getElementById(
+            'closeActivateDevice'
+        );
+
+        const cancelButton = document.getElementById(
+            'cancelActivateDevice'
+        );
+
+        closeButton?.addEventListener('click', () => {
+
+            this.closeActivateDeviceModal();
+
+        });
+
+        cancelButton?.addEventListener('click', () => {
+
+            this.closeActivateDeviceModal();
+
+        });
+        
+        const addButton = document.getElementById(
+            'addVehicle'
+        );
+
+        if (addButton) {
+
+            addButton.addEventListener('click', () => {
+
+                this.openActivateDeviceModal();
+
+            });
+
+        }
+
         this.bindSidebarCardEvents();
+
+        const activateForm = document.getElementById(
+            'activateDeviceForm'
+        );
+
+        activateForm?.addEventListener(
+
+            'submit',
+
+            (event) => {
+
+                event.preventDefault();
+
+                this.submitActivateDevice();
+
+            }
+
+        );
+
+        const vehicleForm = document.getElementById(
+
+            'vehicleInformationForm'
+
+        );
+
+        vehicleForm?.addEventListener(
+
+            'submit',
+
+            (event) => {
+
+                event.preventDefault();
+
+                this.submitVehicleInformation();
+
+            }
+
+        );
 
         this.setSidebarInitialized(
 

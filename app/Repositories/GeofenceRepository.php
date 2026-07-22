@@ -9,104 +9,167 @@ use Illuminate\Database\Eloquent\Collection;
 class GeofenceRepository
 {
     /**
-     * Mengambil seluruh geofence milik user.
+     * Seluruh geofence milik user.
      */
     public function getByUser(int $userId): Collection
     {
         return Geofence::query()
-
             ->with([
                 'device',
                 'device.vehicle',
             ])
+            ->whereHas('device', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })
+            ->latest()
+            ->get();
+    }
+
+    /**
+     * Geofence berdasarkan device.
+     */
+    public function getByDevice(int $deviceId): Collection
+    {
+        return Geofence::query()
+            ->where('device_id', $deviceId)
+            ->latest()
+            ->get();
+    }
+
+    /**
+     * Cari geofence.
+     */
+    public function find(int $id): ?Geofence
+    {
+        return Geofence::query()
+            ->with([
+                'device',
+                'device.vehicle',
+            ])
+            ->find($id);
+    }
+
+    /**
+     * Cari geofence milik user.
+     */
+    public function findOwnedByUser(
+        int $id,
+        int $userId
+    ): ?Geofence {
+
+        return Geofence::query()
+
+            ->whereKey($id)
 
             ->whereHas('device', function ($query) use ($userId) {
 
                 $query->where('user_id', $userId);
             })
 
-            ->latest()
-
-            ->get();
+            ->first();
     }
 
     /**
-     * Mengambil seluruh geofence berdasarkan device.
+     * Cari device.
      */
-    public function getByDevice(int $deviceId): Collection
-    {
-        return Geofence::query()
+    public function findDevice(
+        int $deviceId
+    ): ?Device {
 
-            ->where('device_id', $deviceId)
-
-            ->latest()
-
-            ->get();
-    }
-
-    /**
-     * Mencari geofence berdasarkan id.
-     */
-    public function find(int $id): ?Geofence
-    {
-        return Geofence::query()
+        return Device::query()
 
             ->with([
-                'device',
-                'device.vehicle',
+                'vehicle',
             ])
 
-            ->find($id);
+            ->find($deviceId);
     }
 
     /**
-     * Menyimpan geofence baru.
+     * Cari device milik user.
      */
-    public function create(array $data): Geofence
-    {
+    public function findDeviceByUser(
+        int $deviceId,
+        int $userId
+    ): ?Device {
+
+        return Device::query()
+
+            ->with([
+                'vehicle',
+            ])
+
+            ->whereKey($deviceId)
+
+            ->where('user_id', $userId)
+
+            ->first();
+    }
+
+    /**
+     * Simpan geofence.
+     */
+    public function create(
+        array $data
+    ): Geofence {
+
         return Geofence::create($data);
     }
 
     /**
      * Update geofence.
      */
-    public function update(Geofence $geofence, array $data): Geofence
-    {
+    public function update(
+        Geofence $geofence,
+        array $data
+    ): Geofence {
+
         $geofence->update($data);
 
         return $geofence->refresh();
     }
 
     /**
-     * Mengaktifkan / Menonaktifkan geofence.
+     * Update status.
      */
     public function updateStatus(
         Geofence $geofence,
         bool $status
-    ): bool {
+    ): Geofence {
 
-        return $geofence->update([
+        $geofence->update([
+
             'status' => $status,
+
         ]);
+
+        return $geofence->refresh();
     }
 
     /**
-     * Menghapus geofence.
+     * Hapus satu geofence.
      */
-    public function delete(Geofence $geofence): bool
-    {
+    public function delete(
+        Geofence $geofence
+    ): bool {
+
         return (bool) $geofence->delete();
     }
 
     /**
-     * Mengambil device beserta kendaraan.
+     * Hapus banyak geofence.
      */
-    public function findDevice(int $deviceId): ?Device
-    {
-        return Device::query()
+    public function deleteMany(
+        array $ids
+    ): int {
 
-            ->with('vehicle')
+        return Geofence::query()
 
-            ->find($deviceId);
+            ->whereIn(
+                'id',
+                $ids
+            )
+
+            ->delete();
     }
 }

@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\Device;
 use Illuminate\Validation\ValidationException;
 
-class DeviceService
+class ActivateDeviceService
 {
     public function activateDevice(array $data): Device
     {

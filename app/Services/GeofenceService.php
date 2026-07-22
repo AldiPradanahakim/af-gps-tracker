@@ -4,119 +4,85 @@ namespace App\Services;
 
 use App\Models\Geofence;
 use App\Repositories\GeofenceRepository;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use RuntimeException;
+use Illuminate\Validation\ValidationException;
 
 class GeofenceService
 {
     public function __construct(
-        protected GeofenceRepository $geofenceRepository
+        protected GeofenceRepository $repository
     ) {}
 
     /**
-     * Menampilkan seluruh geofence milik user.
+     * Ambil seluruh geofence milik user login.
      */
-    public function getAll(int $userId)
+    public function getAll(): Collection
     {
-        return $this->geofenceRepository
-            ->getByUser($userId);
+        return $this->repository->getByUser(
+            Auth::id()
+        );
     }
 
     /**
-     * Menyimpan geofence baru.
+     * Simpan geofence baru.
      */
     public function store(array $data): Geofence
     {
         return DB::transaction(function () use ($data) {
 
-            $device = $this->geofenceRepository
-                ->findDevice($data['device_id']);
+            $device = $this->repository->findDeviceByUser(
+                $data['device_id'],
+                Auth::id()
+            );
 
             if (! $device) {
-                throw new RuntimeException('Device tidak ditemukan.');
+
+                throw ValidationException::withMessages([
+                    'device_id' => 'Device tidak ditemukan.',
+                ]);
             }
 
-            if ($data['type'] === 'radius') {
+            $config = match ($data['type']) {
 
-                $config = $this->buildRadiusConfig(
+                'radius' => $this->buildRadiusConfig(
                     $device,
                     $data
-                );
-            } else {
+                ),
 
-                $config = $this->buildAdministrativeConfig(
+                'administrative' => $this->buildAdministrativeConfig(
                     $data
-                );
-            }
+                ),
 
-            return $this->geofenceRepository
-                ->create([
+                'custom' => $this->buildCustomConfig(
+                    $data
+                ),
 
-                    'device_id' => $device->id,
+                default => throw ValidationException::withMessages([
+                    'type' => 'Tipe geofence tidak valid.',
+                ]),
+            };
 
-                    'name' => $data['name'],
+            return $this->repository->create([
 
-                    'description' => $data['description'] ?? null,
+                'device_id' => $device->id,
 
-                    'type' => $data['type'],
+                'name' => $data['name'],
 
-                    'config' => $config,
+                'description' => $data['description'] ?? null,
 
-                    'status' => true,
+                'type' => $data['type'],
 
-                ]);
+                'config' => $config,
+
+                'status' => true,
+
+            ]);
         });
     }
-
     /**
-     * Update status geofence.
-     */
-    public function updateStatus(
-        int $id,
-        bool $status
-    ): Geofence {
-
-        $geofence = $this->find($id);
-
-        $this->geofenceRepository
-            ->updateStatus(
-                $geofence,
-                $status
-            );
-
-        return $geofence->refresh();
-    }
-
-    /**
-     * Hapus geofence.
-     */
-    public function delete(int $id): void
-    {
-        $this->geofenceRepository
-            ->delete(
-                $this->find($id)
-            );
-    }
-
-    /**
-     * Detail geofence.
-     */
-    public function find(int $id): Geofence
-    {
-        $geofence = $this->geofenceRepository
-            ->find($id);
-
-        if (! $geofence) {
-            throw new RuntimeException(
-                'Geofence tidak ditemukan.'
-            );
-        }
-
-        return $geofence;
-    }
-
-    /**
-     * Config Radius.
+     * Bangun konfigurasi geofence radius.
      */
     protected function buildRadiusConfig(
         $device,
@@ -125,67 +91,334 @@ class GeofenceService
 
         $radius = (float) $data['radius'];
 
-        if ($data['radius_unit'] === 'kilometer') {
+        if ($radius <= 0) {
 
-            $radius *= 1000;
+            throw ValidationException::withMessages([
+                'radius' => 'Radius harus lebih dari 0.',
+            ]);
         }
 
-        if ($data['source'] === 'home') {
+        $source = $data['radius_source'];
 
-            $location = $device->home_location;
+        $latitude = null;
+        $longitude = null;
 
-            if (! $location) {
+        switch ($source) {
 
-                throw new RuntimeException(
-                    'Home Location belum diatur.'
-                );
-            }
-        } else {
+            case 'home_location':
 
-            $location = optional(
-                $device->travelHistories()
+                $home = $device->home_location;
+
+                if (
+                    empty($home) ||
+                    !isset($home['lat']) ||
+                    !isset($home['lng'])
+                ) {
+
+                    throw ValidationException::withMessages([
+                        'radius_source' => 'Home location belum tersedia.',
+                    ]);
+                }
+
+                $latitude = (float) $home['lat'];
+                $longitude = (float) $home['lng'];
+
+                break;
+
+            case 'current_location':
+
+                $history = $device->travelHistories()
                     ->latest('received_at')
-                    ->first()
-            )->location;
+                    ->first();
 
-            if (! $location) {
+                if (! $history) {
 
-                throw new RuntimeException(
-                    'Lokasi kendaraan belum tersedia.'
-                );
-            }
+                    throw ValidationException::withMessages([
+                        'radius_source' => 'Lokasi terakhir perangkat tidak ditemukan.',
+                    ]);
+                }
+
+                $location = $history->location;
+
+                if (
+                    empty($location) ||
+                    !isset($location['lat']) ||
+                    !isset($location['lng'])
+                ) {
+
+                    throw ValidationException::withMessages([
+                        'radius_source' => 'Lokasi terakhir tidak valid.',
+                    ]);
+                }
+
+                $latitude = (float) $location['lat'];
+                $longitude = (float) $location['lng'];
+
+                break;
+
+            case 'manual':
+
+                if (
+                    !isset($data['latitude']) ||
+                    !isset($data['longitude'])
+                ) {
+
+                    throw ValidationException::withMessages([
+                        'latitude' => 'Latitude wajib diisi.',
+                        'longitude' => 'Longitude wajib diisi.',
+                    ]);
+                }
+
+                $latitude = (float) $data['latitude'];
+                $longitude = (float) $data['longitude'];
+
+                break;
+
+            default:
+
+                throw ValidationException::withMessages([
+                    'radius_source' => 'Sumber radius tidak valid.',
+                ]);
         }
 
         return [
 
-            'source' => $data['source'],
-
             'center' => [
 
-                'latitude' => $location['latitude'],
+                'lat' => $latitude,
 
-                'longitude' => $location['longitude'],
+                'lng' => $longitude,
 
             ],
 
             'radius' => $radius,
 
+            'unit' => $data['radius_unit'] ?? 'meter',
+
+            'source' => $source,
+
         ];
     }
-
     /**
-     * Config Administrative.
+     * Bangun konfigurasi geofence administratif.
      */
     protected function buildAdministrativeConfig(
         array $data
     ): array {
 
+        if (
+            empty($data['geojson']) ||
+            empty($data['display_name']) ||
+            empty($data['administrative_type'])
+        ) {
+
+            throw ValidationException::withMessages([
+                'geojson' => 'Data wilayah administratif tidak lengkap.',
+            ]);
+        }
+
+        $geojson = is_string($data['geojson'])
+            ? json_decode($data['geojson'], true)
+            : $data['geojson'];
+
+        if (
+            json_last_error() !== JSON_ERROR_NONE ||
+            !is_array($geojson)
+        ) {
+
+            throw ValidationException::withMessages([
+                'geojson' => 'GeoJSON tidak valid.',
+            ]);
+        }
+
+        if (
+            !isset($geojson['type']) ||
+            !in_array(
+                $geojson['type'],
+                ['Polygon', 'MultiPolygon']
+            )
+        ) {
+
+            throw ValidationException::withMessages([
+                'geojson' => 'GeoJSON harus berupa Polygon atau MultiPolygon.',
+            ]);
+        }
+
         return [
 
             'display_name' => $data['display_name'],
 
-            'geojson' => $data['geojson'],
+            'administrative_type' => $data['administrative_type'],
+
+            'geometry' => $geojson,
 
         ];
+    }
+
+    /**
+     * Bangun konfigurasi geofence custom polygon.
+     */
+    protected function buildCustomConfig(
+        array $data
+    ): array {
+
+        if (empty($data['geojson'])) {
+
+            throw ValidationException::withMessages([
+                'geojson' => 'Polygon belum dibuat.',
+            ]);
+        }
+
+        $geojson = is_string($data['geojson'])
+            ? json_decode($data['geojson'], true)
+            : $data['geojson'];
+
+        if (
+            json_last_error() !== JSON_ERROR_NONE ||
+            !is_array($geojson)
+        ) {
+
+            throw ValidationException::withMessages([
+                'geojson' => 'GeoJSON tidak valid.',
+            ]);
+        }
+
+        if (
+            !isset($geojson['type']) ||
+            !in_array(
+                $geojson['type'],
+                ['Polygon', 'MultiPolygon']
+            )
+        ) {
+
+            throw ValidationException::withMessages([
+                'geojson' => 'Polygon tidak valid.',
+            ]);
+        }
+
+        return [
+
+            'geometry' => $geojson,
+
+        ];
+    }
+    /**
+     * Update status geofence.
+     */
+    public function updateStatus(
+        int $id,
+        bool $status
+    ): Geofence {
+
+        $geofence = $this->repository->findOwnedByUser(
+            $id,
+            Auth::id()
+        );
+
+        if (! $geofence) {
+
+            throw ValidationException::withMessages([
+                'geofence' => 'Geofence tidak ditemukan.',
+            ]);
+        }
+
+        return DB::transaction(function () use (
+            $geofence,
+            $status
+        ) {
+
+            return $this->repository->updateStatus(
+                $geofence,
+                $status
+            );
+        });
+    }
+
+    /**
+     * Hapus satu geofence.
+     */
+    public function destroy(
+        int $id
+    ): void {
+
+        $geofence = $this->repository->findOwnedByUser(
+            $id,
+            Auth::id()
+        );
+
+        if (! $geofence) {
+
+            throw ValidationException::withMessages([
+                'geofence' => 'Geofence tidak ditemukan.',
+            ]);
+        }
+
+        DB::transaction(function () use (
+            $geofence
+        ) {
+
+            $this->repository->delete(
+                $geofence
+            );
+        });
+    }
+
+    /**
+     * Hapus banyak geofence.
+     */
+    public function destroyMany(
+        array $ids
+    ): int {
+
+        $ownedIds = [];
+
+        foreach ($ids as $id) {
+
+            $geofence = $this->repository->findOwnedByUser(
+                $id,
+                Auth::id()
+            );
+
+            if ($geofence) {
+
+                $ownedIds[] = $geofence->id;
+            }
+        }
+
+        if (empty($ownedIds)) {
+
+            throw ValidationException::withMessages([
+                'ids' => 'Tidak ada geofence yang dapat dihapus.',
+            ]);
+        }
+
+        return DB::transaction(function () use (
+            $ownedIds
+        ) {
+
+            return $this->repository->deleteMany(
+                $ownedIds
+            );
+        });
+    }
+
+    public function getByDevice(
+        int $deviceId
+    ) {
+        $device = $this->repository->findDeviceByUser(
+            $deviceId,
+            Auth::id()
+        );
+
+        if (! $device) {
+
+            throw ValidationException::withMessages([
+                'device_id' => 'Device tidak ditemukan.',
+            ]);
+        }
+
+        return $this->repository->getByDevice(
+            $device->id
+        );
     }
 }

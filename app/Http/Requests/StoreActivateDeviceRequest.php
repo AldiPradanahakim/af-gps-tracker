@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreVehicleRequest extends FormRequest
+class StoreActivateDeviceRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -14,25 +14,15 @@ class StoreVehicleRequest extends FormRequest
     public function rules(): array
     {
         return [
-
-            'vehicle_name' => [
+            'device_id' => [
                 'required',
                 'string',
-                'max:100',
+                'max:50',
             ],
-
-            'vehicle_type' => [
-                'required',
-                'in:motor,mobil',
-            ],
-
-            'plate_number' => [
+            'device_password' => [
                 'required',
                 'string',
-                'max:20',
-                'unique:vehicles,plate_number',
             ],
-
         ];
     }
 }

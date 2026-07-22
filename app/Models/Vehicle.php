@@ -11,6 +11,8 @@ class Vehicle extends Model
         'vehicle_name',
         'vehicle_type',
         'plate_number',
+        'marker_icon',
+        'marker_color',
     ];
 
     public function device()

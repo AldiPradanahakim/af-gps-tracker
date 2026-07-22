@@ -12,11 +12,10 @@ class StoreGeofenceRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->check();
+        return true;
     }
-
     /**
-     * Get the validation rules.
+     * Validation Rules
      */
     public function rules(): array
     {
@@ -24,58 +23,41 @@ class StoreGeofenceRequest extends FormRequest
 
             /*
             |--------------------------------------------------------------------------
-            | Device
-            |--------------------------------------------------------------------------
-            */
-
-            'device_id' => [
-
-                'required',
-
-                'integer',
-
-                'exists:devices,id',
-
-            ],
-
-            /*
-            |--------------------------------------------------------------------------
-            | Geofence
+            | Basic
             |--------------------------------------------------------------------------
             */
 
             'name' => [
-
                 'required',
-
                 'string',
-
                 'max:100',
-
             ],
 
             'description' => [
-
                 'nullable',
-
                 'string',
-
-                'max:500',
-
+                'max:255',
             ],
 
-            'type' => [
-
+            'device_id' => [
                 'required',
+                'integer',
+                'exists:devices,id',
+            ],
 
+            /*
+            |--------------------------------------------------------------------------
+            | Type
+            |--------------------------------------------------------------------------
+            */
+
+            'type' => [
+                'required',
                 Rule::in([
-
                     'radius',
-
                     'administrative',
-
+                    'custom',
                 ]),
-
             ],
 
             /*
@@ -84,50 +66,43 @@ class StoreGeofenceRequest extends FormRequest
             |--------------------------------------------------------------------------
             */
 
-            'source' => [
-
-                Rule::requiredIf(
-                    $this->input('type') === 'radius'
-                ),
-
+            'radius_source' => [
+                'required_if:type,radius',
                 Rule::in([
-
-                    'home',
-
+                    'home_location',
                     'current_location',
-
+                    'manual',
                 ]),
+            ],
 
+            'latitude' => [
+                'required_if:radius_source,manual',
+                'nullable',
+                'numeric',
+                'between:-90,90',
+            ],
+
+            'longitude' => [
+                'required_if:radius_source,manual',
+                'nullable',
+                'numeric',
+                'between:-180,180',
             ],
 
             'radius' => [
-
-                Rule::requiredIf(
-                    $this->input('type') === 'radius'
-                ),
-
+                'required_if:type,radius',
+                'nullable',
                 'numeric',
-
                 'min:50',
-
                 'max:50000',
-
             ],
 
             'radius_unit' => [
-
-                Rule::requiredIf(
-                    $this->input('type') === 'radius'
-                ),
-
+                'required_if:type,radius',
                 Rule::in([
-
                     'meter',
-
                     'kilometer',
-
                 ]),
-
             ],
 
             /*
@@ -136,54 +111,155 @@ class StoreGeofenceRequest extends FormRequest
             |--------------------------------------------------------------------------
             */
 
-            'geojson' => [
-
-                Rule::requiredIf(
-                    $this->input('type') === 'administrative'
-                ),
-
-                'array',
-
+            'display_name' => [
+                'required_if:type,administrative',
+                'nullable',
+                'string',
+                'max:255',
             ],
 
-            'display_name' => [
-
-                Rule::requiredIf(
-                    $this->input('type') === 'administrative'
-                ),
-
+            'administrative_type' => [
+                'required_if:type,administrative',
+                'nullable',
                 'string',
+                'max:100',
+            ],
 
+            /*
+            |--------------------------------------------------------------------------
+            | Administrative & Custom
+            |--------------------------------------------------------------------------
+            */
+
+            'geojson' => [
+                'required_if:type,administrative,custom',
+                'nullable',
+                'json',
             ],
 
         ];
     }
 
     /**
-     * Custom validation message.
+     * Validation Messages
      */
     public function messages(): array
     {
         return [
 
-            'device_id.required' => 'Kendaraan wajib dipilih.',
-
-            'device_id.exists' => 'Kendaraan tidak ditemukan.',
+            /*
+            |--------------------------------------------------------------------------
+            | Basic
+            |--------------------------------------------------------------------------
+            */
 
             'name.required' => 'Nama geofence wajib diisi.',
 
+            'name.max' => 'Nama geofence maksimal 100 karakter.',
+
+            'description.max' => 'Deskripsi maksimal 255 karakter.',
+
+            'device_id.required' => 'Silakan pilih kendaraan.',
+
+            'device_id.exists' => 'Kendaraan tidak ditemukan.',
+
+            /*
+            |--------------------------------------------------------------------------
+            | Type
+            |--------------------------------------------------------------------------
+            */
+
             'type.required' => 'Jenis geofence wajib dipilih.',
 
-            'radius.required' => 'Radius wajib diisi.',
+            'type.in' => 'Jenis geofence tidak valid.',
 
-            'radius.min' => 'Radius minimal 50 meter.',
+            /*
+            |--------------------------------------------------------------------------
+            | Radius
+            |--------------------------------------------------------------------------
+            */
 
-            'radius.max' => 'Radius maksimal 50 kilometer.',
+            'radius_source.required_if' =>
+            'Sumber titik radius wajib dipilih.',
 
-            'geojson.required' => 'Wilayah administratif wajib dipilih.',
+            'radius.required_if' =>
+            'Radius wajib diisi.',
 
-            'display_name.required' => 'Wilayah administratif wajib dipilih.',
+            'radius.min' =>
+            'Radius minimal 50 meter.',
+
+            'radius.max' =>
+            'Radius maksimal 50000 meter.',
+
+            'radius.numeric' =>
+            'Radius harus berupa angka.',
+
+            'radius_unit.required_if' =>
+            'Satuan radius wajib dipilih.',
+
+            'radius_unit.in' =>
+            'Satuan radius tidak valid.',
+
+            'latitude.required_if' =>
+            'Latitude wajib diisi.',
+
+            'longitude.required_if' =>
+            'Longitude wajib diisi.',
+
+            'latitude.numeric' =>
+            'Latitude tidak valid.',
+
+            'longitude.numeric' =>
+            'Longitude tidak valid.',
+
+            /*
+            |--------------------------------------------------------------------------
+            | Administrative
+            |--------------------------------------------------------------------------
+            */
+
+            'display_name.required_if' =>
+            'Wilayah administratif wajib dipilih.',
+
+            'administrative_type.required_if' =>
+            'Jenis wilayah administratif wajib dipilih.',
+
+            /*
+            |--------------------------------------------------------------------------
+            | GeoJSON
+            |--------------------------------------------------------------------------
+            */
+
+            'geojson.required_if' =>
+            'GeoJSON wajib tersedia.',
+
+            'geojson.json' =>
+            'Format GeoJSON tidak valid.',
 
         ];
+    }
+
+    /**
+     * Prepare Before Validation
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->filled('type')) {
+            $this->merge([
+                'type' => strtolower(trim($this->type)),
+            ]);
+        }
+
+        if ($this->filled('radius_unit')) {
+            $this->merge([
+                'radius_unit' => strtolower(trim($this->radius_unit)),
+            ]);
+        }
+
+        if ($this->filled('radius_source')) {
+            $this->merge([
+                'radius_source' => strtolower(trim($this->radius_source)),
+            ]);
+        }
     }
 }

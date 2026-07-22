@@ -1,12 +1,16 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\DeviceController;
+use App\Http\Controllers\ActivateDeviceController;
+use App\Http\Controllers\ActivateVehicleController;
 use App\Http\Controllers\GeofenceController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\VehicleController;
-use Illuminate\Support\Facades\Route;
+
+use App\Http\Controllers\Home\DeviceController as HomeDeviceController;
+use App\Http\Controllers\Home\VehicleController as HomeVehicleController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -18,10 +22,10 @@ Route::get('/', function () {
 |--------------------------------------------------------------------------
 */
 
-Route::get('/devices/activate', [DeviceController::class, 'create'])
+Route::get('/devices/activate', [ActivateDeviceController::class, 'create'])
     ->name('devices.create');
 
-Route::post('/devices/activate', [DeviceController::class, 'store'])
+Route::post('/devices/activate', [ActivateDeviceController::class, 'store'])
     ->name('devices.store');
 
 /*
@@ -50,8 +54,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::get('/dashboard', [DashboardController::class, 'index'])
-        ->name('dashboard');
+    Route::get('/dashboard', [
+        DashboardController::class,
+        'index'
+    ])->name('dashboard');
 
     /*
     |--------------------------------------------------------------------------
@@ -59,8 +65,32 @@ Route::middleware(['auth', 'verified'])->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::get('/home', [HomeController::class, 'index'])
-        ->name('home');
+    Route::get('/home', [
+        HomeController::class,
+        'index'
+    ])->name('home');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Home Device
+    |--------------------------------------------------------------------------
+    */
+
+    Route::post('/home/devices/activate', [
+        HomeDeviceController::class,
+        'store'
+    ])->name('home.devices.activate');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Home Vehicle
+    |--------------------------------------------------------------------------
+    */
+
+    Route::post('/home/vehicles', [
+        HomeVehicleController::class,
+        'store'
+    ])->name('home.vehicles.store');
 
     /*
     |--------------------------------------------------------------------------
@@ -68,14 +98,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::get('/vehicles/create', [VehicleController::class, 'create'])
-        ->name('vehicles.create');
+    Route::get('/vehicles/create', [
+        ActivateVehicleController::class,
+        'create'
+    ])->name('vehicles.create');
 
-    Route::post('/vehicles', [VehicleController::class, 'store'])
-        ->name('vehicles.store');
+    Route::post('/vehicles', [
+        ActivateVehicleController::class,
+        'store'
+    ])->name('vehicles.store');
 
-    Route::get('/vehicles/{device}', [VehicleController::class, 'show'])
-        ->name('vehicles.show');
+    Route::get('/vehicles/{device}', [
+        ActivateVehicleController::class,
+        'show'
+    ])->name('vehicles.show');
 
     /*
     |--------------------------------------------------------------------------
@@ -83,14 +119,50 @@ Route::middleware(['auth', 'verified'])->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::post('/geofences', [GeofenceController::class, 'store'])
-        ->name('geofences.store');
+    /**
+     * Load seluruh geofence berdasarkan device.
+     * Digunakan oleh:
+     * - Delete Geofence Modal
+     * - Refresh Sidebar
+     * - Vehicle Detail
+     */
+    Route::get('/geofence/device/{device}', [
+        GeofenceController::class,
+        'index'
+    ])->name('geofences.index');
 
-    Route::delete('/geofences/{geofence}', [GeofenceController::class, 'destroy'])
-        ->name('geofences.destroy');
+    /**
+     * Store Geofence
+     */
+    Route::post('/geofences', [
+        GeofenceController::class,
+        'store'
+    ])->name('geofences.store');
 
-    Route::patch('/geofences/{geofence}/status', [GeofenceController::class, 'updateStatus'])
-        ->name('geofences.status');
+    /**
+     * Delete Multiple Geofence
+     */
+    Route::delete('/geofences', [
+        GeofenceController::class,
+        'destroyMany'
+    ])->name('geofences.destroyMany');
+
+    /**
+     * Delete Single Geofence
+     * Tetap dipertahankan agar kompatibel dengan fitur lama.
+     */
+    Route::delete('/geofences/{geofence}', [
+        GeofenceController::class,
+        'destroy'
+    ])->name('geofences.destroy');
+
+    /**
+     * Enable / Disable Geofence
+     */
+    Route::patch('/geofences/{geofence}/status', [
+        GeofenceController::class,
+        'updateStatus'
+    ])->name('geofences.status');
 
     /*
     |--------------------------------------------------------------------------
@@ -98,11 +170,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::patch('/profile', [ProfileController::class, 'update'])
-        ->name('profile.update');
+    Route::patch('/profile', [
+        ProfileController::class,
+        'update'
+    ])->name('profile.update');
 
-    Route::delete('/profile', [ProfileController::class, 'destroy'])
-        ->name('profile.destroy');
+    Route::delete('/profile', [
+        ProfileController::class,
+        'destroy'
+    ])->name('profile.destroy');
 });
 
 require __DIR__ . '/auth.php';

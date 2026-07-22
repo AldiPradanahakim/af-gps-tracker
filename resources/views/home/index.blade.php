@@ -31,6 +31,8 @@
 </div>
 
 {{-- MODALS --}}
+<x-toast />
+
 @include('home.modals.add-geofence')
 
 @include('home.modals.activate-device')

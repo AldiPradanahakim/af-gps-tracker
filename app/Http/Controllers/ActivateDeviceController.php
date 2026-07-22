@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreDeviceRequest;
-use App\Services\DeviceService;
+use App\Http\Requests\StoreActivateDeviceRequest;
+use App\Services\ActivateDeviceService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
-class DeviceController extends Controller
+class ActivateDeviceController extends Controller
 {
     public function __construct(
-        private DeviceService $deviceService
+        private ActivateDeviceService $deviceService
     ) {}
 
     public function create(): View
@@ -18,7 +18,7 @@ class DeviceController extends Controller
         return view('devices.create');
     }
 
-    public function store(StoreDeviceRequest $request): RedirectResponse
+    public function store(StoreActivateDeviceRequest $request): RedirectResponse
     {
         $this->deviceService->activateDevice(
             $request->validated()

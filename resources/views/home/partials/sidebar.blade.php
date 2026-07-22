@@ -221,12 +221,22 @@
 
                     <div class="mt-6 flex items-center gap-2">
 
+                        @php
+                            $hasCoordinate =
+                                !is_null($vehicle['latitude']) &&
+                                !is_null($vehicle['longitude']);
+                        @endphp
+
                         <button
                             type="button"
-                            onclick="focusVehicle({{ $vehicle['device_id'] }})"
-                            class="flex-1 rounded-xl bg-[#2563EB] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700">
+                            onclick="GPSTracker.focusVehicle('{{ $vehicle['device_id'] }}')"
+                            @disabled(!$hasCoordinate)
+                            class="flex-1 rounded-xl px-4 py-2.5 text-sm font-semibold transition
+                            {{ $hasCoordinate
+                                ? 'bg-[#2563EB] text-white hover:bg-blue-700'
+                                : 'bg-slate-300 text-slate-500 cursor-not-allowed' }}">
 
-                            Lihat di Peta
+                            {{ $hasCoordinate ? 'Lihat di Peta' : 'Belum Ada GPS' }}
 
                         </button>
 

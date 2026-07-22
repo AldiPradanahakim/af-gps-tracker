@@ -137,6 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
 
     }, 100);
+    
     /*
     |--------------------------------------------------------------------------
     | Layer Groups
@@ -152,6 +153,9 @@ document.addEventListener('DOMContentLoaded', () => {
     GPSTracker.administrativeLayer =
         L.layerGroup().addTo(GPSTracker.map);
 
+    GPSTracker.customLayer =
+        L.layerGroup().addTo(GPSTracker.map);
+
     GPSTracker.routeLayer =
         L.layerGroup().addTo(GPSTracker.map);
 
@@ -160,6 +164,636 @@ document.addEventListener('DOMContentLoaded', () => {
 
     GPSTracker.temporaryLayer =
         L.layerGroup().addTo(GPSTracker.map);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Layer Collection
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.layers = {
+
+        marker: GPSTracker.markerLayer,
+
+        radius: GPSTracker.radiusLayer,
+
+        administrative: GPSTracker.administrativeLayer,
+
+        custom: GPSTracker.customLayer,
+
+        route: GPSTracker.routeLayer,
+
+        playback: GPSTracker.playbackLayer,
+
+        temporary: GPSTracker.temporaryLayer,
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Layer Getter
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.getLayer = function (
+
+        type
+
+    ) {
+
+        return this.layers[type] ?? null;
+
+    };
+
+    GPSTracker.hasLayer = function (
+
+        type
+
+    ) {
+
+        return this.getLayer(
+
+            type
+
+        ) !== null;
+
+    };
+
+    GPSTracker.clearLayer = function (
+
+        type
+
+    ) {
+
+        const layer = this.getLayer(
+
+            type
+
+        );
+
+        if (!layer) {
+
+            return;
+
+        }
+
+        layer.clearLayers();
+
+    };
+
+    GPSTracker.clearLayers = function (
+
+        ...types
+
+    ) {
+
+        types.forEach(
+
+            type => {
+
+                this.clearLayer(
+
+                    type
+
+                );
+
+            }
+
+        );
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Layer Visibility
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.showLayer = function (
+
+        type
+
+    ) {
+
+        const layer = this.getLayer(
+
+            type
+
+        );
+
+        if (
+
+            !layer ||
+
+            this.map.hasLayer(
+
+                layer
+
+            )
+
+        ) {
+
+            return;
+
+        }
+
+        layer.addTo(
+
+            this.map
+
+        );
+
+    };
+
+    GPSTracker.hideLayer = function (
+
+        type
+
+    ) {
+
+        const layer = this.getLayer(
+
+            type
+
+        );
+
+        if (
+
+            !layer ||
+
+            !this.map.hasLayer(
+
+                layer
+
+            )
+
+        ) {
+
+            return;
+
+        }
+
+        this.map.removeLayer(
+
+            layer
+
+        );
+
+    };
+
+    GPSTracker.toggleLayer = function (
+
+        type,
+
+        visible
+
+    ) {
+
+        visible
+
+            ? this.showLayer(type)
+
+            : this.hideLayer(type);
+
+    };
+
+    GPSTracker.showLayers = function (
+
+        ...types
+
+    ) {
+
+        types.forEach(
+
+            type => {
+
+                this.showLayer(
+
+                    type
+
+                );
+
+            }
+
+        );
+
+    };
+
+    GPSTracker.hideLayers = function (
+
+        ...types
+
+    ) {
+
+        types.forEach(
+
+            type => {
+
+                this.hideLayer(
+
+                    type
+
+                );
+
+            }
+
+        );
+
+    };
+
+    GPSTracker.isLayerVisible = function (
+
+        type
+
+    ) {
+
+        const layer = this.getLayer(
+
+            type
+
+        );
+
+        return (
+
+            !!layer &&
+
+            this.map.hasLayer(
+
+                layer
+
+            )
+
+        );
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Layer Utilities
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.eachLayer = function (
+
+        type,
+
+        callback
+
+    ) {
+
+        const layer = this.getLayer(
+
+            type
+
+        );
+
+        if (
+
+            !layer ||
+
+            typeof callback !== 'function'
+
+        ) {
+
+            return;
+
+        }
+
+        layer.eachLayer(
+
+            callback
+
+        );
+
+    };
+
+    GPSTracker.findLayer = function (
+
+        type,
+
+        callback
+
+    ) {
+
+        let result = null;
+
+        this.eachLayer(
+
+            type,
+
+            layer => {
+
+                if (
+
+                    result === null &&
+
+                    callback(
+
+                        layer
+
+                    )
+
+                ) {
+
+                    result = layer;
+
+                }
+
+            }
+
+        );
+
+        return result;
+
+    };
+
+    GPSTracker.removeLayerItem = function (
+
+        type,
+
+        layer
+
+    ) {
+
+        const group = this.getLayer(
+
+            type
+
+        );
+
+        if (
+
+            !group ||
+
+            !layer
+
+        ) {
+
+            return;
+
+        }
+
+        group.removeLayer(
+
+            layer
+
+        );
+
+    };
+
+    GPSTracker.addLayerItem = function (
+
+        type,
+
+        layer
+
+    ) {
+
+        const group = this.getLayer(
+
+            type
+
+        );
+
+        if (
+
+            !group ||
+
+            !layer
+
+        ) {
+
+            return;
+
+        }
+
+        group.addLayer(
+
+            layer
+
+        );
+
+    };
+
+    GPSTracker.replaceLayerItem = function (
+
+        type,
+
+        oldLayer,
+
+        newLayer
+
+    ) {
+
+        this.removeLayerItem(
+
+            type,
+
+            oldLayer
+
+        );
+
+        this.addLayerItem(
+
+            type,
+
+            newLayer
+
+        );
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Layer Bounds
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.getLayerBounds = function (
+
+        type
+
+    ) {
+
+        const layer = this.getLayer(
+
+            type
+
+        );
+
+        if (
+
+            !layer ||
+
+            this.getLayerCount(
+
+                type
+
+            ) === 0
+
+        ) {
+
+            return null;
+
+        }
+
+        return layer.getBounds();
+
+    };
+
+    GPSTracker.fitLayer = function (
+
+        type
+
+    ) {
+
+        const bounds = this.getLayerBounds(
+
+            type
+
+        );
+
+        if (
+
+            !bounds ||
+
+            !bounds.isValid()
+
+        ) {
+
+            return;
+
+        }
+
+        this.fitBounds(
+
+            bounds
+
+        );
+
+    };
+
+    GPSTracker.fitLayers = function (
+
+        ...types
+
+    ) {
+
+        const bounds = L.latLngBounds();
+
+        types.forEach(
+
+            type => {
+
+                const layerBounds = this.getLayerBounds(
+
+                    type
+
+                );
+
+                if (
+
+                    layerBounds &&
+
+                    layerBounds.isValid()
+
+                ) {
+
+                    bounds.extend(
+
+                        layerBounds
+
+                    );
+
+                }
+
+            }
+
+        );
+
+        if (
+
+            bounds.isValid()
+
+        ) {
+
+            this.fitBounds(
+
+                bounds
+
+            );
+
+        }
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Layer Count
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.getLayerCount = function (
+
+        type
+
+    ) {
+
+        const layer = this.getLayer(
+
+            type
+
+        );
+
+        if (!layer) {
+
+            return 0;
+
+        }
+
+        return layer.getLayers().length;
+
+    };
+
+    GPSTracker.hasLayerItem = function (
+
+        type
+
+    ) {
+
+        return (
+
+            this.getLayerCount(
+
+                type
+
+            ) > 0
+
+        );
+
+    };
+
+    GPSTracker.clearAllLayers = function () {
+
+        Object.keys(
+
+            this.layers
+
+        ).forEach(
+
+            type => {
+
+                this.clearLayer(
+
+                    type
+
+                );
+
+            }
+
+        );
+
+    };
 
     /*
     |--------------------------------------------------------------------------
