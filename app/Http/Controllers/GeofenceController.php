@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateGeofenceStatusRequest;
 use App\Services\GeofenceService;
 use Illuminate\Http\JsonResponse;
 
+
 class GeofenceController extends Controller
 {
     public function __construct(
@@ -43,23 +44,28 @@ class GeofenceController extends Controller
      * Store
      * --------------------------------------------------------------------------
      */
-    public function store(
-        StoreGeofenceRequest $request
-    ): JsonResponse {
+    public function store(StoreGeofenceRequest $request): JsonResponse
+    {
+        try {
 
-        $geofence = $this->geofenceService->store(
-            $request->validated()
-        );
+            $geofence = $this->geofenceService->store(
+                $request->validated()
+            );
 
-        return response()->json([
+            return response()->json([
+                'success' => true,
+                'message' => 'Geofence berhasil ditambahkan.',
+                'data' => $geofence,
+            ], 201);
+        } catch (\Throwable $e) {
 
-            'success' => true,
-
-            'message' => 'Geofence berhasil ditambahkan.',
-
-            'data' => $geofence,
-
-        ], 201);
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine(),
+            ], 500);
+        }
     }
 
     /**
@@ -133,6 +139,26 @@ class GeofenceController extends Controller
             'success' => true,
 
             'message' => "{$deleted} geofence berhasil dihapus.",
+
+        ]);
+    }
+
+    /**
+     * --------------------------------------------------------------------------
+     * Get All Geofence User
+     * --------------------------------------------------------------------------
+     */
+    public function all(): JsonResponse
+    {
+        $geofences = $this->geofenceService->all();
+
+        return response()->json([
+
+            'success' => true,
+
+            'message' => 'Daftar geofence berhasil diambil.',
+
+            'data' => $geofences,
 
         ]);
     }

@@ -22,19 +22,12 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     const defaultLayer = L.tileLayer(
-
     'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-
         {
-
-            maxZoom:22,
-
+            maxZoom:19,
             minZoom:4,
-
             detectRetina:true,
-
         }
-
     );
 
     const satelliteLayer = L.tileLayer(

@@ -10,56 +10,25 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
+*/
+
+/*
+|--------------------------------------------------------------------------
+| Administrative Area
+|--------------------------------------------------------------------------
 |
-| Semua endpoint API untuk aplikasi GPS Tracker.
+| Endpoint publik hanya untuk membaca data wilayah.
 |
 */
 
-Route::middleware('auth')->group(function () {
-
-    /*
-    |--------------------------------------------------------------------------
-    | User
-    |--------------------------------------------------------------------------
-    */
-
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    });
-
-    /*
-    |--------------------------------------------------------------------------
-    | Search
-    |--------------------------------------------------------------------------
-    */
-
-    Route::get('/search', SearchController::class)
-        ->name('api.search');
-
-    /*
-    |--------------------------------------------------------------------------
-    | Administrative Area
-    |--------------------------------------------------------------------------
-    */
-
-    Route::prefix('administrative')->name('api.administrative.')->group(function () {
-
-        /*
-    |----------------------------------------------------------------------
-    | City
-    |----------------------------------------------------------------------
-    */
+Route::prefix('administrative')
+    ->name('api.administrative.')
+    ->group(function () {
 
         Route::get('/city', [
             AdministrativeAreaController::class,
             'city',
         ])->name('city');
-
-        /*
-    |----------------------------------------------------------------------
-    | District
-    |----------------------------------------------------------------------
-    */
 
         Route::get('/districts', [
             AdministrativeAreaController::class,
@@ -71,12 +40,6 @@ Route::middleware('auth')->group(function () {
             'district',
         ])->name('district');
 
-        /*
-    |----------------------------------------------------------------------
-    | Village
-    |----------------------------------------------------------------------
-    */
-
         Route::get('/districts/{districtCode}/villages', [
             AdministrativeAreaController::class,
             'villages',
@@ -86,12 +49,6 @@ Route::middleware('auth')->group(function () {
             AdministrativeAreaController::class,
             'village',
         ])->name('village');
-
-        /*
-    |----------------------------------------------------------------------
-    | GeoJSON
-    |----------------------------------------------------------------------
-    */
 
         Route::get('/polygon/{level}/{code}', [
             AdministrativeAreaController::class,
@@ -109,18 +66,31 @@ Route::middleware('auth')->group(function () {
         ])->name('geojson.all');
     });
 
-    /*
-    |--------------------------------------------------------------------------
-    | Geofence
-    |--------------------------------------------------------------------------
-    */
+/*
+|--------------------------------------------------------------------------
+| Authenticated API
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth')->group(function () {
+
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
+
+    Route::get('/search', SearchController::class)
+        ->name('api.search');
 
     Route::get('/geofences', [GeofenceController::class, 'index'])
         ->name('api.geofences.index');
 
-    Route::patch('/geofences/{geofence}/status', [GeofenceController::class, 'updateStatus'])
-        ->name('api.geofences.status');
+    Route::patch('/geofences/{geofence}/status', [
+        GeofenceController::class,
+        'updateStatus'
+    ])->name('api.geofences.status');
 
-    Route::delete('/geofences/{geofence}', [GeofenceController::class, 'destroy'])
-        ->name('api.geofences.destroy');
+    Route::delete('/geofences/{geofence}', [
+        GeofenceController::class,
+        'destroy'
+    ])->name('api.geofences.destroy');
 });

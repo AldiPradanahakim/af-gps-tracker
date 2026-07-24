@@ -41,19 +41,22 @@ class AdministrativeAreaController extends Controller
     {
         try {
 
-            return response()->json([
-                'success' => true,
-                'data' => $this->administrativeAreaService
-                    ->searchDistricts(
-                        $request->string('keyword')->toString()
-                    ),
-            ]);
-        } catch (Throwable $e) {
+            $data = $this->administrativeAreaService
+                ->searchDistricts(
+                    $request->string('keyword')->toString()
+                );
 
             return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], 500);
+                'success' => true,
+                'data' => $data,
+            ]);
+        } catch (\Throwable $e) {
+
+            dd(
+                $e->getMessage(),
+                $e->getFile(),
+                $e->getLine()
+            );
         }
     }
 
@@ -163,7 +166,7 @@ class AdministrativeAreaController extends Controller
         string $level,
         string $code
     ): JsonResponse {
-        
+
         try {
 
             return response()->json([

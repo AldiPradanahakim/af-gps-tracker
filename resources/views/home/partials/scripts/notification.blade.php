@@ -761,9 +761,17 @@ document.addEventListener('gpstracker:map-ready', () => {
     |--------------------------------------------------------------------------
     */
 
-    GPSTracker.markNotificationAsRead = function (id) {
+    GPSTracker.markNotificationAsRead = function (
 
-        const notification = this.getNotification(id);
+        id
+
+    ) {
+
+        const notification = this.getNotification(
+
+            id
+
+        );
 
         if (!notification) {
 
@@ -771,9 +779,11 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         }
 
-        notification.read_at = notification.read_at ?? new Date().toISOString();
+        notification.read_at ??=
 
-        this.updateNotificationBadge();
+            new Date().toISOString();
+
+        this.renderNotifications();
 
     };
 
@@ -795,9 +805,17 @@ document.addEventListener('gpstracker:map-ready', () => {
     |--------------------------------------------------------------------------
     */
 
-    GPSTracker.handleNotificationClick = function (id) {
+    GPSTracker.handleNotificationClick = function (
 
-        const notification = this.getNotification(id);
+        id
+
+    ) {
+
+        const notification = this.getNotification(
+
+            id
+
+        );
 
         if (!notification) {
 
@@ -805,13 +823,23 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         }
 
-        this.markNotificationAsRead(id);
+        this.markNotificationAsRead(
+
+            id
+
+        );
 
         this.closeNotificationDropdown();
 
+        const deviceId = this.getNotificationDevice(
+
+            notification
+
+        );
+
         if (
 
-            notification.device_id &&
+            deviceId &&
 
             typeof this.focusVehicle === 'function'
 
@@ -819,7 +847,7 @@ document.addEventListener('gpstracker:map-ready', () => {
 
             this.focusVehicle(
 
-                notification.device_id
+                deviceId
 
             );
 
@@ -842,6 +870,14 @@ document.addEventListener('gpstracker:map-ready', () => {
             return;
 
         }
+
+        if (button.dataset.notificationBound === 'true') {
+
+            return;
+
+        }
+
+        button.dataset.notificationBound = 'true';
 
         button.addEventListener(
 
@@ -876,6 +912,14 @@ document.addEventListener('gpstracker:map-ready', () => {
             return;
 
         }
+
+        if (dropdown.dataset.notificationBound === 'true') {
+
+            return;
+
+        }
+
+        dropdown.dataset.notificationBound = 'true';
 
         dropdown.addEventListener(
 
@@ -941,6 +985,18 @@ document.addEventListener('gpstracker:map-ready', () => {
 
     GPSTracker.bindNotificationOutsideClick = function () {
 
+        if (
+
+            this.notification.outsideClickBound
+
+        ) {
+
+            return;
+
+        }
+
+        this.notification.outsideClickBound = true;
+
         document.addEventListener(
 
             'click',
@@ -951,7 +1007,13 @@ document.addEventListener('gpstracker:map-ready', () => {
 
                 const button = this.getNotificationButton();
 
-                if (!dropdown || !button) {
+                if (
+
+                    !dropdown ||
+
+                    !button
+
+                ) {
 
                     return;
 
@@ -959,9 +1021,17 @@ document.addEventListener('gpstracker:map-ready', () => {
 
                 if (
 
-                    dropdown.contains(event.target) ||
+                    dropdown.contains(
 
-                    button.contains(event.target)
+                        event.target
+
+                    ) ||
+
+                    button.contains(
+
+                        event.target
+
+                    )
 
                 ) {
 
@@ -983,6 +1053,18 @@ document.addEventListener('gpstracker:map-ready', () => {
     */
 
     GPSTracker.bindNotificationKeyboard = function () {
+
+        if (
+
+            this.notification.keyboardBound
+
+        ) {
+
+            return;
+
+        }
+
+        this.notification.keyboardBound = true;
 
         document.addEventListener(
 

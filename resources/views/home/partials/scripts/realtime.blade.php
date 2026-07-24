@@ -250,21 +250,37 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         this.setRealtimeConnecting(true);
 
-        this.realtime.echo = window.Echo;
+        try {
 
-        this.subscribeRealtimeChannels();
+            this.realtime.echo = window.Echo;
 
-        this.setRealtimeConnecting(false);
+            this.subscribeRealtimeChannels();
 
-        this.setRealtimeConnected(true);
+            this.setRealtimeConnected(true);
 
-        this.setRealtimeInitialized(true);
+            this.setRealtimeInitialized(true);
 
-        this.realtimeLog(
+            this.realtimeLog(
 
-            'Realtime connected.'
+                'Realtime connected.'
 
-        );
+            );
+
+        } catch (error) {
+
+            this.realtimeError(
+
+                'Failed to connect realtime.',
+
+                error
+
+            );
+
+        } finally {
+
+            this.setRealtimeConnecting(false);
+
+        }
 
     };
 
@@ -284,22 +300,44 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         }
 
-        Object.keys(this.realtime.channels).forEach(channel => {
+        Object.keys(
 
-            echo.leave(channel);
+            this.realtime.channels
+
+        ).forEach(channel => {
+
+            echo.leave(
+
+                channel
+
+            );
 
         });
 
         this.realtime.channels = {};
 
-        this.setRealtimeConnected(false);
+        this.stopRealtimeHeartbeat();
 
-        this.setRealtimeSubscribed(false);
+        this.setRealtimeConnected(
 
-        this.setRealtimeInitialized(false);
+            false
+
+        );
+
+        this.setRealtimeSubscribed(
+
+            false
+
+        );
+
+        this.setRealtimeInitialized(
+
+            false
+
+        );
 
     };
-
+    
     /*
     |--------------------------------------------------------------------------
     | Subscribe All Device Channels
@@ -351,742 +389,27 @@ document.addEventListener('gpstracker:map-ready', () => {
     };
     GPSTracker.receiveRealtimePayload = function (payload) {
 
-    if (!payload) {
+        if (!payload) {
 
-        return;
+            return;
 
-    }
+        }
 
-    this.setRealtimePayload(
+        this.setRealtimePayload(
 
-        payload
-
-    );
-
-    this.setRealtimeUpdateTime();
-
-    const vehicle = payload;
-
-    if (
-
-        !vehicle ||
-
-        !vehicle.device_id
-
-    ) {
-
-        return;
-
-    }
-
-    this.setRealtimeVehicle(
-
-        vehicle
-
-    );
-
-    this.processRealtimeVehicle(
-
-        vehicle
-
-    );
-
-};
-
-
-
-/*
-|--------------------------------------------------------------------------
-| Process Vehicle
-|--------------------------------------------------------------------------
-*/
-
-GPSTracker.processRealtimeVehicle = function (vehicle) {
-
-    const index = this.vehicles.findIndex(item => {
-
-        return Number(item.device_id) === Number(vehicle.device_id);
-
-    });
-
-    if (index === -1) {
-
-        this.realtimeWarn(
-
-            'Vehicle tidak ditemukan.',
-
-            vehicle.device_id
+            payload
 
         );
 
-        return;
+        this.setRealtimeUpdateTime();
 
-    }
-
-    this.syncRealtimeVehicle(
-
-        index,
-
-        vehicle
-
-    );
-
-};
-
-
-
-/*
-|--------------------------------------------------------------------------
-| Sync Vehicle
-|--------------------------------------------------------------------------
-*/
-
-GPSTracker.syncRealtimeVehicle = function (index, vehicle) {
-
-    const current = this.vehicles[index];
-
-    this.vehicles[index] = {
-
-        ...current,
-
-        ...vehicle,
-
-    };
-
-    this.refreshRealtimeModules(
-
-        this.vehicles[index]
-
-    );
-
-};
-
-
-
-/*
-|--------------------------------------------------------------------------
-| Refresh Modules
-|--------------------------------------------------------------------------
-*/
-
-GPSTracker.refreshRealtimeModules = function (vehicle) {
-
-    this.refreshRealtimeMarker(
-
-        vehicle
-
-    );
-
-    this.refreshRealtimePopup(
-
-        vehicle
-
-    );
-
-    this.refreshRealtimeSidebar(
-
-        vehicle
-
-    );
-
-    this.refreshRealtimeSearch(
-
-        vehicle
-
-    );
-
-    this.refreshRealtimeNotification(
-
-        vehicle
-
-    );
-
-    this.refreshRealtimeVehicleDetail(
-
-        vehicle
-
-    );
-
-    this.refreshRealtimeHomeLocation(
-
-        vehicle
-
-    );
-
-    this.refreshRealtimeGeofence(
-
-        vehicle
-
-    );
-
-    this.refreshRealtimeStopDetection(
-
-        vehicle
-
-    );
-
-    this.refreshRealtimeAddress(
-
-        vehicle
-
-    );
-
-    this.refreshRealtimeMap(
-
-        vehicle
-
-    );
-
-};
-
-
-
-/*
-|--------------------------------------------------------------------------
-| Replace Vehicle
-|--------------------------------------------------------------------------
-*/
-
-GPSTracker.replaceVehicle = function (vehicle) {
-
-    const index = this.vehicles.findIndex(item => {
-
-        return Number(item.device_id) === Number(vehicle.device_id);
-
-    });
-
-    if (index === -1) {
-
-        return false;
-
-    }
-
-    this.vehicles[index] = {
-
-        ...this.vehicles[index],
-
-        ...vehicle,
-
-    };
-
-    return true;
-
-};
-
-
-
-/*
-|--------------------------------------------------------------------------
-| Find Vehicle
-|--------------------------------------------------------------------------
-*/
-
-GPSTracker.findRealtimeVehicle = function (deviceId) {
-
-    return this.vehicles.find(vehicle => {
-
-        return Number(vehicle.device_id) === Number(deviceId);
-
-    });
-
-};
-
-
-
-/*
-|--------------------------------------------------------------------------
-| Find Vehicle Index
-|--------------------------------------------------------------------------
-*/
-
-GPSTracker.findRealtimeVehicleIndex = function (deviceId) {
-
-    return this.vehicles.findIndex(vehicle => {
-
-        return Number(vehicle.device_id) === Number(deviceId);
-
-    });
-
-};
-
-
-
-/*
-|--------------------------------------------------------------------------
-| Update Vehicle State
-|--------------------------------------------------------------------------
-*/
-
-GPSTracker.updateRealtimeVehicleState = function (vehicle) {
-
-    this.setRealtimeVehicle(
-
-        vehicle
-
-    );
-
-    this.setRealtimePayload(
-
-        vehicle
-
-    );
-
-    this.setRealtimeUpdateTime();
-
-};
-
-/*
-|--------------------------------------------------------------------------
-| Refresh Marker
-|--------------------------------------------------------------------------
-*/
-
-GPSTracker.refreshRealtimeMarker = function (vehicle) {
-
-    if (
-
-        typeof this.updateMarker !== 'function'
-
-    ) {
-
-        return;
-
-    }
-
-    this.updateMarker(
-
-        vehicle
-
-    );
-
-};
-
-
-
-/*
-|--------------------------------------------------------------------------
-| Refresh Popup
-|--------------------------------------------------------------------------
-*/
-
-GPSTracker.refreshRealtimePopup = function (vehicle) {
-
-    if (
-
-        typeof this.updatePopup !== 'function'
-
-    ) {
-
-        return;
-
-    }
-
-    this.updatePopup(
-
-        vehicle
-
-    );
-
-};
-
-
-
-/*
-|--------------------------------------------------------------------------
-| Refresh Sidebar
-|--------------------------------------------------------------------------
-*/
-
-GPSTracker.refreshRealtimeSidebar = function (vehicle) {
-
-    if (
-
-        typeof this.updateVehicleCard !== 'function'
-
-    ) {
-
-        return;
-
-    }
-
-    this.updateVehicleCard(
-
-        vehicle
-
-    );
-
-};
-
-
-
-/*
-|--------------------------------------------------------------------------
-| Refresh Search
-|--------------------------------------------------------------------------
-*/
-
-GPSTracker.refreshRealtimeSearch = function (vehicle) {
-
-    if (
-
-        typeof this.updateSearchResult !== 'function'
-
-    ) {
-
-        return;
-
-    }
-
-    this.updateSearchResult(
-
-        vehicle
-
-    );
-
-};
-
-
-
-/*
-|--------------------------------------------------------------------------
-| Refresh Notification
-|--------------------------------------------------------------------------
-*/
-
-GPSTracker.refreshRealtimeNotification = function (vehicle) {
-
-    if (
-
-        typeof this.receiveNotification !== 'function'
-
-    ) {
-
-        return;
-
-    }
-
-    if (
-
-        !vehicle.notification
-
-    ) {
-
-        return;
-
-    }
-
-    this.receiveNotification(
-
-        vehicle.notification
-
-    );
-
-};
-
-
-
-/*
-|--------------------------------------------------------------------------
-| Refresh Vehicle Detail
-|--------------------------------------------------------------------------
-*/
-
-GPSTracker.refreshRealtimeVehicleDetail = function (vehicle) {
-
-    if (
-
-        typeof this.updateVehicleDetail !== 'function'
-
-    ) {
-
-        return;
-
-    }
-
-    this.updateVehicleDetail(
-
-        vehicle
-
-    );
-
-};
-
-
-
-/*
-|--------------------------------------------------------------------------
-| Refresh Home Location
-|--------------------------------------------------------------------------
-*/
-
-GPSTracker.refreshRealtimeHomeLocation = function (vehicle) {
-
-    if (
-
-        typeof this.updateHomeLocation !== 'function'
-
-    ) {
-
-        return;
-
-    }
-
-    this.updateHomeLocation(
-
-        vehicle
-
-    );
-
-};
-
-
-
-/*
-|--------------------------------------------------------------------------
-| Refresh Geofence
-|--------------------------------------------------------------------------
-*/
-
-GPSTracker.refreshRealtimeGeofence = function (vehicle) {
-
-    if (
-
-        typeof this.checkGeofence !== 'function'
-
-    ) {
-
-        return;
-
-    }
-
-    this.checkGeofence(
-
-        vehicle
-
-    );
-
-};
-
-
-
-/*
-|--------------------------------------------------------------------------
-| Refresh Stop Detection
-|--------------------------------------------------------------------------
-*/
-
-GPSTracker.refreshRealtimeStopDetection = function (vehicle) {
-
-    if (
-
-        typeof this.detectVehicleStop !== 'function'
-
-    ) {
-
-        return;
-
-    }
-
-    this.detectVehicleStop(
-
-        vehicle
-
-    );
-
-};
-
-
-
-/*
-|--------------------------------------------------------------------------
-| Refresh Reverse Geocoding
-|--------------------------------------------------------------------------
-*/
-
-GPSTracker.refreshRealtimeAddress = function (vehicle) {
-
-    if (
-
-        typeof this.reverseGeocode !== 'function'
-
-    ) {
-
-        return;
-
-    }
-
-    this.reverseGeocode(
-
-        vehicle
-
-    );
-
-};
-
-
-
-/*
-|--------------------------------------------------------------------------
-| Refresh Map
-|--------------------------------------------------------------------------
-*/
-
-GPSTracker.refreshRealtimeMap = function (vehicle) {
-
-    if (
-
-        !this.map
-
-    ) {
-
-        return;
-
-    }
-
-    const latitude = Number(
-
-        vehicle.latitude
-
-    );
-
-    const longitude = Number(
-
-        vehicle.longitude
-
-    );
-
-    if (
-
-        Number.isNaN(latitude) ||
-
-        Number.isNaN(longitude)
-
-    ) {
-
-        return;
-
-    }
-
-    if (
-
-        this.followVehicle === true
-
-    ) {
-
-        this.map.panTo(
-
-            [
-
-                latitude,
-
-                longitude,
-
-            ],
-
-            {
-
-                animate: true,
-
-            }
-
-        );
-
-    }
-
-};
-
-
-
-/*
-|--------------------------------------------------------------------------
-| Refresh All Components
-|--------------------------------------------------------------------------
-*/
-
-GPSTracker.refreshRealtimeModules = function (vehicle) {
-
-    this.refreshRealtimeMarker(
-
-        vehicle
-
-    );
-
-    this.refreshRealtimePopup(
-
-        vehicle
-
-    );
-
-    this.refreshRealtimeSidebar(
-
-        vehicle
-
-    );
-
-    this.refreshRealtimeSearch(
-
-        vehicle
-
-    );
-
-    this.refreshRealtimeNotification(
-
-        vehicle
-
-    );
-
-    this.refreshRealtimeVehicleDetail(
-
-        vehicle
-
-    );
-
-    this.refreshRealtimeHomeLocation(
-
-        vehicle
-
-    );
-
-    this.refreshRealtimeGeofence(
-
-        vehicle
-
-    );
-
-    this.refreshRealtimeStopDetection(
-
-        vehicle
-
-    );
-
-    this.refreshRealtimeAddress(
-
-        vehicle
-
-    );
-
-    this.refreshRealtimeMap(
-
-        vehicle
-
-    );
-
-};
-/*
-|--------------------------------------------------------------------------
-| Heartbeat
-|--------------------------------------------------------------------------
-*/
-
-GPSTracker.startRealtimeHeartbeat = function () {
-
-    this.stopRealtimeHeartbeat();
-
-    this.realtime.heartbeat = setInterval(() => {
+        const vehicle = payload;
 
         if (
 
-            !this.isRealtimeConnected()
+            !vehicle ||
+
+            !vehicle.device_id
 
         ) {
 
@@ -1094,207 +417,953 @@ GPSTracker.startRealtimeHeartbeat = function () {
 
         }
 
-        this.realtime.lastHeartbeat = new Date();
+        this.setRealtimeVehicle(
 
-        this.realtimeLog(
-
-            'Heartbeat',
-
-            this.realtime.lastHeartbeat.toLocaleTimeString()
+            vehicle
 
         );
 
-    },
+        this.processRealtimeVehicle(
 
-    this.realtimeConfig.heartbeatInterval);
+            vehicle
 
-};
+        );
 
-
-
-GPSTracker.stopRealtimeHeartbeat = function () {
-
-    if (
-
-        !this.realtime.heartbeat
-
-    ) {
-
-        return;
-
-    }
-
-    clearInterval(
-
-        this.realtime.heartbeat
-
-    );
-
-    this.realtime.heartbeat = null;
-
-};
+    };
 
 
 
-/*
-|--------------------------------------------------------------------------
-| Reset Realtime
-|--------------------------------------------------------------------------
-*/
+    /*
+    |--------------------------------------------------------------------------
+    | Process Vehicle
+    |--------------------------------------------------------------------------
+    */
+    GPSTracker.processRealtimeVehicle = function (vehicle) {
 
-GPSTracker.resetRealtime = function () {
+        const index = this.vehicles.findIndex(item => {
 
-    this.stopRealtimeHeartbeat();
+            return String(
 
-    clearTimeout(
+                item.device_id
 
-        this.realtime.reconnectTimer
+            ) === String(
 
-    );
+                vehicle.device_id
 
-    this.realtime.connected = false;
-
-    this.realtime.connecting = false;
-
-    this.realtime.reconnecting = false;
-
-    this.realtime.subscribed = false;
-
-    this.realtime.initialized = false;
-
-    this.realtime.lastHeartbeat = null;
-
-    this.realtime.lastPayload = null;
-
-    this.realtime.lastVehicle = null;
-
-    this.realtime.lastUpdate = null;
-
-};
-
-
-
-/*
-|--------------------------------------------------------------------------
-| Destroy Realtime
-|--------------------------------------------------------------------------
-*/
-
-GPSTracker.destroyRealtime = function () {
-
-    const echo = this.getRealtimeEcho();
-
-    if (echo) {
-
-        Object.keys(this.realtime.channels).forEach(channel => {
-
-            echo.leave(channel);
+            );
 
         });
 
-    }
-
-    this.realtime.channels = {};
-
-    this.resetRealtime();
-
-};
-
-
-
-/*
-|--------------------------------------------------------------------------
-| Window Events
-|--------------------------------------------------------------------------
-*/
-
-GPSTracker.bindRealtimeWindowEvents = function () {
-
-    window.addEventListener(
-
-        'online',
-
-        () => {
-
-            this.realtimeLog(
-
-                'Internet connected.'
-
-            );
-
-            this.connectRealtime();
-
-        }
-
-    );
-
-
-
-    window.addEventListener(
-
-        'offline',
-
-        () => {
+        if (index === -1) {
 
             this.realtimeWarn(
 
-                'Internet disconnected.'
+                'Vehicle tidak ditemukan.',
+
+                vehicle.device_id
+
+            );
+
+            return;
+
+        }
+
+        this.syncRealtimeVehicle(
+
+            index,
+
+            vehicle
+
+        );
+
+    };
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Sync Vehicle
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.syncRealtimeVehicle = function (index, vehicle) {
+
+        const current = this.vehicles[index];
+
+        this.vehicles[index] = {
+
+            ...current,
+
+            ...vehicle,
+
+        };
+
+        this.refreshRealtimeModules(
+
+            this.vehicles[index]
+
+        );
+
+    };
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Refresh Modules
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.refreshRealtimeModules = function (vehicle) {
+
+        this.refreshRealtimeMarker(
+
+            vehicle
+
+        );
+
+        this.refreshRealtimePopup(
+
+            vehicle
+
+        );
+
+        this.refreshRealtimeSidebar(
+
+            vehicle
+
+        );
+
+        this.refreshRealtimeSearch(
+
+            vehicle
+
+        );
+
+        this.refreshRealtimeNotification(
+
+            vehicle
+
+        );
+
+        this.refreshRealtimeVehicleDetail(
+
+            vehicle
+
+        );
+
+        this.refreshRealtimeHomeLocation(
+
+            vehicle
+
+        );
+
+        this.refreshRealtimeGeofence(
+
+            vehicle
+
+        );
+
+        this.refreshRealtimeStopDetection(
+
+            vehicle
+
+        );
+
+        this.refreshRealtimeAddress(
+
+            vehicle
+
+        );
+
+        this.refreshRealtimeMap(
+
+            vehicle
+
+        );
+
+    };
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Replace Vehicle
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.replaceVehicle = function (vehicle) {
+
+        const index = this.vehicles.findIndex(item => {
+
+            return Number(item.device_id) === Number(vehicle.device_id);
+
+        });
+
+        if (index === -1) {
+
+            return false;
+
+        }
+
+        this.vehicles[index] = {
+
+            ...this.vehicles[index],
+
+            ...vehicle,
+
+        };
+
+        return true;
+
+    };
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Find Vehicle
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.findRealtimeVehicle = function (deviceId) {
+
+        return this.vehicles.find(vehicle => {
+
+            return String(
+
+                vehicle.device_id
+
+            ) === String(
+
+                deviceId
+
+            );
+
+        });
+
+    };
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Find Vehicle Index
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.findRealtimeVehicleIndex = function (deviceId) {
+
+        return this.vehicles.findIndex(vehicle => {
+
+            return String(
+
+                vehicle.device_id
+
+            ) === String(
+
+                deviceId
+
+            );
+
+        });
+
+    };
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Update Vehicle State
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.updateRealtimeVehicleState = function (vehicle) {
+
+        this.setRealtimeVehicle(
+
+            vehicle
+
+        );
+
+        this.setRealtimePayload(
+
+            vehicle
+
+        );
+
+        this.setRealtimeUpdateTime();
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Refresh Marker
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.refreshRealtimeMarker = function (vehicle) {
+
+        if (
+
+            typeof this.updateMarker !== 'function'
+
+        ) {
+
+            return;
+
+        }
+
+        this.updateMarker(
+
+            vehicle
+
+        );
+
+    };
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Refresh Popup
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.refreshRealtimePopup = function (vehicle) {
+
+        if (
+
+            typeof this.updatePopup !== 'function'
+
+        ) {
+
+            return;
+
+        }
+
+        this.updatePopup(
+
+            vehicle
+
+        );
+
+    };
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Refresh Sidebar
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.refreshRealtimeSidebar = function (vehicle) {
+
+        if (
+
+            typeof this.updateVehicleCard !== 'function'
+
+        ) {
+
+            return;
+
+        }
+
+        this.updateVehicleCard(
+
+            vehicle
+
+        );
+
+    };
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Refresh Search
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.refreshRealtimeSearch = function (vehicle) {
+
+        if (
+
+            typeof this.updateSearchResult !== 'function'
+
+        ) {
+
+            return;
+
+        }
+
+        this.updateSearchResult(
+
+            vehicle
+
+        );
+
+    };
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Refresh Notification
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.refreshRealtimeNotification = function (vehicle) {
+
+        if (
+
+            typeof this.receiveNotification !== 'function'
+
+        ) {
+
+            return;
+
+        }
+
+        if (
+
+            !vehicle.notification
+
+        ) {
+
+            return;
+
+        }
+
+        this.receiveNotification(
+
+            vehicle.notification
+
+        );
+
+    };
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Refresh Vehicle Detail
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.refreshRealtimeVehicleDetail = function (vehicle) {
+
+        if (
+
+            typeof this.updateVehicleDetail !== 'function'
+
+        ) {
+
+            return;
+
+        }
+
+        this.updateVehicleDetail(
+
+            vehicle
+
+        );
+
+    };
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Refresh Home Location
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.refreshRealtimeHomeLocation = function (vehicle) {
+
+        if (
+
+            typeof this.updateHomeLocation !== 'function'
+
+        ) {
+
+            return;
+
+        }
+
+        this.updateHomeLocation(
+
+            vehicle
+
+        );
+
+    };
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Refresh Geofence
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.refreshRealtimeGeofence = function (vehicle) {
+
+        if (
+
+            typeof this.checkGeofence !== 'function'
+
+        ) {
+
+            return;
+
+        }
+
+        this.checkGeofence(
+
+            vehicle
+
+        );
+
+    };
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Refresh Stop Detection
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.refreshRealtimeStopDetection = function (vehicle) {
+
+        if (
+
+            typeof this.detectVehicleStop !== 'function'
+
+        ) {
+
+            return;
+
+        }
+
+        this.detectVehicleStop(
+
+            vehicle
+
+        );
+
+    };
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Refresh Reverse Geocoding
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.refreshRealtimeAddress = function (vehicle) {
+
+        if (
+
+            typeof this.reverseGeocode !== 'function'
+
+        ) {
+
+            return;
+
+        }
+
+        this.reverseGeocode(
+
+            vehicle
+
+        );
+
+    };
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Refresh Map
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.refreshRealtimeMap = function (vehicle) {
+
+        if (
+
+            !this.map
+
+        ) {
+
+            return;
+
+        }
+
+        const latitude = Number(
+
+            vehicle.latitude
+
+        );
+
+        const longitude = Number(
+
+            vehicle.longitude
+
+        );
+
+        if (
+
+            Number.isNaN(latitude) ||
+
+            Number.isNaN(longitude)
+
+        ) {
+
+            return;
+
+        }
+
+        if (
+
+            this.followVehicle === true
+
+        ) {
+
+            this.map.panTo(
+
+                [
+
+                    latitude,
+
+                    longitude,
+
+                ],
+
+                {
+
+                    animate: true,
+
+                }
 
             );
 
         }
 
-    );
+    };
 
 
 
-    window.addEventListener(
+    /*
+    |--------------------------------------------------------------------------
+    | Refresh All Components
+    |--------------------------------------------------------------------------
+    */
 
-        'beforeunload',
+    GPSTracker.refreshRealtimeModules = function (vehicle) {
 
-        () => {
+        this.refreshRealtimeMarker(
 
-            this.destroyRealtime();
+            vehicle
+
+        );
+
+        this.refreshRealtimePopup(
+
+            vehicle
+
+        );
+
+        this.refreshRealtimeSidebar(
+
+            vehicle
+
+        );
+
+        this.refreshRealtimeSearch(
+
+            vehicle
+
+        );
+
+        this.refreshRealtimeNotification(
+
+            vehicle
+
+        );
+
+        this.refreshRealtimeVehicleDetail(
+
+            vehicle
+
+        );
+
+        this.refreshRealtimeHomeLocation(
+
+            vehicle
+
+        );
+
+        this.refreshRealtimeGeofence(
+
+            vehicle
+
+        );
+
+        this.refreshRealtimeStopDetection(
+
+            vehicle
+
+        );
+
+        this.refreshRealtimeAddress(
+
+            vehicle
+
+        );
+
+        this.refreshRealtimeMap(
+
+            vehicle
+
+        );
+
+    };
+    /*
+    |--------------------------------------------------------------------------
+    | Heartbeat
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.startRealtimeHeartbeat = function () {
+
+        this.stopRealtimeHeartbeat();
+
+        this.realtime.heartbeat = setInterval(() => {
+
+            if (
+
+                !this.isRealtimeConnected()
+
+            ) {
+
+                return;
+
+            }
+
+            this.realtime.lastHeartbeat = new Date();
+
+            this.realtimeLog(
+
+                'Heartbeat',
+
+                this.realtime.lastHeartbeat.toLocaleTimeString()
+
+            );
+
+        },
+
+        this.realtimeConfig.heartbeatInterval);
+
+    };
+
+
+
+    GPSTracker.stopRealtimeHeartbeat = function () {
+
+        if (
+
+            !this.realtime.heartbeat
+
+        ) {
+
+            return;
 
         }
 
-    );
+        clearInterval(
 
-};
+            this.realtime.heartbeat
+
+        );
+
+        this.realtime.heartbeat = null;
+
+    };
 
 
 
-/*
-|--------------------------------------------------------------------------
-| Initialize
-|--------------------------------------------------------------------------
-*/
+    /*
+    |--------------------------------------------------------------------------
+    | Reset Realtime
+    |--------------------------------------------------------------------------
+    */
 
-GPSTracker.initializeRealtime = function () {
+    GPSTracker.resetRealtime = function () {
 
-    if (
+        this.stopRealtimeHeartbeat();
 
-        this.isRealtimeInitialized()
+        clearTimeout(
 
-    ) {
+            this.realtime.reconnectTimer
 
-        return;
+        );
 
-    }
+        this.realtime.connected = false;
 
-    this.realtimeLog(
+        this.realtime.connecting = false;
 
-        'Initialize realtime...'
+        this.realtime.reconnecting = false;
 
-    );
+        this.realtime.subscribed = false;
 
-    this.connectRealtime();
+        this.realtime.initialized = false;
 
-    this.bindRealtimeWindowEvents();
+        this.realtime.lastHeartbeat = null;
 
-    this.startRealtimeHeartbeat();
+        this.realtime.lastPayload = null;
 
-};
+        this.realtime.lastVehicle = null;
+
+        this.realtime.lastUpdate = null;
+
+    };
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Destroy Realtime
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.destroyRealtime = function () {
+
+        const echo = this.getRealtimeEcho();
+
+        if (echo) {
+
+            Object.keys(this.realtime.channels).forEach(channel => {
+
+                echo.leave(channel);
+
+            });
+
+        }
+
+        this.realtime.channels = {};
+
+        this.resetRealtime();
+
+    };
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Window Events
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.bindRealtimeWindowEvents = function () {
+
+        if (
+
+            this.realtime.windowEventsBound
+
+        ) {
+
+            return;
+
+        }
+
+        this.realtime.windowEventsBound = true;
+
+        window.addEventListener(
+
+            'online',
+
+            () => {
+
+                this.realtimeLog(
+
+                    'Internet connected.'
+
+                );
+
+                this.connectRealtime();
+
+            }
+
+        );
+
+        window.addEventListener(
+
+            'offline',
+
+            () => {
+
+                this.realtimeWarn(
+
+                    'Internet disconnected.'
+
+                );
+
+            }
+
+        );
+
+        window.addEventListener(
+
+            'beforeunload',
+
+            () => {
+
+                this.destroyRealtime();
+
+            }
+
+        );
+
+    };
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Initialize
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.initializeRealtime = function () {
+
+        if (
+
+            this.isRealtimeInitialized()
+
+        ) {
+
+            return;
+
+        }
+
+        this.realtimeLog(
+
+            'Initialize realtime...'
+
+        );
+
+        this.connectRealtime();
+
+        this.bindRealtimeWindowEvents();
+
+        this.startRealtimeHeartbeat();
+
+    };
 
 
 

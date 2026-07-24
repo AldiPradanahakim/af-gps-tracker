@@ -411,36 +411,6 @@
 
                         </label>
 
-                        <label
-                            class="flex cursor-pointer items-start gap-4 rounded-xl border border-slate-300 bg-white p-4">
-
-                            <input
-                                type="radio"
-                                id="radiusManual"
-                                name="radius_source"
-                                value="manual"
-                                class="mt-1">
-
-                            <div>
-
-                                <div
-                                    class="font-medium text-slate-900">
-
-                                    Pilih Titik di Peta
-
-                                </div>
-
-                                <div
-                                    class="mt-1 text-sm text-slate-500">
-
-                                    Klik langsung pada peta untuk menentukan titik pusat radius.
-
-                                </div>
-
-                            </div>
-
-                        </label>
-
                     </div>
 
                     <div
@@ -585,21 +555,13 @@
 
                             <div>
 
-                                <div
-                                    class="font-medium text-amber-800">
-
+                                <div class="font-medium text-amber-800">
                                     Informasi
-
                                 </div>
 
-                                <div
-                                    class="mt-1 text-sm text-amber-700">
-
-                                    Jika memilih <b>Pilih Titik di Peta</b>,
-                                    modal akan tetap terbuka dan peta masuk ke
-                                    mode pemilihan titik. Setelah titik dipilih,
-                                    koordinat akan otomatis terisi.
-
+                                <div class="mt-1 text-sm text-amber-700">
+                                    Radius akan menggunakan koordinat <b>Home Location</b> atau
+                                    <b>Lokasi GPS Terakhir</b> sesuai pilihan Anda.
                                 </div>
 
                             </div>
@@ -832,6 +794,43 @@
                             <li>Double click untuk menyelesaikan polygon.</li>
 
                         </ol>
+
+                    </div>
+
+                    <div class="flex justify-center">
+
+                        <button
+                            id="startCustomDrawing"
+                            type="button"
+                            class="rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-700">
+
+                            Mulai Menggambar
+
+                        </button>
+
+                    </div>
+
+                    <div
+                        id="customDrawingAction"
+                        class="hidden flex justify-center gap-3">
+
+                        <button
+                            id="redrawCustomPolygon"
+                            type="button"
+                            class="rounded-xl border border-slate-300 px-5 py-3 hover:bg-slate-100">
+
+                            Gambar Ulang
+
+                        </button>
+
+                        <button
+                            id="cancelCustomPolygon"
+                            type="button"
+                            class="rounded-xl bg-red-600 px-5 py-3 font-semibold text-white hover:bg-red-700">
+
+                            Batalkan
+
+                        </button>
 
                     </div>
 
@@ -1079,6 +1078,24 @@
 
         );
 
+        const customDrawingAction = document.getElementById(
+            'customDrawingAction'
+        );
+
+        const redrawCustomPolygon = document.getElementById(
+            'redrawCustomPolygon'
+        );
+
+        const cancelCustomPolygon = document.getElementById(
+            'cancelCustomPolygon'
+        );
+
+        const startCustomDrawing = document.getElementById(
+
+            'startCustomDrawing'
+
+        );
+
         const radiusContainer = document.getElementById(
 
             'radiusContainer'
@@ -1106,12 +1123,6 @@
         const radiusCurrent = document.getElementById(
 
             'radiusCurrent'
-
-        );
-
-        const radiusManual = document.getElementById(
-
-            'radiusManual'
 
         );
 
@@ -1291,6 +1302,22 @@
 
         }
 
+        function hideModal() {
+
+            modal.classList.remove(
+
+                'flex'
+
+            );
+
+            modal.classList.add(
+
+                'hidden'
+
+            );
+
+        }
+
         openButton?.addEventListener(
 
             'click',
@@ -1363,20 +1390,36 @@
 
                 );
 
-                customPolygonStatus.innerHTML = `
+                console.log(event.detail.geojson);
 
-                    <div class="font-semibold text-emerald-700">
+                customDrawingAction.classList.add(
+                    'hidden'
+                );
 
-                        Polygon berhasil dibuat.
+                openModal();
 
-                    </div>
+                customDrawingAction.classList.remove(
+                    'hidden'
+                );
 
-                    <div class="mt-2 text-sm text-slate-600">
+                GPSTracker.previewCustom?.(
+                    event.detail.geojson
+                );
 
-                        Area geofence siap disimpan.
+                customPolygonStatus.innerHTML =
 
-                    </div>
+                `
+                <div class="font-semibold text-emerald-700">
 
+                    ✓ Polygon berhasil dibuat
+
+                </div>
+
+                <div class="mt-2 text-sm text-slate-600">
+
+                    Area siap disimpan atau digambar ulang.
+
+                </div>
                 `;
 
             }
@@ -1414,6 +1457,9 @@
             radiusCoordinate.innerHTML =
 
                 'Belum ada titik dipilih.';
+
+            customPolygonStatus.textContent =
+                'Belum ada polygon dibuat.';
 
             administrativeSearch.value = '';
 
@@ -1464,6 +1510,10 @@
                 GPSTracker.cancelCustomDrawing?.();
 
             }
+
+            customDrawingAction.classList.add(
+                'hidden'
+            );
 
         }
 
@@ -1542,6 +1592,12 @@
 
                 GPSTracker.removePreviewLayer?.();
 
+                geojsonInput.value = '';
+
+                displayNameInput.value = '';
+
+                administrativeTypeInput.value = '';
+
             }
 
             /*
@@ -1553,24 +1609,17 @@
             if (radiusType.checked) {
 
                 radiusContainer.classList.remove(
-
                     'hidden'
-
                 );
 
                 radiusCard.classList.add(
-
                     'border-blue-600',
                     'bg-blue-50'
-
                 );
-
-                GPSTracker.startRadiusDrawing?.();
 
                 updateRadiusSource();
 
                 return;
-
             }
 
             /*
@@ -1608,26 +1657,19 @@
 
             if (customType.checked) {
 
-                customContainer.classList.remove(
+                    customContainer.classList.remove(
+                        'hidden'
+                    );
 
-                    'hidden'
+                    customCard.classList.add(
+                        'border-blue-600',
+                        'bg-blue-50'
+                    );
 
-                );
+                    customPolygonStatus.textContent =
+                        'Klik tombol "Mulai Menggambar".';
 
-                customCard.classList.add(
-
-                    'border-blue-600',
-                    'bg-blue-50'
-
-                );
-
-                customPolygonStatus.textContent =
-
-                    'Klik pada peta untuk mulai menggambar polygon.';
-
-                GPSTracker.startCustomDrawing?.();
-
-            }
+                }
 
         }
 
@@ -1655,6 +1697,62 @@
 
         );
 
+        startCustomDrawing?.addEventListener(
+
+            'click',
+
+            () => {
+
+                GPSTracker.startCustomDrawing?.();
+
+                hideModal();
+
+                window.Toast?.info(
+                    'Klik pada peta untuk membuat titik. Double click untuk selesai.'
+                );
+
+            }
+
+        );
+
+        redrawCustomPolygon?.addEventListener(
+
+            'click',
+
+            () => {
+
+                GPSTracker.cancelCustomDrawing?.();
+
+                geojsonInput.value = '';
+
+                hideModal();
+
+                GPSTracker.startCustomDrawing?.();
+
+            }
+
+        );
+
+        cancelCustomPolygon?.addEventListener(
+
+            'click',
+
+            () => {
+
+                GPSTracker.cancelCustomDrawing?.();
+
+                geojsonInput.value = '';
+
+                customDrawingAction.classList.add(
+                    'hidden'
+                );
+
+                customPolygonStatus.textContent =
+                    'Belum ada polygon dibuat.';
+
+            }
+
+        );
                 /*
         |--------------------------------------------------------------------------
         | Device Changed
@@ -1667,6 +1765,8 @@
 
             () => {
 
+                console.log('DEVICE CHANGED');
+
                 latitudeInput.value = '';
 
                 longitudeInput.value = '';
@@ -1676,14 +1776,11 @@
                 longitudePreview.value = '';
 
                 radiusCoordinate.innerHTML =
-
                     'Belum ada titik dipilih.';
 
-                if (
+                if (radiusType.checked) {
 
-                    radiusType.checked
-
-                ) {
+                    console.log('CALL updateRadiusSource FROM CHANGE');
 
                     updateRadiusSource();
 
@@ -1715,21 +1812,16 @@
 
         );
 
-        radiusManual.addEventListener(
-
-            'change',
-
-            updateRadiusSource
-
-        );
-
         function updateRadiusSource() {
 
-                const option =
+                console.log('updateRadiusSource');
 
+                const option =
                     deviceSelect.options[
                         deviceSelect.selectedIndex
                     ];
+
+                console.log(option);
 
                 if (
 
@@ -1785,24 +1877,9 @@
 
                 else {
 
-                    latitudeInput.value = '';
-
-                    longitudeInput.value = '';
-
-                    latitudePreview.value = '';
-
-                    longitudePreview.value = '';
-
-                    radiusCoordinate.innerHTML =
-
-                        'Silakan klik peta untuk menentukan titik radius.';
-
-                    GPSTracker.startRadiusDrawing?.();
-
                     return;
 
                 }
-
                 if (
 
                     lat === '' ||
@@ -1834,6 +1911,14 @@
                     lng
 
                 );
+
+                GPSTracker.removePreviewLayer?.();
+
+                console.log('before preview', {
+                    lat,
+                    lng,
+                    fn: GPSTracker.previewRadiusDrawing
+                });
 
                 GPSTracker.previewRadiusDrawing?.(
 
@@ -2007,51 +2092,31 @@
 
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | GPSTracker Radius Finished
-        |--------------------------------------------------------------------------
-        */
-
         document.addEventListener(
 
-            'gpstracker:radius-finished',
+            'gpstracker:drawing-started',
 
-            event => {
+            () => {
 
-                const {
+                customPolygonStatus.innerHTML =
 
-                    latitude,
+                `
 
-                    longitude,
+                <div class="font-semibold text-blue-700">
 
-                    radius
+                    Sedang menggambar polygon...
 
-                } = event.detail;
+                </div>
 
-                radiusManual.checked = true;
+                <div class="mt-2 text-sm text-slate-600">
 
-                setRadiusCoordinate(
+                    Klik pada peta untuk membuat titik.<br>
 
-                    latitude,
+                    Double click untuk menyelesaikan polygon.
 
-                    longitude
+                </div>
 
-                );
-
-                radiusValue.value =
-
-                    radius;
-
-                GPSTracker.previewRadiusDrawing?.(
-
-                    latitude,
-
-                    longitude,
-
-                    getRadiusMeter()
-
-                );
+                `;
 
             }
 
@@ -2173,7 +2238,18 @@
                         throw new Error('Failed loading districts.');
                     }
 
-                    const districts = await districtResponse.json();
+                    const response = await districtResponse.json();
+
+                        if (!response.success) {
+
+                            throw new Error(
+                                response.message ??
+                                'Failed loading districts.'
+                            );
+
+                        }
+
+                    const districts = response.data ?? [];
 
                     const lowerKeyword = keyword.toLowerCase();
 
@@ -2340,78 +2416,94 @@
         */
 
         async function selectAdministrative(item)
-        {
-            try {
-
-                administrativeLoading.classList.remove('hidden');
-
-                const geojson = await loadAdministrativePolygon(
-                    item.level,
-                    item.code
-                );
-
-                administrativeSearch.value = item.name;
-
-                displayNameInput.value = item.name;
-
-                administrativeTypeInput.value = item.level;
-
-                geojsonInput.value = JSON.stringify(geojson);
-
-                selectedAdministrative.classList.remove('hidden');
-
-                selectedAdministrativeName.textContent = item.name;
-
-                selectedAdministrativeType.textContent = item.type;
-
-                administrativeResult.classList.add('hidden');
-
-            }
-            catch (error) {
-
-                console.error(error);
-
-                administrativeError.classList.remove('hidden');
-
-            }
-            finally {
-
-                administrativeLoading.classList.add('hidden');
-
-            }
-        }
-
-        async function loadAdministrativePolygon(level, code)
             {
-                const response = await fetch(
+                try {
 
-                    `/api/administrative/geojson/${level}/${code}`,
+                    administrativeLoading.classList.remove('hidden');
 
-                    {
+                    const geometry = await loadAdministrativePolygon(
+                        item.level,
+                        item.code
+                    );
 
-                        headers: {
+                    administrativeSearch.value = item.name;
 
-                            Accept: 'application/json',
+                    displayNameInput.value = item.name;
 
-                            'X-Requested-With':
-                                'XMLHttpRequest'
+                    administrativeTypeInput.value = item.level;
 
-                        }
+                    geojsonInput.value = JSON.stringify(geometry);
 
-                    }
+                    selectedAdministrative.classList.remove('hidden');
 
-                );
+                    selectedAdministrativeName.textContent = item.name;
 
-                if (!response.ok) {
+                    selectedAdministrativeType.textContent = item.type;
 
-                    throw new Error(
-                        'Failed loading administrative polygon.'
+                    administrativeResult.classList.add('hidden');
+
+                    GPSTracker.previewAdministrative?.(
+                        geometry
                     );
 
                 }
+                catch (error) {
 
-                return await response.json();
+                    console.error(error);
+
+                    administrativeError.classList.remove('hidden');
+
+                }
+                finally {
+
+                    administrativeLoading.classList.add('hidden');
+
+                }
             }
+
+        async function loadAdministrativePolygon(level, code)
+        {
+            const response = await fetch(
+
+                `/api/administrative/geojson/${level}/${code}`,
+
+                {
+
+                    headers: {
+
+                        Accept: 'application/json',
+
+                        'X-Requested-With':
+                            'XMLHttpRequest'
+
+                    }
+
+                }
+
+            );
+
+            if (!response.ok) {
+
+                throw new Error(
+                    'Failed loading administrative polygon.'
+                );
+
+            }
+
+            const result = await response.json();
+
+            if (!result.success) {
+
+                throw new Error(
+                    result.message ??
+                    'Failed loading administrative polygon.'
+                );
+
+            }
+
+            return result.data;
+
+        }
 
         /*
         |--------------------------------------------------------------------------
@@ -2464,6 +2556,8 @@
                     'hidden'
 
                 );
+
+                GPSTracker.removePreviewLayer?.();
 
                 GPSTracker.cancelAdministrativeDrawing?.();
 
@@ -2903,51 +2997,23 @@
                     |--------------------------------------------------------------------------
                     */
 
-                    if (
+                    if (window.GPSTracker) {
 
-                        window.GPSTracker
+                        const deviceId = String(deviceSelect.value);
 
-                    ) {
+                        GPSTracker.focusVehicle(deviceId);
 
-                        await GPSTracker.loadGeofences?.();
+                        await GPSTracker.refreshGeofences();
 
-                        await GPSTracker.refreshSidebarGeofence?.();
-
-                        await GPSTracker.refreshVehicleGeofence?.();
-
-                        await GPSTracker.refreshNotificationBadge?.();
+                        closeModal();
 
                     }
 
-                    closeModal();
-
-                    if (
-
-                        window.Toast
-
-                    ) {
-
-                        Toast.success(
-
-                            result.message ??
-
-                            'Geofence berhasil ditambahkan.'
-
-                        );
-
-                    }
-
-                    else {
-
-                        alert(
-
-                            result.message ??
-
-                            'Geofence berhasil ditambahkan.'
-
-                        );
-
-                    }
+                    GPSTracker.showToast(
+                        'success',
+                        'Berhasil',
+                        result.message ?? 'Geofence berhasil ditambahkan.'
+                    );
 
                 }
 
@@ -2957,37 +3023,18 @@
 
                 ) {
 
-                    console.error(
+                        console.error(
 
-                        error
-
-                    );
-
-                    if (
-
-                        window.Toast
-
-                    ) {
-
-                        Toast.error(
-
-                            error.message
+                            error
 
                         );
 
-                    }
-
-                    else {
-
-                        alert(
-
+                        GPSTracker.showToast(
+                            'error',
+                            'Gagal',
                             error.message
-
                         );
-
                     }
-
-                }
 
                 finally {
 
@@ -3005,17 +3052,19 @@
         |--------------------------------------------------------------------------
         */
 
-        toggleType();
+        console.log('INIT');
 
-        if (
+                toggleType();
 
-            deviceSelect.value
+                console.log('device value', deviceSelect.value);
 
-        ) {
+                if (deviceSelect.value) {
 
-            updateRadiusSource();
+                    console.log('CALL updateRadiusSource');
 
-        }
+                    updateRadiusSource();
+
+                }
 
             }
 

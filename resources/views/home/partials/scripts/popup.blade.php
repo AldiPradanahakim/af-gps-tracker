@@ -453,6 +453,18 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         );
 
+        const marker = this.getMarker?.(vehicle.device_id);
+
+        if (marker?.getPopup()) {
+
+            marker.getPopup().setContent(
+
+                this.createPopupContent(vehicle)
+
+            );
+
+        }
+
         if (
 
             this.hasCurrentVehicle() &&
@@ -487,7 +499,11 @@ document.addEventListener('gpstracker:map-ready', () => {
     |--------------------------------------------------------------------------
     */
 
-    GPSTracker.destroyPopup = function (deviceId) {
+    GPSTracker.destroyPopup = function (
+
+        deviceId
+
+    ) {
 
         const popup = this.getVehiclePopup(
 
@@ -508,6 +524,44 @@ document.addEventListener('gpstracker:map-ready', () => {
             deviceId
 
         );
+
+        if (
+
+            this.getCurrentVehicle() &&
+
+            String(
+
+                this.getCurrentVehicle().device_id
+
+            ) === String(deviceId)
+
+        ) {
+
+            this.setCurrentPopup(
+
+                null
+
+            );
+
+            this.setCurrentMarker(
+
+                null
+
+            );
+
+            this.setCurrentVehicle(
+
+                null
+
+            );
+
+            this.setPopupOpened(
+
+                false
+
+            );
+
+        }
 
     };
 
@@ -757,6 +811,18 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         );
 
+        const popup = marker.getPopup();
+
+        if (popup) {
+
+            popup.setContent(
+
+                this.createPopupContent(vehicle)
+
+            );
+
+        }
+
         this.setCurrentMarker(
 
             marker
@@ -770,9 +836,7 @@ document.addEventListener('gpstracker:map-ready', () => {
         );
 
         this.setCurrentPopup(
-
-            marker.getPopup()
-
+            popup
         );
 
         this.setPopupOpened(
@@ -799,43 +863,23 @@ document.addEventListener('gpstracker:map-ready', () => {
 
     GPSTracker.closePopup = function () {
 
-        if (
+        const marker = this.getCurrentMarker();
 
-            !this.hasCurrentMarker()
-
-        ) {
+        if (!marker) {
 
             return;
 
         }
 
-        this.getCurrentMarker()
+        marker.closePopup();
 
-            .closePopup();
+        this.setPopupOpened(false);
 
-        this.setPopupOpened(
+        this.setCurrentPopup(null);
 
-            false
+        this.setCurrentMarker(null);
 
-        );
-
-        this.setCurrentPopup(
-
-            null
-
-        );
-
-        this.setCurrentMarker(
-
-            null
-
-        );
-
-        this.setCurrentVehicle(
-
-            null
-
-        );
+        this.setCurrentVehicle(null);
 
     };
 

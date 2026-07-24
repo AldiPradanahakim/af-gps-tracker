@@ -155,30 +155,6 @@ class GeofenceService
                 $longitude = (float) $location['lng'];
 
                 break;
-
-            case 'manual':
-
-                if (
-                    !isset($data['latitude']) ||
-                    !isset($data['longitude'])
-                ) {
-
-                    throw ValidationException::withMessages([
-                        'latitude' => 'Latitude wajib diisi.',
-                        'longitude' => 'Longitude wajib diisi.',
-                    ]);
-                }
-
-                $latitude = (float) $data['latitude'];
-                $longitude = (float) $data['longitude'];
-
-                break;
-
-            default:
-
-                throw ValidationException::withMessages([
-                    'radius_source' => 'Sumber radius tidak valid.',
-                ]);
         }
 
         return [
@@ -232,6 +208,15 @@ class GeofenceService
         }
 
         if (
+            isset($geojson['type']) &&
+            $geojson['type'] === 'FeatureCollection'
+        ) {
+
+            $geojson = $geojson['features'][0]['geometry'] ?? null;
+        }
+
+        if (
+            !is_array($geojson) ||
             !isset($geojson['type']) ||
             !in_array(
                 $geojson['type'],
@@ -283,16 +268,50 @@ class GeofenceService
             ]);
         }
 
+        /*
+|--------------------------------------------------------------------------
+| Feature -> Polygon
+|--------------------------------------------------------------------------
+*/
+
         if (
+            isset($geojson['type']) &&
+            $geojson['type'] === 'Feature'
+        ) {
+
+            $geojson = $geojson['geometry'] ?? [];
+        }
+
+        /*
+|--------------------------------------------------------------------------
+| Validation
+|--------------------------------------------------------------------------
+*/
+
+        if (
+
             !isset($geojson['type']) ||
+
             !in_array(
+
                 $geojson['type'],
-                ['Polygon', 'MultiPolygon']
+
+                [
+
+                    'Polygon',
+
+                    'MultiPolygon'
+
+                ]
+
             )
+
         ) {
 
             throw ValidationException::withMessages([
+
                 'geojson' => 'Polygon tidak valid.',
+
             ]);
         }
 
@@ -419,6 +438,12 @@ class GeofenceService
 
         return $this->repository->getByDevice(
             $device->id
+        );
+    }
+    public function all()
+    {
+        return $this->repository->getByUser(
+            Auth::id()
         );
     }
 }

@@ -190,38 +190,72 @@ document.addEventListener(
 
         ) {
 
-            if (
+            const geometry = geofence?.config?.geometry;
 
-                !geofence?.config?.geojson
-
-            ) {
+            if (!geometry) {
 
                 return;
 
             }
 
+            let geojson = geometry;
+
+            // Support geometry Polygon/MultiPolygon
             if (
-                !geofence.config.geojson.features ||
-                geofence.config.geojson.features.length === 0
+
+                geometry.type === 'Polygon' ||
+
+                geometry.type === 'MultiPolygon'
+
             ) {
+
+                geojson = {
+
+                    type: 'Feature',
+
+                    geometry: geometry,
+
+                    properties: {}
+
+                };
+
+            }
+
+            // Support Feature
+            else if (
+
+                geometry.type === 'Feature'
+
+            ) {
+
+                geojson = geometry;
+
+            }
+
+            // Support FeatureCollection
+            else if (
+
+                geometry.type === 'FeatureCollection'
+
+            ) {
+
+                geojson = geometry;
+
+            }
+
+            else {
+
                 return;
+
             }
 
             const polygon = L.geoJSON(
 
-                geofence.config.geojson,
+                geojson,
 
                 {
 
-                    style: () => {
-
-                        return this.getGeofenceStyle(
-
-                            type
-
-                        );
-
-                    },
+                    style: () => this.getGeofenceStyle(type),
 
                 }
 
@@ -234,10 +268,15 @@ document.addEventListener(
             );
 
             polygon.on(
+
                 'click',
+
                 () => {
+
                     this.setSelectedGeofence(geofence);
+
                 }
+
             );
 
             this.setGeofenceLayer(
@@ -252,11 +291,7 @@ document.addEventListener(
 
             polygon.addTo(
 
-                this.getGeofenceLayerGroup(
-
-                    type
-
-                )
+                this.getGeofenceLayerGroup(type)
 
             );
 
@@ -389,6 +424,28 @@ document.addEventListener(
         GPSTracker.getGeofenceConfig = function () {
 
             return this.geofenceConfig;
+
+        };
+
+        GPSTracker.getGeofences = function () {
+
+            return Array.isArray(this.geofences)
+                ? this.geofences
+                : [];
+
+        };
+
+        GPSTracker.refreshGeofences = async function () {
+
+            await this.loadGeofences();
+
+            this.renderGeofences();
+
+            requestAnimationFrame(() => {
+
+                this.refreshGeofenceCheckbox();
+
+            });
 
         };
 
@@ -1137,6 +1194,8 @@ document.addEventListener(
 
                 );
 
+                layer.off();
+
             }
 
             this.getGeofenceLayers(type).delete(
@@ -1171,6 +1230,7 @@ document.addEventListener(
                     group.hasLayer(layer)
                 ) {
                     group.removeLayer(layer);
+                    layer.off();
                 }
 
             });
@@ -1198,6 +1258,7 @@ document.addEventListener(
                 id
 
             );
+            this.removePreviewLayer();
 
         };
 
@@ -1214,6 +1275,7 @@ document.addEventListener(
                 id
 
             );
+            this.removePreviewLayer();
 
         };
 
@@ -1230,6 +1292,7 @@ document.addEventListener(
                 id
 
             );
+            this.removePreviewLayer();
 
         };
 
@@ -1271,6 +1334,8 @@ document.addEventListener(
 
             this.clearCustomLayers();
 
+            this.removePreviewLayer();
+
         };
 
         /*
@@ -1279,7 +1344,7 @@ document.addEventListener(
         |--------------------------------------------------------------------------
         */
 
-        GGPSTracker.removePreviewLayer = function () {
+        GPSTracker.removePreviewLayer = function () {
 
             const preview = this.getPreviewLayer();
 
@@ -1312,23 +1377,10 @@ document.addEventListener(
 
         ) {
 
-            return this.geofences.find(
-
-                geofence => {
-
-                    return String(
-
-                        geofence.id
-
-                    ) === String(
-
-                        id
-
-                    );
-
-                }
-
-            ) ?? null;
+            return (this.getGeofences() ?? []).find(
+                        geofence =>
+                            String(geofence.id) === String(id)
+                    ) ?? null;
 
         };
         /*
@@ -1343,9 +1395,19 @@ document.addEventListener(
 
         ) {
 
+            if (!geofence?.config?.center) {
+
+                return;
+
+            }
+
+            const center = geofence.config.center;
+
             if (
 
-                !geofence?.config?.center
+                isNaN(Number(center.lat)) ||
+
+                isNaN(Number(center.lng))
 
             ) {
 
@@ -1354,50 +1416,55 @@ document.addEventListener(
             }
 
             if (
-                isNaN(Number(geofence.config.center.latitude)) ||
-                isNaN(Number(geofence.config.center.longitude))
+
+                geofence.config.radius == null ||
+
+                Number(geofence.config.radius) <= 0
+
             ) {
+
                 return;
+
             }
 
             const circle = L.circle(
 
                 [
 
-                    Number(
+                    Number(center.lat),
 
-                        geofence.config.center.latitude
-
-                    ),
-
-                    Number(
-
-                        geofence.config.center.longitude
-
-                    ),
+                    Number(center.lng),
 
                 ],
 
                 {
 
-                    radius: Number(
+                    radius: Number(geofence.config.radius),
 
-                        geofence.config.radius ?? 0
-
-                    ),
-
-                    ...this.getGeofenceConfig()
-
-                        .radiusStyle,
+                    ...this.getGeofenceConfig().radiusStyle,
 
                 }
 
             );
 
-            circle.bindPopup(`
-                <strong>${geofence.name}</strong><br>
-                Radius : ${Number(geofence.config.radius).toLocaleString()} m
-            `);
+            circle.on(
+
+                'click',
+
+                () => {
+
+                    this.setSelectedGeofence(geofence);
+
+                }
+
+            );
+
+            circle.bindPopup(
+
+                `<strong>${geofence.name}</strong><br>
+                Radius : ${Number(geofence.config.radius).toLocaleString()} m`
+
+            );
 
             this.setRadiusLayer(
 
@@ -1408,7 +1475,9 @@ document.addEventListener(
             );
 
             circle.addTo(
+
                 this.getGeofenceLayerGroup('radius')
+
             );
 
         };
@@ -1474,6 +1543,16 @@ document.addEventListener(
 
             }
 
+            if (this.hasGeofenceLayer(
+                geofence.type,
+                geofence.id
+            )) {
+                this.removeGeofenceLayer(
+                    geofence.type,
+                    geofence.id
+                );
+            }
+
             const renderer = {
 
                 radius: this.renderRadius,
@@ -1528,15 +1607,134 @@ document.addEventListener(
 
             this.clearGeofenceLayers();
 
-            this.setSelectedGeofence(null);
+            const geofences = this.geofences ?? [];
 
-            const geofences = this.getGeofences() ?? [];
+            geofences.forEach(geofence => {
 
-            geofences.forEach(
-                geofence => {
-                    this.renderGeofence(geofence);
+                this.renderGeofence(geofence);
+
+            });
+
+        };
+
+        GPSTracker.refreshGeofenceCheckbox = function () {
+
+            const all = document.getElementById('toggleAllGeofence');
+            const radius = document.getElementById('toggleRadius');
+            const administrative = document.getElementById('toggleAdministrative');
+            const custom = document.getElementById('toggleCustom');
+
+            if (radius?.checked) {
+                this.showRadius();
+            } else {
+                this.hideRadius();
+            }
+
+            if (administrative?.checked) {
+                this.showAdministrative();
+            } else {
+                this.hideAdministrative();
+            }
+
+            if (custom?.checked) {
+                this.showCustom();
+            } else {
+                this.hideCustom();
+            }
+
+            if (all) {
+                all.checked =
+                    Boolean(radius?.checked) &&
+                    Boolean(administrative?.checked) &&
+                    Boolean(custom?.checked);
+            }
+
+        };
+
+        GPSTracker.loadGeofences = async function () {
+
+            console.log('========================');
+            console.log('LOAD GEOFENCES');
+
+            const deviceId = this.getSelectedVehicle();
+
+            console.log('Selected Vehicle :', deviceId);
+
+            if (
+                deviceId === null ||
+                deviceId === undefined ||
+                deviceId === ''
+            ) {
+
+                console.warn('Device ID kosong');
+
+                this.geofences = [];
+
+                return;
+
+            }
+
+            try {
+
+                const response = await fetch(
+
+                    `/geofence/device/${deviceId}`,
+
+                    {
+
+                        headers: {
+
+                            Accept: 'application/json',
+
+                            'X-Requested-With': 'XMLHttpRequest',
+
+                        }
+
+                    }
+
+                );
+
+                console.log('Response Status :', response.status);
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        `HTTP ${response.status}`
+                    );
+
                 }
-            );
+
+                const result = await response.json();
+
+                console.log('Response :', result);
+
+                if (!result.success) {
+
+                    throw new Error(
+                        result.message ??
+                        'Gagal memuat geofence.'
+                    );
+
+                }
+
+                this.geofences = Array.isArray(result.data)
+                    ? result.data
+                    : [];
+
+                console.log(
+                    'Loaded Geofences :',
+                    this.geofences
+                );
+
+            }
+
+            catch (error) {
+
+                console.error(error);
+
+                this.geofences = [];
+
+            }
 
         };
 
@@ -1582,27 +1780,13 @@ document.addEventListener(
 
         GPSTracker.cancelRadiusDrawing = function () {
 
-            const circle = this.geofence.drawing.radius.circle;
+            this.removePreviewLayer();
 
-            if (
+            const drawing = this.getRadiusDrawing();
 
-                circle &&
-
-                this.map.hasLayer(circle)
-
-            ) {
-
-                this.map.removeLayer(
-
-                    circle
-
-                );
-
-            }
-
-            this.geofence.drawing.radius.center = null;
-
-            this.geofence.drawing.radius.circle = null;
+            drawing.center = null;
+            drawing.circle = null;
+            drawing.value = 100;
 
             this.setDrawingEnabled(false);
 
@@ -1641,75 +1825,74 @@ document.addEventListener(
         */
 
         GPSTracker.previewRadiusDrawing = function (
-
             latitude,
-
             longitude,
-
             radius = null
-
         ) {
 
-            if (radius === null) {
-
-                radius = this.geofence.drawing.radius.value;
-
-            }
-
-            const drawing = this.geofence.drawing.radius;
+            console.log('previewRadiusDrawing', {
+                latitude,
+                longitude,
+                radius
+            });
 
             if (
-
-                drawing.circle &&
-
-                this.map.hasLayer(drawing.circle)
-
+                !this.map ||
+                latitude == null ||
+                longitude == null
             ) {
-
-                this.map.removeLayer(
-
-                    drawing.circle
-
-                );
-
+                return;
             }
 
+            if (radius === null) {
+                radius = this.getRadiusDrawing().value;
+            }
+
+            radius = Number(radius);
+
+            this.removePreviewLayer();
+
+            const drawing = this.getRadiusDrawing();
+
             drawing.center = {
-
-                latitude,
-
-                longitude,
-
+                latitude: Number(latitude),
+                longitude: Number(longitude),
             };
 
-            drawing.circle = L.circle(
+            drawing.value = radius;
 
+            const circle = L.circle(
                 [
-
                     Number(latitude),
-
-                    Number(longitude),
-
+                    Number(longitude)
                 ],
-
                 {
-
-                    radius: Number(radius),
-
-                    ...this.getGeofenceConfig().radiusStyle,
-
+                    radius: radius,
+                    color: '#2563eb',
+                    weight: 2,
+                    fillColor: '#3b82f6',
+                    fillOpacity: 0.25
                 }
-
             );
 
-            drawing.circle.addTo(
+            // Tambahkan ke radius layer, bukan langsung ke map
+            this.radiusLayer.addLayer(circle);
 
-                this.map
+            drawing.circle = circle;
 
+            this.setPreviewLayer(circle);
+
+            console.log(this.getPreviewLayer());
+
+            this.map.flyTo(
+                [
+                    Number(latitude),
+                    Number(longitude)
+                ],
+                Math.min(this.map.getZoom(), 18)
             );
 
         };
-
         /*
         |--------------------------------------------------------------------------
         | Start Custom Drawing
@@ -1735,6 +1918,16 @@ document.addEventListener(
             this.setDrawingPolygon(null);
 
             this.map.doubleClickZoom.disable();
+
+            document.dispatchEvent(
+
+                new CustomEvent(
+
+                    'gpstracker:drawing-started'
+
+                )
+
+            );
 
             this.geofenceLog(
 
@@ -1783,8 +1976,6 @@ document.addEventListener(
         */
 
         GPSTracker.cancelAdministrativeDrawing = function () {
-
-            this.removePreviewLayer();
 
             this.removePreviewLayer();
 
@@ -1870,13 +2061,15 @@ document.addEventListener(
 
                 {
 
-                    radius: 5,
+                    radius: 10,
 
-                    color: '#F59E0B',
+                    color: '#ffffff',
 
-                    weight: 2,
+                    weight: 4,
 
-                    fillOpacity: 1,
+                    fillColor: '#2563eb',
+
+                    fillOpacity: 1
 
                 }
 
@@ -2176,7 +2369,7 @@ document.addEventListener(
                                         detail: {
                                             latitude: event.latlng.lat,
                                             longitude: event.latlng.lng,
-                                            radius
+                                            radius: radius
                                         }
                                     }
                                 )
@@ -2188,63 +2381,38 @@ document.addEventListener(
 
             );
 
+            this.map.on(
+                'dblclick',
+                event => {
+
+                    if (!this.isDrawingEnabled()) {
+                        return;
+                    }
+
+                    L.DomEvent.stop(event);
+
+                    const geojson = this.finishCustomDrawing();
+
+                    if (geojson) {
+
+                        document.dispatchEvent(
+                            new CustomEvent(
+                                'gpstracker:drawing-finished',
+                                {
+                                    detail: {
+                                        geojson
+                                    }
+                                }
+                            )
+                        );
+
+                    }
+
+                }
+            );
+
         };
 
-        this.map.on(
-
-            'dblclick',
-
-            event => {
-
-                if (
-
-                    !this.isDrawingEnabled()
-
-                ) {
-
-                    return;
-
-                }
-
-                L.DomEvent.stop(
-
-                    event
-
-                );
-
-                const geojson = this.finishCustomDrawing();
-
-                if (
-
-                    geojson
-
-                ) {
-
-                    document.dispatchEvent(
-
-                        new CustomEvent(
-
-                            'gpstracker:drawing-finished',
-
-                            {
-
-                                detail: {
-
-                                    geojson,
-
-                                }
-
-                            }
-
-                        )
-
-                    );
-
-                }
-
-            }
-
-        );
 
         /*
         |--------------------------------------------------------------------------
@@ -2356,16 +2524,6 @@ document.addEventListener(
 
                 if (
 
-                    inputLongitude
-
-                ) {
-
-                    inputLongitude.value = event.detail.center.longitude;
-
-                }
-
-                if (
-
                     inputRadius
 
                 ) {
@@ -2386,13 +2544,12 @@ document.addEventListener(
 
         GPSTracker.focusGeofence = function (id) {
 
-            const geofence = (this.getGeofences() ?? []).find(
-                geofence =>
-                    String(geofence.id) === String(id)
-            );
+            const geofence = this.findGeofence(id);
 
             if (!geofence) {
+
                 return;
+
             }
 
             this.setSelectedGeofence(geofence);
@@ -2400,35 +2557,54 @@ document.addEventListener(
             this.removePreviewLayer();
 
             const layer = this.getGeofenceLayer(
+
                 geofence.type,
+
                 id
+
             );
 
             if (!layer) {
+
                 return;
+
             }
 
-            if (
-                typeof layer.getBounds === 'function'
-            ) {
+            if (typeof layer.getBounds === 'function') {
 
                 const bounds = layer.getBounds();
 
-                if (bounds && bounds.isValid()) {
+                if (bounds.isValid()) {
+
                     this.fitBounds(bounds);
+
+                    if (typeof layer.openPopup === 'function') {
+
+                        layer.openPopup();
+
+                    }
+
                 }
 
                 return;
+
             }
 
-            if (
-                typeof layer.getLatLng === 'function'
-            ) {
+            if (typeof layer.getLatLng === 'function') {
 
                 this.map.flyTo(
+
                     layer.getLatLng(),
+
                     16
+
                 );
+
+                if (typeof layer.openPopup === 'function') {
+
+                    layer.openPopup();
+
+                }
 
             }
 
@@ -2506,6 +2682,13 @@ document.addEventListener(
             longitude,
             radius
         ) {
+
+            if (
+                latitude == null ||
+                longitude == null
+            ) {
+                return;
+            }
 
             this.previewRadiusDrawing(
                 Number(latitude),
@@ -2742,16 +2925,23 @@ document.addEventListener(
         */
 
         GPSTracker.previewAdministrative = function (
-            geojson
+
+            geometry
+
         ) {
 
-            if (!geojson) {
+            if (!geometry) {
+
                 return;
+
             }
 
             this.previewGeoJson(
-                geojson,
+
+                geometry,
+
                 'administrative'
+
             );
 
         };
@@ -2768,13 +2958,19 @@ document.addEventListener(
 
         ) {
 
+            if (!feature?.geometry) {
+
+                return;
+
+            }
+
             this.geofence.drawing.administrative.feature = feature;
 
-            this.geofence.drawing.administrative.geojson = feature.geojson;
+            this.geofence.drawing.administrative.geometry = feature.geometry;
 
             this.previewAdministrative(
 
-                feature.geojson
+                feature.geometry
 
             );
 
@@ -2788,16 +2984,23 @@ document.addEventListener(
         */
 
         GPSTracker.previewCustom = function (
-            geojson
+
+            geometry
+
         ) {
 
-            if (!geojson) {
+            if (!geometry) {
+
                 return;
+
             }
 
             this.previewGeoJson(
-                geojson,
+
+                geometry,
+
                 'custom'
+
             );
 
         };
@@ -2839,13 +3042,13 @@ document.addEventListener(
 
                 Number(
 
-                    geofence.config.center.latitude
+                    geofence.config.center.lat
 
                 ),
 
                 Number(
 
-                    geofence.config.center.longitude
+                    geofence.config.center.lng
 
                 )
 
@@ -2985,6 +3188,13 @@ document.addEventListener(
         ) {
 
             if (
+                    String(vehicle.device_id) !==
+                    String(geofence.device_id)
+                ){
+                    return false;
+                }
+
+            if (
 
                 !vehicle ||
 
@@ -3021,7 +3231,12 @@ document.addEventListener(
                 return;
             }
 
-            const geofences = this.getGeofences() ?? [];
+            const geofences =
+            (this.getGeofences() ?? []).filter(
+                geofence =>
+                    String(geofence.device_id) ===
+                    String(vehicle.device_id)
+            );
 
             geofences.forEach(geofence => {
 
@@ -3101,15 +3316,7 @@ document.addEventListener(
                             group
 
                         );
-                        if (
-                            layer &&
-                            !group.hasLayer(layer)
-                        ) {
-                            layer.addTo(group);
-                        }
-
                     }
-
                 }
 
             );
@@ -3258,15 +3465,19 @@ document.addEventListener(
 
             this.renderGeofences();
 
-            this.showAllGeofences();
+            if (!this.geofence.eventsBound) {
 
-            this.bindDrawingEvents();
-            
-            this.bindRadiusInput();
+                this.bindDrawingEvents();
 
-            this.bindGeofenceType();
+                this.bindRadiusInput();
 
-            this.bindEditEvents();
+                this.bindGeofenceType();
+
+                this.bindEditEvents();
+
+                this.geofence.eventsBound = true;
+
+            }
 
             this.setGeofenceInitialized(
 
@@ -3301,6 +3512,8 @@ document.addEventListener(
                 null
 
             );
+
+            this.geofence.eventsBound = false;
 
             this.setGeofenceInitialized(
 
@@ -3767,6 +3980,8 @@ document.addEventListener(
         | Ready
         |--------------------------------------------------------------------------
         */
+
+        GPSTracker.initializeGeofence();
 
         GPSTracker.bindGeofenceEvents();
 

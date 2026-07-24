@@ -408,20 +408,6 @@ document.addEventListener(
 
         };
 
-        GPSTracker.getVehicleBattery = function (
-
-            vehicle
-
-        ) {
-
-            return Number(
-
-                vehicle.battery ?? 0
-
-            );
-
-        };
-
         /*
         |--------------------------------------------------------------------------
         | Marker Style
@@ -892,17 +878,19 @@ document.addEventListener(
 
                         if (
 
-                            typeof this.selectVehicle === "function"
+                            typeof this.selectVehicle !== "function"
 
                         ) {
 
-                            this.selectVehicle(
-
-                                vehicle.device_id
-
-                            );
+                            return;
 
                         }
+
+                        this.selectVehicle(
+
+                            marker.deviceId
+
+                        );
 
                     }
 
@@ -1056,6 +1044,24 @@ document.addEventListener(
 
             this.marker.markers = {};
 
+            this.setSelectedMarker(
+
+                null
+
+            );
+
+            this.setSelectedVehicle(
+
+                null
+
+            );
+
+            this.setActivePopup(
+
+                null
+
+            );
+
         };
 
         /*
@@ -1102,73 +1108,83 @@ document.addEventListener(
 
         GPSTracker.eachMarker = function (
 
-            callback
+                    callback
 
-        ) {
+                ) {
 
-            this.getMarkerList().forEach(
+                    this.getMarkerList().forEach(
 
-                callback
+                        callback
 
-            );
+                    );
 
-        };
+                };
 
-        GPSTracker.findMarkerBy = function (
+                GPSTracker.findMarkerBy = function (
 
-            callback
+                    callback
 
-        ) {
+                ) {
 
-            return this.getMarkerList().find(
+                    return this.getMarkerList().find(
 
-                callback
+                        callback
 
-            ) ?? null;
+                    ) ?? null;
 
-        };
+                };
 
-        GPSTracker.filterMarkers = function (
+                GPSTracker.filterMarkers = function (
 
-            callback
+                    callback
 
-        ) {
+                ) {
 
-            return this.getMarkerList().filter(
+                    return this.getMarkerList().filter(
 
-                callback
+                        callback
 
-            );
+                    );
 
-        };
+                };
 
-        GPSTracker.getMarkerByDeviceCode = function (
+                GPSTracker.getMarkerByDeviceCode = function (
 
-            deviceCode
+                    deviceCode
 
-        ) {
+                ) {
 
-            return this.findMarkerBy(
+                    return this.findMarkerBy(
 
-                marker =>
+                        marker =>
 
-                    marker.deviceCode === deviceCode
+                            marker.deviceCode === deviceCode
 
-            );
+                    );
 
-        };
+                };
 
-        /*
-        |--------------------------------------------------------------------------
-        | Focus Marker
-        |--------------------------------------------------------------------------
-        */
+                /*
+                |--------------------------------------------------------------------------
+                | Focus Marker
+                |--------------------------------------------------------------------------
+                */
 
-        GPSTracker.focusMarker = function (
+                GPSTracker.focusMarker = function (
 
             deviceId
 
         ) {
+
+            if (
+
+                !Array.isArray(this.vehicles)
+
+            ) {
+
+                return;
+
+            }
 
             const vehicle = this.vehicles.find(
 
@@ -1182,11 +1198,7 @@ document.addEventListener(
 
                 !vehicle ||
 
-                !this.hasVehicleCoordinate(
-
-                    vehicle
-
-                )
+                !this.hasVehicleCoordinate(vehicle)
 
             ) {
 
@@ -1385,23 +1397,16 @@ document.addEventListener(
             if (!marker) {
 
                 marker = this.createMarker(
-
                     vehicle
-
                 );
 
                 if (!marker) {
-
                     return;
-
                 }
 
                 this.addLayerItem(
-
                     'marker',
-
                     marker
-
                 );
 
             }
@@ -1578,31 +1583,19 @@ document.addEventListener(
 
             }
 
-            this.vehicles.forEach(
+            this.vehicles.forEach(vehicle => {
 
-                vehicle => {
+                if (
 
-                    if (
+                    this.hasVehicleCoordinate(vehicle)
 
-                        this.hasVehicleCoordinate(
+                ) {
 
-                            vehicle
-
-                        )
-
-                    ) {
-
-                        this.renderMarker(
-
-                            vehicle
-
-                        );
-
-                    }
+                    this.renderMarker(vehicle);
 
                 }
 
-            );
+            });
 
         };
 
@@ -1750,7 +1743,15 @@ document.addEventListener(
 
         ) {
 
-            if (!payload) {
+            if (
+
+                !payload ||
+
+                payload.device_id === null ||
+
+                payload.device_id === undefined
+
+            ) {
 
                 return;
 
@@ -1944,59 +1945,23 @@ document.addEventListener(
 
         /*
         |--------------------------------------------------------------------------
-        | Destroy Marker
-        |--------------------------------------------------------------------------
-        */
-
-        GPSTracker.destroyMarker = function () {
-
-            this.resetMarker();
-
-        };
-
-        /*
-        |--------------------------------------------------------------------------
         | Vehicle Added
         |--------------------------------------------------------------------------
         */
 
         document.addEventListener(
 
-            'gpstracker:vehicle-added',
+                'gpstracker:vehicle-updated',
 
-            event => {
+                event => {
 
-                GPSTracker.receiveRealtimePayload(
+                    if (!event.detail?.vehicle) {
+                        return;
+                    }
 
-                    event.detail
+                }
 
-                );
-
-            }
-
-        );
-
-        /*
-        |--------------------------------------------------------------------------
-        | Vehicle Updated
-        |--------------------------------------------------------------------------
-        */
-
-        document.addEventListener(
-
-            'gpstracker:vehicle-updated',
-
-            event => {
-
-                GPSTracker.receiveRealtimePayload(
-
-                    event.detail
-
-                );
-
-            }
-
-        );
+            );
 
         /*
         |--------------------------------------------------------------------------

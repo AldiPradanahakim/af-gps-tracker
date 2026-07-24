@@ -28,14 +28,13 @@ class AdministrativeAreaService
     {
         $path = self::BASE_PATH . '/' . $filename;
 
-        if (!Storage::disk('local')->exists($path)) {
+        if (!file_exists(storage_path('app/' . $path))) {
             throw new InvalidArgumentException(
                 "GeoJSON {$filename} tidak ditemukan."
             );
         }
-
         $json = json_decode(
-            Storage::disk('local')->get($path),
+            file_get_contents(storage_path('app/' . $path)),
             true
         );
 

@@ -491,6 +491,24 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         }
 
+        if (
+
+            this.hasVehicleCard(
+
+                vehicle.device_id
+
+            )
+
+        ) {
+
+            return this.getVehicleCard(
+
+                vehicle.device_id
+
+            );
+
+        }
+
         const card = this.createVehicleCard(
 
             vehicle
@@ -527,11 +545,7 @@ document.addEventListener('gpstracker:map-ready', () => {
 
     GPSTracker.removeVehicleCard = function (deviceId) {
 
-        const card = this.getVehicleCard(
-
-            deviceId
-
-        );
+        const card = this.getVehicleCard(deviceId);
 
         if (!card) {
 
@@ -1403,6 +1417,8 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         }
 
+        this.setSelectedVehicle(deviceId);
+
         this.highlightVehicleCard(
 
             deviceId
@@ -1770,17 +1786,17 @@ document.addEventListener('gpstracker:map-ready', () => {
         )
         ?.reset();
 
-    this.replaceVehicle(
+        this.replaceVehicle(
 
-        vehicle
+            vehicle
 
-    );
+        );
 
-    this.appendVehicleCard(
+        this.replaceVehicleCard(
 
-        vehicle
+            vehicle
 
-    );
+        );
 
         this.refreshSidebarEvents();
 
@@ -1846,6 +1862,14 @@ document.addEventListener('gpstracker:map-ready', () => {
     GPSTracker.bindSidebarCardEvents = function () {
 
         this.getVehicleCards().forEach(card => {
+
+            if (card.dataset.sidebarBound === 'true') {
+
+                return;
+
+            }
+
+            card.dataset.sidebarBound = 'true';
 
             card.addEventListener(
 
@@ -1933,6 +1957,64 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         this.sidebar.emptyState = null;
 
+        this.sidebar.selectedCard = null;
+
+        this.sidebar.selectedVehicle = null;
+
+        this.sidebar.activateModal = null;
+
+        this.sidebar.vehicleModal = null;
+
+        document.getElementById(
+
+            'closeActivateDevice'
+
+        )?.removeAttribute(
+
+            'data-sidebar-bound'
+
+        );
+
+        document.getElementById(
+
+            'cancelActivateDevice'
+
+        )?.removeAttribute(
+
+            'data-sidebar-bound'
+
+        );
+
+        document.getElementById(
+
+            'addVehicle'
+
+        )?.removeAttribute(
+
+            'data-sidebar-bound'
+
+        );
+
+        document.getElementById(
+
+            'activateDeviceForm'
+
+        )?.removeAttribute(
+
+            'data-sidebar-bound'
+
+        );
+
+        document.getElementById(
+
+            'vehicleInformationForm'
+
+        )?.removeAttribute(
+
+            'data-sidebar-bound'
+
+        );
+
         this.sidebar.initialized = false;
 
     };
@@ -1954,6 +2036,22 @@ document.addEventListener('gpstracker:map-ready', () => {
         const toastTitle = document.getElementById('toast-title');
 
         const toastMessage = document.getElementById('toast-message');
+
+        if (
+
+            !toast ||
+
+            !icon ||
+
+            !toastTitle ||
+
+            !toastMessage
+
+        ) {
+
+            return;
+
+        }
 
         toastTitle.textContent = title;
 
@@ -2054,58 +2152,128 @@ document.addEventListener('gpstracker:map-ready', () => {
         this.toggleSidebarEmptyState();
 
         const closeButton = document.getElementById(
+
             'closeActivateDevice'
+
         );
+
+        if (
+
+            closeButton &&
+
+            closeButton.dataset.sidebarBound !== 'true'
+
+        ) {
+
+            closeButton.dataset.sidebarBound = 'true';
+
+            closeButton.addEventListener(
+
+                'click',
+
+                () => {
+
+                    this.closeActivateDeviceModal();
+
+                }
+
+            );
+
+        }
 
         const cancelButton = document.getElementById(
+
             'cancelActivateDevice'
+
         );
 
-        closeButton?.addEventListener('click', () => {
+        if (
 
-            this.closeActivateDeviceModal();
+            cancelButton &&
 
-        });
+            cancelButton.dataset.sidebarBound !== 'true'
 
-        cancelButton?.addEventListener('click', () => {
+        ) {
 
-            this.closeActivateDeviceModal();
+            cancelButton.dataset.sidebarBound = 'true';
 
-        });
-        
+            cancelButton.addEventListener(
+
+                'click',
+
+                () => {
+
+                    this.closeActivateDeviceModal();
+
+                }
+
+            );
+
+        }
+
         const addButton = document.getElementById(
+
             'addVehicle'
+
         );
 
-        if (addButton) {
+        if (
 
-            addButton.addEventListener('click', () => {
+            addButton &&
 
-                this.openActivateDeviceModal();
+            addButton.dataset.sidebarBound !== 'true'
 
-            });
+        ) {
+
+            addButton.dataset.sidebarBound = 'true';
+
+            addButton.addEventListener(
+
+                'click',
+
+                () => {
+
+                    this.openActivateDeviceModal();
+
+                }
+
+            );
 
         }
 
         this.bindSidebarCardEvents();
 
         const activateForm = document.getElementById(
+
             'activateDeviceForm'
-        );
-
-        activateForm?.addEventListener(
-
-            'submit',
-
-            (event) => {
-
-                event.preventDefault();
-
-                this.submitActivateDevice();
-
-            }
 
         );
+
+        if (
+
+            activateForm &&
+
+            activateForm.dataset.sidebarBound !== 'true'
+
+        ) {
+
+            activateForm.dataset.sidebarBound = 'true';
+
+            activateForm.addEventListener(
+
+                'submit',
+
+                (event) => {
+
+                    event.preventDefault();
+
+                    this.submitActivateDevice();
+
+                }
+
+            );
+
+        }
 
         const vehicleForm = document.getElementById(
 
@@ -2113,19 +2281,31 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         );
 
-        vehicleForm?.addEventListener(
+        if (
 
-            'submit',
+            vehicleForm &&
 
-            (event) => {
+            vehicleForm.dataset.sidebarBound !== 'true'
 
-                event.preventDefault();
+        ) {
 
-                this.submitVehicleInformation();
+            vehicleForm.dataset.sidebarBound = 'true';
 
-            }
+            vehicleForm.addEventListener(
 
-        );
+                'submit',
+
+                (event) => {
+
+                    event.preventDefault();
+
+                    this.submitVehicleInformation();
+
+                }
+
+            );
+
+        }
 
         this.setSidebarInitialized(
 

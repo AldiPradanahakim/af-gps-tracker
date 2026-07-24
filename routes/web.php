@@ -113,19 +113,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'show'
     ])->name('vehicles.show');
 
-    /*
-    |--------------------------------------------------------------------------
-    | Geofence
-    |--------------------------------------------------------------------------
-    */
+    Route::get('/geofences', [
+        GeofenceController::class,
+        'all'
+    ])->name('geofences.all');
 
-    /**
-     * Load seluruh geofence berdasarkan device.
-     * Digunakan oleh:
-     * - Delete Geofence Modal
-     * - Refresh Sidebar
-     * - Vehicle Detail
-     */
     Route::get('/geofence/device/{device}', [
         GeofenceController::class,
         'index'

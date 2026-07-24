@@ -35,6 +35,8 @@
 
 @include('home.modals.add-geofence')
 
+@include('home.modals.delete-geofence')
+
 @include('home.modals.activate-device')
 
 @include('home.modals.vehicle-information')

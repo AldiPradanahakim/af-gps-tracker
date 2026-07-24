@@ -62,6 +62,7 @@
 
         <form
             id="deleteGeofenceForm"
+            action="{{ route('geofences.destroyMany') }}"
             class="flex-1 overflow-y-auto">
 
             @csrf
@@ -96,6 +97,10 @@
 
                             -- Pilih Kendaraan --
 
+                        </option>
+
+                        <option value="all">
+                            Semua Kendaraan
                         </option>
 
                         @foreach($devices as $device)
@@ -139,15 +144,14 @@
                             <h3
                                 class="font-semibold text-slate-900">
 
-                                Daftar Geofence
+                                Jenis Geofence
 
                             </h3>
 
                             <p
                                 class="mt-1 text-sm text-slate-500">
 
-                                Setiap kendaraan hanya dapat memiliki satu Radius,
-                                satu Administrative, dan satu Custom Polygon.
+                                Pilih jenis geofence yang ingin dihapus.
 
                             </p>
 
@@ -394,6 +398,54 @@
 
 </div>
 
+<div
+    id="deleteConfirmModal"
+    class="fixed inset-0 z-[10000] hidden items-center justify-center bg-slate-950/50 backdrop-blur-sm">
+
+    <div
+        class="w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl">
+
+        <h3
+            class="text-xl font-bold text-slate-900">
+
+            Konfirmasi
+
+        </h3>
+
+        <p
+            class="mt-3 text-sm text-slate-600">
+
+            Apakah Anda yakin ingin menghapus geofence ini?
+
+        </p>
+
+        <div
+            class="mt-8 flex justify-end gap-3">
+
+            <button
+                type="button"
+                id="cancelConfirmDelete"
+                class="rounded-xl border border-slate-300 px-5 py-2 hover:bg-slate-100">
+
+                Batal
+
+            </button>
+
+            <button
+                type="button"
+                id="confirmDelete"
+                class="rounded-xl bg-red-600 px-5 py-2 font-semibold text-white hover:bg-red-700">
+
+                Ya, Hapus
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
 {{-- ========================================================= --}}
 {{-- Script --}}
 {{-- ========================================================= --}}
@@ -496,6 +548,18 @@ document.addEventListener(
 
         );
 
+        const confirmModal = document.getElementById(
+            'deleteConfirmModal'
+        );
+
+        const confirmDeleteButton = document.getElementById(
+            'confirmDelete'
+        );
+
+        const cancelConfirmButton = document.getElementById(
+            'cancelConfirmDelete'
+        );
+
         let loadingRequest = false;
 
         /*
@@ -523,15 +587,19 @@ document.addEventListener(
         function closeModal() {
 
             modal.classList.remove(
-
                 'flex'
-
             );
 
             modal.classList.add(
-
                 'hidden'
+            );
 
+            confirmModal.classList.remove(
+                'flex'
+            );
+
+            confirmModal.classList.add(
+                'hidden'
             );
 
             resetModal();
@@ -681,15 +749,53 @@ document.addEventListener(
 
             try {
 
+                let url = '';
+
+                if (deviceSelect.value === 'all') {
+
+                    const response = await fetch(
+
+                        '/geofences',
+
+                        {
+
+                            headers: {
+
+                                Accept: 'application/json'
+
+                            }
+
+                        }
+
+                    );
+
+                    const result = await response.json();
+
+                    renderGeofence(
+
+                        result.data ?? []
+
+                    );
+
+                    loading.classList.add('hidden');
+
+                    loadingRequest = false;
+
+                    return;
+
+                }
+
+                url = `/geofence/device/${deviceSelect.value}`;
+
                 const response = await fetch(
 
-                    `/geofence/device/${deviceSelect.value}`,
+                    url,
 
                     {
 
                         headers: {
 
-                            'Accept': 'application/json'
+                            Accept: 'application/json'
 
                         }
 
@@ -1050,7 +1156,7 @@ document.addEventListener(
 
             'submit',
 
-            async function (
+            function (
 
                 event
 
@@ -1068,7 +1174,41 @@ document.addEventListener(
 
                 }
 
+                confirmModal.classList.remove('hidden');
+
+                confirmModal.classList.add('flex');
+
+            }
+
+        );
+
+        cancelConfirmButton.addEventListener(
+
+            'click',
+
+            () => {
+
+                confirmModal.classList.remove('flex');
+
+                confirmModal.classList.add('hidden');
+
+            }
+
+        );
+
+        confirmDeleteButton.addEventListener(
+
+            'click',
+
+            async () => {
+
+                confirmModal.classList.remove('flex');
+
+                confirmModal.classList.add('hidden');
+
                 startLoading();
+
+                confirmDeleteButton.disabled = true;
 
                 try {
 
@@ -1098,25 +1238,15 @@ document.addEventListener(
 
                             },
 
-                            body: new FormData(
-
-                                form
-
-                            )
+                            body: new FormData(form)
 
                         }
 
                     );
 
-                    const result =
+                    const result = await response.json();
 
-                        await response.json();
-
-                    if (
-
-                        !response.ok
-
-                    ) {
+                    if (!response.ok) {
 
                         throw new Error(
 
@@ -1128,41 +1258,25 @@ document.addEventListener(
 
                     }
 
-                    /*
-                    |--------------------------------------------------------------------------
-                    | Refresh GPSTracker
-                    |--------------------------------------------------------------------------
-                    */
+                    await GPSTracker.refreshGeofences();
 
-                    await GPSTracker.loadGeofences?.();
+                    window.dispatchEvent(
 
-                    await GPSTracker.refreshSidebarGeofence?.();
+                        new CustomEvent(
 
-                    await GPSTracker.refreshVehicleGeofence?.();
+                            'gpstracker:geofence-deleted'
 
-                    await GPSTracker.refreshNotificationBadge?.();
+                        )
 
-                    /*
-                    |--------------------------------------------------------------------------
-                    | Reload List
-                    |--------------------------------------------------------------------------
-                    */
+                    );
 
                     await loadVehicleGeofence();
 
-                    /*
-                    |--------------------------------------------------------------------------
-                    | Success
-                    |--------------------------------------------------------------------------
-                    */
-
-                    GPSTracker.showToast?.(
+                    GPSTracker.showToast(
 
                         'success',
 
-                        result.message ??
-
-                        'Geofence berhasil dihapus.'
+                        result.message
 
                     );
 
@@ -1170,19 +1284,9 @@ document.addEventListener(
 
                 }
 
-                catch (
+                catch (error) {
 
-                    error
-
-                ) {
-
-                    console.error(
-
-                        error
-
-                    );
-
-                    GPSTracker.showToast?.(
+                    GPSTracker.showToast(
 
                         'error',
 
@@ -1194,7 +1298,39 @@ document.addEventListener(
 
                 finally {
 
+                    confirmDeleteButton.disabled = false;
+
                     stopLoading();
+
+                }
+
+            }
+
+        );
+
+        confirmModal.addEventListener(
+
+            'click',
+
+            event => {
+
+                if (
+
+                    event.target === confirmModal
+
+                ) {
+
+                    confirmModal.classList.remove(
+
+                        'flex'
+
+                    );
+
+                    confirmModal.classList.add(
+
+                        'hidden'
+
+                    );
 
                 }
 
