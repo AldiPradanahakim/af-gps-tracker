@@ -43,6 +43,36 @@
         {{-- RIGHT MENU --}}
         <div class="ml-8 flex items-center gap-3">
 
+            {{-- HOME --}}
+            <button
+                id="homeLocationButton"
+                type="button"
+                class="flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
+
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 text-[#2563EB]"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2">
+
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M3 10.5L12 3l9 7.5"/>
+
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M5 9.5V21h14V9.5"/>
+
+                </svg>
+
+                Home
+
+            </button>
+
             {{-- GEOFENCE --}}
             <div class="relative">
 
@@ -103,17 +133,6 @@
                         </p>
 
                         <div class="space-y-2">
-
-                            <button
-                                id="setHomeLocation"
-                                type="button"
-                                class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100">
-
-                                <span>🏠</span>
-
-                                <span>Set Home Location</span>
-
-                            </button>
 
                             <button
                                 id="addGeofence"

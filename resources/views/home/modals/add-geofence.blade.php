@@ -169,13 +169,13 @@
 
                                 data-device-id="{{ $device['device_id'] ?? '' }}"
 
-                                data-home-lat="{{ $device['home_location']['latitude'] ?? '' }}"
+                                data-home-lat="{{ $device['home_location']['lat'] ?? '' }}"
 
-                                data-home-lng="{{ $device['home_location']['longitude'] ?? '' }}"
+                                data-home-lng="{{ $device['home_location']['lng'] ?? '' }}"
 
-                                data-last-lat="{{ $device['last_location']['latitude'] ?? '' }}"
+                                data-last-lat="{{ $device['last_location']['lat'] ?? '' }}"
 
-                                data-last-lng="{{ $device['last_location']['longitude'] ?? '' }}">
+                                data-last-lng="{{ $device['last_location']['lng'] ?? '' }}">
 
                                 {{ $device['vehicle_name'] }}
 

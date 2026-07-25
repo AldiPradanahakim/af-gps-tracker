@@ -140,6 +140,9 @@ document.addEventListener('DOMContentLoaded', () => {
     GPSTracker.markerLayer =
         L.layerGroup().addTo(GPSTracker.map);
 
+    GPSTracker.homeLayer =
+        L.layerGroup().addTo(GPSTracker.map);
+
     GPSTracker.radiusLayer =
         L.layerGroup().addTo(GPSTracker.map);
 
@@ -157,7 +160,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     GPSTracker.temporaryLayer =
         L.layerGroup().addTo(GPSTracker.map);
-
     /*
     |--------------------------------------------------------------------------
     | Layer Collection
@@ -167,6 +169,8 @@ document.addEventListener('DOMContentLoaded', () => {
     GPSTracker.layers = {
 
         marker: GPSTracker.markerLayer,
+
+        home: GPSTracker.homeLayer,
 
         radius: GPSTracker.radiusLayer,
 
@@ -977,7 +981,523 @@ document.addEventListener('DOMContentLoaded', () => {
         );
 
     };
-        /*
+
+    /*
+    |--------------------------------------------------------------------------
+    | Home Location
+    |--------------------------------------------------------------------------
+    */
+
+    /*
+    |--------------------------------------------------------------------------
+    | Home Location Icons
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.homeIcon = L.divIcon({
+
+        className: 'gps-home-marker',
+
+        html: `
+            <div
+                class="flex h-10 w-10 items-center justify-center rounded-full border-4 border-white bg-blue-600 shadow-xl">
+                🏠
+            </div>
+        `,
+
+        iconSize: [40,40],
+
+        iconAnchor: [20,20],
+
+        popupAnchor: [0,-20],
+
+    });
+
+    GPSTracker.previewHomeIcon = L.divIcon({
+
+        className: 'gps-preview-home-marker',
+
+        html: `
+            <div
+                class="flex h-10 w-10 items-center justify-center rounded-full border-4 border-white bg-red-500 shadow-xl">
+                📍
+            </div>
+        `,
+
+        iconSize:[40,40],
+
+        iconAnchor:[20,20],
+
+    });
+
+    GPSTracker.homeMarkers = {};
+
+    GPSTracker.previewHomeMarker = null;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Preview Home Marker
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.previewHomeLocation = function (
+
+        latitude,
+
+        longitude
+
+    ) {
+
+        if (
+
+            !this.isValidCoordinate(
+
+                latitude,
+
+                longitude
+
+            )
+
+        ) {
+
+            return;
+
+        }
+
+        this.clearHomePreview();
+
+        this.previewHomeMarker = L.marker(
+
+            [
+
+                Number(latitude),
+
+                Number(longitude)
+
+            ],
+
+            {
+
+                draggable:true,
+
+                icon:this.previewHomeIcon
+
+            }
+
+        ).addTo(
+            this.temporaryLayer
+        );
+
+        this.previewHomeMarker.on(
+            'dragend',
+            function (event) {
+
+                document.dispatchEvent(
+
+                    new CustomEvent(
+
+                        'gpstracker:home-preview-moved',
+
+                        {
+
+                            detail: event.target.getLatLng()
+
+                        }
+
+                    )
+
+                );
+
+            }
+        );
+
+        this.flyToLocation(
+
+            latitude,
+
+            longitude,
+
+            17
+
+        );
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Clear Preview
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.clearHomePreview = function () {
+
+        if (
+
+            !this.previewHomeMarker
+
+        ) {
+
+            return;
+
+        }
+
+        this.temporaryLayer.removeLayer(
+
+            this.previewHomeMarker
+
+        );
+
+        this.previewHomeMarker = null;
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Render Home Marker
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.renderHomeLocation = function (
+
+        device,
+
+        home
+
+    ) {
+
+        if (
+
+            !device ||
+
+            !home
+
+        ) {
+
+            return;
+
+        }
+
+        const deviceId = device.id;
+
+        const vehicleName =
+            device.vehicle_name ??
+            device.device_id ??
+            'Unknown Vehicle';
+
+        if (
+
+            this.homeMarkers[deviceId]
+
+        ) {
+
+            this.homeLayer.removeLayer(
+
+                this.homeMarkers[deviceId]
+
+            );
+
+        }
+
+        const marker = L.marker(
+
+            [
+
+                Number(home.lat),
+
+                Number(home.lng)
+
+            ],
+
+            {
+
+                icon:this.homeIcon
+
+            }
+
+        );
+
+        marker.bindPopup(`
+
+        <div class="min-w-[230px]">
+
+            <div class="mb-2 flex items-center gap-2">
+
+                <div class="text-xl">🏠</div>
+
+                <div>
+
+                    <div class="font-bold">
+
+                        Home Location
+
+                    </div>
+
+                    <div class="text-xs text-slate-500">
+
+                        ${vehicleName}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="mb-2 text-sm">
+
+                ${home.display_name}
+
+            </div>
+
+            <div class="text-xs text-slate-500">
+
+                Latitude :
+                ${Number(home.lat).toFixed(6)}
+
+                <br>
+
+                Longitude :
+                ${Number(home.lng).toFixed(6)}
+
+            </div>
+
+        </div>
+
+        `);
+
+        marker.addTo(
+
+            this.homeLayer
+
+        );
+
+        this.homeMarkers[deviceId] = marker;
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Remove Home Marker
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.removeHomeLocation = function (
+
+        deviceId
+
+    ) {
+
+        if (
+
+            !this.homeMarkers[deviceId]
+
+        ) {
+
+            return;
+
+        }
+
+        this.homeLayer.removeLayer(
+
+            this.homeMarkers[deviceId]
+
+        );
+
+        delete this.homeMarkers[deviceId];
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Load Home Locations
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.loadHomeLocations = function () {
+
+        if (
+
+            !Array.isArray(
+
+                window.GPSHomeLocations
+
+            )
+
+        ) {
+
+            return;
+
+        }
+
+        window.GPSHomeLocations.forEach(
+
+            device => {
+
+                if (
+
+                    !device.home_location
+
+                ) {
+
+                    return;
+
+                }
+
+                let home =
+
+                    device.home_location;
+
+                if (
+
+                    typeof home === 'string'
+
+                ) {
+
+                    try {
+
+                        home = JSON.parse(
+
+                            home
+
+                        );
+
+                    }
+
+                    catch {
+
+                        return;
+
+                    }
+
+                }
+
+                this.renderHomeLocation(
+
+                    device,
+
+                    home
+
+                );
+
+            }
+
+        );
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Save Success
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.saveHomeLocationSuccess = function (
+
+        response
+
+    ) {
+
+        this.clearHomePreview();
+
+        if (
+
+            response.device &&
+
+            response.device.home_location
+
+        ) {
+
+            this.renderHomeLocation(
+
+                response.device,
+
+                response.device.home_location
+
+            );
+
+            this.flyToLocation(
+
+                response.device.home_location.lat,
+
+                response.device.home_location.lng,
+
+                17
+
+            );
+
+            return;
+
+        }
+
+        this.loadHomeLocations();
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Focus Home Location
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.focusHomeLocation = function (
+
+        deviceId
+
+    ) {
+
+        const marker =
+
+            this.homeMarkers[deviceId];
+
+        if (
+
+            !marker
+
+        ) {
+
+            return;
+
+        }
+
+        this.map.flyTo(
+
+            marker.getLatLng(),
+
+            17,
+
+            {
+
+                animate: true,
+
+                duration: 1
+
+            }
+
+        );
+
+        marker.openPopup();
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Home Ready
+    |--------------------------------------------------------------------------
+    */
+
+    document.addEventListener(
+
+        'gpstracker:map-ready',
+
+        () => {
+
+            GPSTracker.loadHomeLocations();
+
+        }
+
+    );
+
+
+    /*
     |--------------------------------------------------------------------------
     | Refresh Map Size
     |--------------------------------------------------------------------------

@@ -33,6 +33,8 @@
 {{-- MODALS --}}
 <x-toast />
 
+@include('home.modals.home-location')
+
 @include('home.modals.add-geofence')
 
 @include('home.modals.delete-geofence')
@@ -159,8 +161,13 @@ body{
 
 @endpush
 
-
 @push('scripts')
+
+<script>
+
+    window.GPSHomeLocations = @json($devices);
+
+</script>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 

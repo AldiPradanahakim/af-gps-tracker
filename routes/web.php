@@ -8,7 +8,7 @@ use App\Http\Controllers\ActivateVehicleController;
 use App\Http\Controllers\GeofenceController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
-
+use App\Http\Controllers\LocationController;
 use App\Http\Controllers\Home\DeviceController as HomeDeviceController;
 use App\Http\Controllers\Home\VehicleController as HomeVehicleController;
 
@@ -171,6 +171,27 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ProfileController::class,
         'destroy'
     ])->name('profile.destroy');
+
+    Route::get(
+
+        '/api/location/search',
+
+        [LocationController::class, 'search']
+
+    );
+
+    Route::get(
+
+        '/api/location/reverse',
+
+        [LocationController::class, 'reverse']
+
+    );
+
+    Route::post(
+        '/api/home-location',
+        [LocationController::class, 'save']
+    );
 });
 
 require __DIR__ . '/auth.php';

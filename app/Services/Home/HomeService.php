@@ -46,7 +46,7 @@ class HomeService
 
                 'id' => $device->id,
 
-                'device_code' => $device->device_id,
+                'device_id' => $device->device_id,
 
                 'vehicle_name' => $device->vehicle?->vehicle_name,
 

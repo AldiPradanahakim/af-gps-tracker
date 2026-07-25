@@ -16,6 +16,8 @@
 
 @include('home.partials.scripts.geofence')
 
+@include('home.partials.scripts.home-location')
+
 @include('home.partials.scripts.realtime')
 
 @include('home.partials.scripts.sidebar')
