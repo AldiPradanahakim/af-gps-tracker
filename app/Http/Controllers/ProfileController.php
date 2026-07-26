@@ -47,16 +47,37 @@ class ProfileController extends Controller
     /**
      * Update profil setelah user login
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(ProfileUpdateRequest $request)
     {
         $user = Auth::user();
 
         assert($user instanceof User);
 
-        $this->profileService->update(
+        $user = $this->profileService->update(
             $user,
             $request->validated()
         );
+
+        if ($request->expectsJson()) {
+
+            return response()->json([
+
+                'success' => true,
+
+                'message' => 'Profil berhasil diperbarui.',
+
+                'user' => [
+
+                    'name' => $user->name,
+
+                    'email' => $user->email,
+
+                    'phone' => $user->phone,
+
+                ],
+
+            ]);
+        }
 
         return back()->with(
             'success',

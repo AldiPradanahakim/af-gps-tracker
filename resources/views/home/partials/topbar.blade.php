@@ -287,9 +287,11 @@
                     type="button"
                     class="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2 transition hover:bg-slate-50">
 
-                    <div class="flex h-10 w-10 items-center justify-center rounded-full bg-[#2563EB] text-sm font-bold text-white">
+                    <div
+                        data-profile-avatar
+                        class="flex h-10 w-10 items-center justify-center rounded-full bg-[#2563EB] text-sm font-bold text-white">
 
-                        {{ strtoupper(substr(auth()->user()->name,0,1)) }}
+                        {{ strtoupper(mb_substr(auth()->user()->name,0,1)) }}
 
                     </div>
 
@@ -297,14 +299,21 @@
 
                         <div class="text-sm font-semibold text-slate-900">
 
-                            {{ auth()->user()->name }}
+                            <span data-profile-name>
+
+                                {{ auth()->user()->name }}
+
+                            </span>
 
                         </div>
 
                         <div class="text-xs text-slate-500">
 
-                            {{ auth()->user()->email }}
+                            <span data-profile-email>
 
+                                {{ auth()->user()->email }}
+
+                            </span>
                         </div>
 
                     </div>

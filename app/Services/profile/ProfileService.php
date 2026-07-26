@@ -6,6 +6,7 @@ use App\Models\Device;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class ProfileService
 {
@@ -37,16 +38,38 @@ class ProfileService
     public function update(User $user, array $data): User
     {
         $payload = [
+
             'name'  => $data['name'],
+
+            'email' => $data['email'],
+
             'phone' => $data['phone'],
+
         ];
 
         if (!empty($data['password'])) {
+
+            if (
+                !Hash::check(
+                    $data['current_password'],
+                    $user->password
+                )
+            ) {
+
+                throw ValidationException::withMessages([
+
+                    'current_password' => [
+                        'Password lama tidak sesuai.'
+                    ],
+
+                ]);
+            }
+
             $payload['password'] = Hash::make($data['password']);
         }
 
         $user->update($payload);
 
-        return $user;
+        return $user->fresh();
     }
 }

@@ -11,6 +11,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\Home\DeviceController as HomeDeviceController;
 use App\Http\Controllers\Home\VehicleController as HomeVehicleController;
+use App\Http\Controllers\SearchController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -187,6 +188,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         [LocationController::class, 'reverse']
 
     );
+
+    Route::get(
+        '/api/search',
+        SearchController::class
+    )->name('search');
 
     Route::post(
         '/api/home-location',

@@ -19,13 +19,32 @@ class SearchRepository
 
             ->where('user_id', $user->id)
 
-            ->whereHas('vehicle', function ($query) use ($keyword) {
+            ->where(function ($query) use ($keyword) {
 
                 $query
 
-                    ->where('vehicle_name', 'LIKE', "%{$keyword}%")
+                    ->where(
+                        'device_id',
+                        'LIKE',
+                        "%{$keyword}%"
+                    )
 
-                    ->orWhere('plate_number', 'LIKE', "%{$keyword}%");
+                    ->orWhereHas('vehicle', function ($vehicle) use ($keyword) {
+
+                        $vehicle
+
+                            ->where(
+                                'vehicle_name',
+                                'LIKE',
+                                "%{$keyword}%"
+                            )
+
+                            ->orWhere(
+                                'plate_number',
+                                'LIKE',
+                                "%{$keyword}%"
+                            );
+                    });
             })
 
             ->get()

@@ -414,6 +414,8 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         );
 
+        this.clearTemporary();
+
     };
 
     GPSTracker.runSearchDebounce = function (
@@ -990,23 +992,11 @@ document.addEventListener('gpstracker:map-ready', () => {
     |--------------------------------------------------------------------------
     */
 
-    GPSTracker.executeSearch = async function (
+    GPSTracker.executeSearch = async function (keyword) {
 
-        keyword
+        this.setSearchKeyword(keyword);
 
-    ) {
-
-        this.setSearchKeyword(
-
-            keyword
-
-        );
-
-        if (
-
-            !this.hasSearchKeyword()
-
-        ) {
+        if (!this.hasSearchKeyword()) {
 
             this.clearSearch();
 
@@ -1014,47 +1004,47 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         }
 
-        this.setSearchLoading(
-
-            true
-
-        );
+        this.setSearchLoading(true);
 
         try {
 
-            this.searchVehicle(
+            const response = await fetch(
 
-                keyword
+                `/api/search?keyword=${encodeURIComponent(keyword)}`,
+
+                {
+
+                    headers: {
+
+                        'Accept': 'application/json',
+
+                        'X-Requested-With': 'XMLHttpRequest',
+
+                    },
+
+                }
 
             );
 
-            await this.searchPlaces(
+            if (!response.ok) {
 
-                keyword
+                throw new Error('Search failed.');
 
-            );
+            }
 
-            return this.mergeSearchResults();
+            const results = await response.json();
+
+            this.setSearchResults(results);
+
+            return results;
 
         }
 
-        catch (
+        catch (error) {
 
-            error
+            this.searchError(error);
 
-        ) {
-
-            this.searchError(
-
-                error
-
-            );
-
-            this.setSearchResults(
-
-                []
-
-            );
+            this.setSearchResults([]);
 
             return [];
 
@@ -1062,11 +1052,7 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         finally {
 
-            this.setSearchLoading(
-
-                false
-
-            );
+            this.setSearchLoading(false);
 
         }
 
@@ -1077,33 +1063,25 @@ document.addEventListener('gpstracker:map-ready', () => {
     |--------------------------------------------------------------------------
     */
 
-    GPSTracker.getSearchIcon = function (
+    GPSTracker.getSearchIcon = function (type) {
 
-        type
-
-    ) {
-
-        switch (
-
-            type
-
-        ) {
+        switch (type) {
 
             case 'vehicle':
-
                 return '🚗';
 
-            case 'place':
+            case 'administrative':
+                return '🗺️';
 
+            case 'location':
                 return '📍';
 
             default:
-
                 return '📍';
 
         }
 
-    };
+    }
 
     /*
     |--------------------------------------------------------------------------
@@ -1303,6 +1281,7 @@ document.addEventListener('gpstracker:map-ready', () => {
         this.openSearchResult();
 
     };
+    
 
     /*
     |--------------------------------------------------------------------------
@@ -1519,41 +1498,77 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         this.closeSearchResult();
 
-        switch (
-
-            result.type
-
-        ) {
+        switch (result.type) {
 
             case 'vehicle':
 
+                this.focusVehicle(
+                    result.device_id
+                );
+
+                this.clearTemporary();
+
+                break;
+
+            case 'location':
+
+                this.flyToLocation(
+
+                    result.latitude,
+
+                    result.longitude,
+
+                    17
+
+                );
+
+                this.showTemporaryMarker(
+
+                    result.latitude,
+
+                    result.longitude,
+
+                    result.title
+
+                );
+
+                break;
+            
+            case 'administrative':
+
                 if (
 
-                    typeof this.focusVehicle === 'function'
+                    result.geojson
 
                 ) {
 
-                    this.focusVehicle(
+                    this.showTemporaryGeoJson(
 
-                        result.device_id
+                        result.geojson
 
                     );
 
                 }
 
-                break;
+                else {
 
-            case 'place':
+                    this.flyToLocation(
 
-                if (
+                        result.latitude,
 
-                    typeof this.previewAddress === 'function'
+                        result.longitude,
 
-                ) {
+                        14
 
-                    this.previewAddress(
+                    );
 
-                        result.place
+                    this.showTemporaryMarker(
+
+                        result.latitude,
+
+                        result.longitude,
+
+                        result.title
 
                     );
 

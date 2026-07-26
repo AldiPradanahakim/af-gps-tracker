@@ -43,6 +43,8 @@
 
 @include('home.modals.vehicle-information')
 
+@include('home.modals.profile')
+
 @endsection
 
 

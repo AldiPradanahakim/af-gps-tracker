@@ -2074,6 +2074,8 @@ window.GPSTracker = {
 
     },
 
+    
+
     /*
     |--------------------------------------------------------------------------
     | Application Destroy
@@ -2153,54 +2155,116 @@ window.GPSTracker = {
 
 };
 
-document.addEventListener(
+    GPSTracker.showTemporaryGeoJson = function (
+        geojson
+    ) {
 
-    'DOMContentLoaded',
+        if (
+            !this.hasMap() ||
+            !geojson
+        ) {
+            return;
+        }
 
-    () => {
+        this.clearTemporary();
 
-        window.GPSTracker.start();
+        const layer = L.geoJSON(
+            geojson,
+            {
+                style: {
+                    color: '#2563EB',
+                    weight: 3,
+                    opacity: 1,
+                    fillOpacity: 0.15
+                }
+            }
+        );
 
-    }
+        layer.addTo(
+            this.getTemporaryLayer()
+        );
 
-);
+        this.fitBounds(
+            layer.getBounds()
+        );
 
-/*
-|--------------------------------------------------------------------------
-| Close All Dropdowns
-|--------------------------------------------------------------------------
-*/
+    };
 
-GPSTracker.closeDropdowns = function () {
+    GPSTracker.showTemporaryMarker = function (
+        latitude,
+        longitude,
+        title = ''
+    ) {
 
-    const dropdowns = [
+        if (!this.hasMap()) {
+            return;
+        }
 
-        'geofenceDropdown',
+        this.clearTemporary();
 
-        'notificationDropdown',
+        const marker = L.marker([
+            Number(latitude),
+            Number(longitude)
+        ]);
 
-        'profileDropdown',
+        if (title) {
+            marker.bindPopup(title);
+        }
 
-        'searchResult',
+        marker.addTo(this.getTemporaryLayer());
 
-    ];
+        marker.openPopup();
 
-    dropdowns.forEach(id => {
+    };
+
+    document.addEventListener(
+
+        'DOMContentLoaded',
+
+        () => {
+
+            window.GPSTracker.start();
+
+        }
+
+    );
+
+    /*
+    |--------------------------------------------------------------------------
+    | Close All Dropdowns
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.closeDropdowns = function () {
+
+        const dropdowns = [
+
+            'geofenceDropdown',
+
+            'notificationDropdown',
+
+            'profileDropdown',
+
+            'searchResult',
+
+        ];
+
+        dropdowns.forEach(id => {
+
+            document
+                .getElementById(id)
+                ?.classList.add('hidden');
+
+        });
 
         document
-            .getElementById(id)
-            ?.classList.add('hidden');
+            .getElementById('geofenceArrow')
+            ?.classList.remove('rotate-180');
 
-    });
+        document
+            .getElementById('profileArrow')
+            ?.classList.remove('rotate-180');
 
-    document
-        .getElementById('geofenceArrow')
-        ?.classList.remove('rotate-180');
-
-    document
-        .getElementById('profileArrow')
-        ?.classList.remove('rotate-180');
-
-};
+    };
 
 </script>

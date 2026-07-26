@@ -78,6 +78,11 @@ class ProfileUpdateRequest extends FormRequest
                 'max:20',
             ],
 
+            'current_password' => [
+                'nullable',
+                'required_with:password',
+            ],
+
             'password' => [
                 'nullable',
                 'confirmed',

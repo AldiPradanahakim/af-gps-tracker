@@ -3,14 +3,14 @@
     <div class="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-6">
 
         <div
-             class="mx-auto
-           w-full
-           max-w-[1600px]
-           rounded-[32px]
-           bg-white
-           border border-[#E5E7EB]
-           shadow-xl
-           overflow-hidden">
+            class="mx-auto
+                    w-full
+                    max-w-[1600px]
+                    rounded-[32px]
+                    bg-white
+                    border border-[#E5E7EB]
+                    shadow-xl
+                    overflow-hidden">
 
             <div class="grid h-full lg:grid-cols-[60%_40%]">
 
