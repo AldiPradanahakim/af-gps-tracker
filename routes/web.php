@@ -12,6 +12,7 @@ use App\Http\Controllers\LocationController;
 use App\Http\Controllers\Home\DeviceController as HomeDeviceController;
 use App\Http\Controllers\Home\VehicleController as HomeVehicleController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\Vehicle\VehicleController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -110,7 +111,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     ])->name('vehicles.store');
 
     Route::get('/vehicles/{device}', [
-        ActivateVehicleController::class,
+        VehicleController::class,
         'show'
     ])->name('vehicles.show');
 
@@ -123,6 +124,31 @@ Route::middleware(['auth', 'verified'])->group(function () {
         GeofenceController::class,
         'index'
     ])->name('geofences.index');
+
+    Route::get('/vehicles/{device}/latest', [
+        VehicleController::class,
+        'latest'
+    ])->name('vehicles.latest');
+
+    Route::get('/vehicles/{device}/history', [
+        VehicleController::class,
+        'history'
+    ])->name('vehicles.history');
+
+    Route::get('/vehicles/{device}/playback', [
+        VehicleController::class,
+        'playback'
+    ])->name('vehicles.playback');
+
+    Route::get('/vehicles/{device}/summary', [
+        VehicleController::class,
+        'summary'
+    ])->name('vehicles.summary');
+
+    Route::get('/vehicles/{device}/activity', [
+        VehicleController::class,
+        'activity'
+    ])->name('vehicles.activity');
 
     /**
      * Store Geofence

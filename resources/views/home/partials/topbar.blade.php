@@ -318,7 +318,7 @@
 
                     </div>
 
-                  <svg
+                    <svg
                         id="profileArrow"
                         xmlns="http://www.w3.org/2000/svg"
                         class="h-4 w-4 text-slate-500 transition-transform duration-200"
