@@ -28,6 +28,56 @@ class VehicleController extends Controller
 
     /**
      * --------------------------------------------------------------------------
+     * Update Vehicle Information
+     * --------------------------------------------------------------------------
+     */
+    public function updateInformation(
+        Request $request,
+        Device $device
+    ): JsonResponse {
+
+        $validated = $request->validate([
+
+            'vehicle_name' => [
+                'required',
+                'string',
+                'max:100',
+            ],
+
+            'plate_number' => [
+                'required',
+                'string',
+                'max:20',
+            ],
+
+            'vehicle_type' => [
+                'required',
+                'in:motor,mobil',
+            ],
+
+        ]);
+
+        $vehicle = $this->vehicleService->updateInformation(
+
+            $device,
+
+            $validated
+
+        );
+
+        return response()->json([
+
+            'success' => true,
+
+            'message' => 'Informasi kendaraan berhasil diperbarui.',
+
+            'data' => $vehicle,
+
+        ]);
+    }
+
+    /**
+     * --------------------------------------------------------------------------
      * Latest Location
      * --------------------------------------------------------------------------
      */

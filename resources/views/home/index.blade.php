@@ -31,7 +31,6 @@
 </div>
 
 {{-- MODALS --}}
-<x-toast />
 
 @include('home.modals.home-location')
 

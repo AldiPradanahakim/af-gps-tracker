@@ -20,6 +20,25 @@ class VehicleService
     }
 
     /**
+     * --------------------------------------------------------------------------
+     * Update Vehicle Information
+     * --------------------------------------------------------------------------
+     */
+    public function updateInformation(
+        Device $device,
+        array $data
+    ): array {
+
+        return $this->vehicleRepository->updateInformation(
+
+            $device,
+
+            $data
+
+        );
+    }
+
+    /**
      * Latest Location.
      */
     public function latest(

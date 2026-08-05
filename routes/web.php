@@ -115,6 +115,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'show'
     ])->name('vehicles.show');
 
+    Route::patch('/vehicles/{device}/information', [
+        VehicleController::class,
+        'updateInformation'
+    ])->name('vehicles.information.update');
+
     Route::get('/geofences', [
         GeofenceController::class,
         'all'

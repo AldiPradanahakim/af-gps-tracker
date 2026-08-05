@@ -30,17 +30,48 @@
                     Informasi Kendaraan
                 </h2>
 
-                <button
-                    id="editVehicleButton"
-                    type="button"
-                    class="inline-flex h-9 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-[11px] font-medium text-slate-700 transition hover:border-blue-300 hover:bg-slate-50"
+                <div
+                    id="vehicleInformationAction"
+                    class="flex items-center gap-3"
                 >
 
-                    <i class="fa-solid fa-pen text-[10px]"></i>
+                    <button
+                        id="editVehicleButton"
+                        type="button"
+                        class="inline-flex h-9 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-[11px] font-medium text-slate-700 transition hover:border-blue-300 hover:bg-slate-50"
+                    >
 
-                    Edit
+                        <i class="fa-solid fa-pen text-[10px]"></i>
 
-                </button>
+                        Edit
+
+                    </button>
+
+                    <button
+                        id="cancelVehicleButton"
+                        type="button"
+                        class="hidden inline-flex h-9 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-[11px] font-medium text-slate-700 transition hover:bg-slate-50"
+                    >
+
+                        <i class="fa-solid fa-xmark text-[10px]"></i>
+
+                        Batal
+
+                    </button>
+
+                    <button
+                        id="saveVehicleButton"
+                        type="button"
+                        class="hidden inline-flex h-9 items-center gap-2 rounded-xl bg-blue-600 px-4 text-[11px] font-medium text-white transition hover:bg-blue-700"
+                    >
+
+                        <i class="fa-solid fa-floppy-disk text-[10px]"></i>
+
+                        Simpan
+
+                    </button>
+
+                </div>
 
             </div>
 
@@ -57,19 +88,59 @@
                 >
 
                     {{-- Nama --}}
-                    <div class="grid grid-cols-[145px_15px_1fr] items-center">
+                    <div
+                        class="grid grid-cols-[145px_15px_1fr] items-center"
+                    >
 
-                        <span class="text-[13px] text-slate-500">
+                        <span
+                            class="text-[13px] text-slate-500"
+                        >
                             Nama Kendaraan
                         </span>
 
-                        <span class="text-center text-slate-400">
+                        <span
+                            class="text-center text-slate-400"
+                        >
                             :
                         </span>
 
-                        <span class="text-[13px] font-semibold text-slate-900">
-                            {{ $device->vehicle->vehicle_name }}
-                        </span>
+                        <div>
+
+                            {{-- ========================================= --}}
+                            {{-- READ MODE --}}
+                            {{-- ========================================= --}}
+
+                            <span
+
+                                id="vehicleNameText"
+
+                                class="text-[13px] font-semibold text-slate-900"
+
+                            >
+
+                                {{ $device->vehicle->vehicle_name }}
+
+                            </span>
+
+                            {{-- ========================================= --}}
+                            {{-- EDIT MODE --}}
+                            {{-- ========================================= --}}
+
+                            <input
+
+                                id="vehicleNameInput"
+
+                                type="text"
+
+                                value="{{ $device->vehicle->vehicle_name }}"
+
+                                maxlength="100"
+
+                                class="hidden h-10 w-full rounded-xl border border-slate-300 px-3 text-[13px] font-medium text-slate-900 outline-none transition focus:border-blue-500"
+
+                            >
+
+                        </div>
 
                     </div>
 
@@ -91,38 +162,128 @@
                     </div>
 
                     {{-- Plat --}}
-                    <div class="grid grid-cols-[145px_15px_1fr] items-center">
+                    <div
+                        class="grid grid-cols-[145px_15px_1fr] items-center"
+                    >
 
-                        <span class="text-[13px] text-slate-500">
+                        <span
+                            class="text-[13px] text-slate-500"
+                        >
                             Nomor Polisi
                         </span>
 
-                        <span class="text-center text-slate-400">
+                        <span
+                            class="text-center text-slate-400"
+                        >
                             :
                         </span>
 
-                        <span class="text-[13px] font-semibold text-slate-900">
-                            {{ $device->vehicle->plate_number ?? '-' }}
-                        </span>
+                        <div>
+
+                            {{-- ========================================= --}}
+                            {{-- READ MODE --}}
+                            {{-- ========================================= --}}
+
+                            <span
+
+                                id="vehiclePlateText"
+
+                                class="text-[13px] font-semibold text-slate-900"
+
+                            >
+
+                                {{ $device->vehicle->plate_number ?? '-' }}
+
+                            </span>
+
+                            {{-- ========================================= --}}
+                            {{-- EDIT MODE --}}
+                            {{-- ========================================= --}}
+
+                            <input
+
+                                id="vehiclePlateInput"
+
+                                type="text"
+
+                                maxlength="20"
+
+                                value="{{ $device->vehicle->plate_number }}"
+
+                                class="hidden h-10 w-full rounded-xl border border-slate-300 px-3 text-[13px] font-medium text-slate-900 outline-none transition focus:border-blue-500"
+
+                            >
+
+                        </div>
 
                     </div>
 
                     {{-- Jenis --}}
-                    <div class="grid grid-cols-[145px_15px_1fr] items-center">
+                    <div
+                        class="grid grid-cols-[145px_15px_1fr] items-center"
+                    >
 
-                        <span class="text-[13px] text-slate-500">
+                        <span
+                            class="text-[13px] text-slate-500"
+                        >
                             Jenis Kendaraan
                         </span>
 
-                        <span class="text-center text-slate-400">
+                        <span
+                            class="text-center text-slate-400"
+                        >
                             :
                         </span>
 
-                        <span class="text-[13px] font-semibold text-slate-900">
-                            {{ ucfirst($device->vehicle->vehicle_type ?? '-') }}
-                        </span>
+                        <div>
 
-                    </div>
+                            {{-- ========================================= --}}
+                            {{-- READ MODE --}}
+                            {{-- ========================================= --}}
+
+                            <span
+
+                                id="vehicleTypeText"
+
+                                class="text-[13px] font-semibold text-slate-900"
+
+                            >
+
+                                {{ ucfirst($device->vehicle->vehicle_type ?? '-') }}
+
+                            </span>
+
+                            {{-- ========================================= --}}
+                            {{-- EDIT MODE --}}
+                            {{-- ========================================= --}}
+
+                            <select
+
+                                id="vehicleTypeInput"
+
+                                class="hidden h-10 w-full rounded-xl border border-slate-300 bg-white px-3 text-[13px] font-medium text-slate-900 outline-none transition focus:border-blue-500"
+
+                            >
+
+                                <option
+                                    value="motor"
+                                    @selected(($device->vehicle->vehicle_type ?? '') == 'motor')
+                                >
+                                    Motor
+                                </option>
+
+                                <option
+                                    value="mobil"
+                                    @selected(($device->vehicle->vehicle_type ?? '') == 'mobil')
+                                >
+                                    Mobil
+                                </option>
+
+                            </select>
+
+                        </div>
+
+</div>
 
                 </div>
 

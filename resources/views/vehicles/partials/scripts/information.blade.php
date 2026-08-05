@@ -14,6 +14,9 @@ window.VehicleInformation = {
 
     activityEndpoint: null,
 
+    updateEndpoint: null,
+
+    isEditing: false,
     /*
     |--------------------------------------------------------------------------
     | Initialize
@@ -30,7 +33,12 @@ window.VehicleInformation = {
         this.activityEndpoint =
             `/vehicles/${state.device.id}/activity`;
 
+        this.updateEndpoint =
+            `/vehicles/${state.device.id}/information`;
+
         this.render();
+
+        this.bindEditEvents();
 
         this.bindEvents();
 
@@ -79,6 +87,482 @@ window.VehicleInformation = {
                 }
 
             );
+
+        }
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Edit Button
+    |--------------------------------------------------------------------------
+    */
+
+    bindEditEvents() {
+
+        const editButton =
+            document.getElementById(
+                'editVehicleButton'
+            );
+
+        const cancelButton =
+            document.getElementById(
+                'cancelVehicleButton'
+            );
+
+        const saveButton =
+            document.getElementById(
+                'saveVehicleButton'
+            );
+
+        editButton?.addEventListener(
+
+            'click',
+
+            () => this.enableEdit()
+
+        );
+
+        cancelButton?.addEventListener(
+
+            'click',
+
+            () => this.disableEdit()
+
+        );
+
+        saveButton?.addEventListener(
+
+            'click',
+
+            () => this.saveInformation()
+
+        );
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Enable Edit
+    |--------------------------------------------------------------------------
+    */
+
+    enableEdit() {
+
+        this.isEditing = true;
+
+        this.toggleField(
+
+            'vehicleName'
+
+        );
+
+        this.toggleField(
+
+            'vehiclePlate'
+
+        );
+
+        this.toggleField(
+
+            'vehicleType'
+
+        );
+
+        document
+            .getElementById(
+                'editVehicleButton'
+            )
+            ?.classList.add('hidden');
+
+        document
+            .getElementById(
+                'cancelVehicleButton'
+            )
+            ?.classList.remove('hidden');
+
+        document
+            .getElementById(
+                'saveVehicleButton'
+            )
+            ?.classList.remove('hidden');
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Disable Edit
+    |--------------------------------------------------------------------------
+    */
+
+    disableEdit() {
+
+        this.isEditing = false;
+
+        document.getElementById(
+
+            'vehicleNameInput'
+
+        ).value =
+
+            document.getElementById(
+
+                'vehicleNameText'
+
+            ).textContent;
+
+        document.getElementById(
+
+            'vehiclePlateInput'
+
+        ).value =
+
+            document.getElementById(
+
+                'vehiclePlateText'
+
+            ).textContent;
+
+        document.getElementById(
+
+            'vehicleTypeInput'
+
+        ).value =
+
+            document.getElementById(
+
+                'vehicleTypeText'
+
+            ).textContent
+                .toLowerCase();
+
+        this.toggleField(
+
+            'vehicleName'
+
+        );
+
+        this.toggleField(
+
+            'vehiclePlate'
+
+        );
+
+        this.toggleField(
+
+            'vehicleType'
+
+        );
+
+        document
+            .getElementById(
+                'editVehicleButton'
+            )
+            ?.classList.remove('hidden');
+
+        document
+            .getElementById(
+                'cancelVehicleButton'
+            )
+            ?.classList.add('hidden');
+
+        document
+            .getElementById(
+                'saveVehicleButton'
+            )
+            ?.classList.add('hidden');
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Toggle Field
+    |--------------------------------------------------------------------------
+    */
+
+    toggleField(prefix) {
+
+        const text = document.getElementById(
+
+            `${prefix}Text`
+
+        );
+
+        const input = document.getElementById(
+
+            `${prefix}Input`
+
+        );
+
+        text?.classList.toggle(
+
+            'hidden'
+
+        );
+
+        input?.classList.toggle(
+
+            'hidden'
+
+        );
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Save
+    |--------------------------------------------------------------------------
+    */
+
+    async saveInformation() {
+
+        try {
+
+            this.setLoading(true);
+
+            const response = await fetch(
+
+                this.updateEndpoint,
+
+                {
+
+                    method: 'PATCH',
+
+                    headers: {
+
+                        'Content-Type': 'application/json',
+
+                        'Accept': 'application/json',
+
+                        'X-CSRF-TOKEN': document
+                            .querySelector(
+                                'meta[name="csrf-token"]'
+                            )
+                            .content,
+
+                        'X-Requested-With':
+                            'XMLHttpRequest',
+
+                    },
+
+                    body: JSON.stringify({
+
+                        vehicle_name:
+                            document.getElementById(
+                                'vehicleNameInput'
+                            ).value,
+
+                        plate_number:
+                            document.getElementById(
+                                'vehiclePlateInput'
+                            ).value,
+
+                        vehicle_type:
+                            document.getElementById(
+                                'vehicleTypeInput'
+                            ).value,
+
+                    }),
+
+                }
+
+            );
+
+            const json = await response.json();
+
+            /*
+            |--------------------------------------------------------------------------
+            | Validation Error
+            |--------------------------------------------------------------------------
+            */
+
+            if (!response.ok) {
+
+                let message = 'Informasi kendaraan gagal diperbarui.';
+
+                if (json.errors) {
+
+                    message = Object
+                        .values(json.errors)
+                        .flat()
+                        .join('\n');
+
+                } else if (json.message) {
+
+                    message = json.message;
+
+                }
+
+                GPSTracker.showToast(
+
+                    'error',
+
+                    'Gagal',
+
+                    message
+
+                );
+
+                return;
+
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Business Error
+            |--------------------------------------------------------------------------
+            */
+
+            if (!json.success) {
+
+                GPSTracker.showToast(
+
+                    'error',
+
+                    'Gagal',
+
+                    json.message ?? 'Terjadi kesalahan.'
+
+                );
+
+                return;
+
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Success
+            |--------------------------------------------------------------------------
+            */
+
+            this.updateVehicleInformation(
+
+                json.data
+
+            );
+
+            GPSTracker.showToast(
+
+                'success',
+
+                'Berhasil',
+
+                json.message
+
+            );
+
+            this.disableEdit();
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+            GPSTracker.showToast(
+
+                'error',
+
+                'Server Error',
+
+                'Terjadi kesalahan pada server.'
+
+            );
+
+        }
+
+        finally {
+
+            this.setLoading(false);
+
+        }
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Update View
+    |--------------------------------------------------------------------------
+    */
+
+    updateVehicleInformation(vehicle) {
+
+        document.getElementById(
+
+            'vehicleNameText'
+
+        ).textContent =
+
+            vehicle.vehicle_name;
+
+        document.getElementById(
+
+            'vehiclePlateText'
+
+        ).textContent =
+
+            vehicle.plate_number;
+
+        document.getElementById(
+
+            'vehicleTypeText'
+
+        ).textContent =
+
+            vehicle.vehicle_type.charAt(0)
+
+            +
+
+            vehicle.vehicle_type.slice(1);
+
+        document.getElementById(
+            'vehicleNameInput'
+        ).value =
+            vehicle.vehicle_name;
+
+        document.getElementById(
+            'vehiclePlateInput'
+        ).value =
+            vehicle.plate_number;
+
+        document.getElementById(
+            'vehicleTypeInput'
+        ).value =
+            vehicle.vehicle_type;
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Loading Button
+    |--------------------------------------------------------------------------
+    */
+
+    setLoading(isLoading) {
+
+        const button = document.getElementById(
+            'saveVehicleButton'
+        );
+
+        if (!button) {
+            return;
+        }
+
+        button.disabled = isLoading;
+
+        if (isLoading) {
+
+            button.innerHTML = `
+                <i class="fa-solid fa-spinner fa-spin mr-2"></i>
+                Menyimpan...
+            `;
+
+        } else {
+
+            button.innerHTML = `
+                <i class="fa-solid fa-floppy-disk mr-2"></i>
+                Simpan
+            `;
 
         }
 
