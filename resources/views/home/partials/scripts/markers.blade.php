@@ -1643,6 +1643,73 @@ document.addEventListener(
         
         /*
         |--------------------------------------------------------------------------
+        | Fit Vehicles
+        |--------------------------------------------------------------------------
+        | Auto-center peta ke marker kendaraan saat halaman dimuat/refresh,
+        | supaya user tidak perlu geser/zoom manual untuk melihat kendaraannya.
+        |--------------------------------------------------------------------------
+        */
+
+        GPSTracker.fitVehicles = function () {
+
+            if (!this.map) {
+
+                return;
+
+            }
+
+            const located = (this.vehicles ?? []).filter(
+                vehicle => this.hasVehicleCoordinate(vehicle)
+            );
+
+            if (!located.length) {
+
+                return;
+
+            }
+
+            if (located.length === 1) {
+
+                const vehicle = located[0];
+
+                this.flyToLocation(
+
+                    vehicle.latitude,
+
+                    vehicle.longitude,
+
+                    this.getMarkerConfig().defaultZoom
+
+                );
+
+                return;
+
+            }
+
+            const bounds = L.latLngBounds(
+
+                located.map(
+                    vehicle => this.getVehicleLatLng(vehicle)
+                )
+
+            );
+
+            if (bounds.isValid()) {
+
+                this.map.fitBounds(bounds, {
+
+                    padding: [60, 60],
+
+                    maxZoom: 16,
+
+                });
+
+            }
+
+        };
+
+        /*
+        |--------------------------------------------------------------------------
         | Initialize Marker
         |--------------------------------------------------------------------------
         */

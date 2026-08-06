@@ -42,9 +42,30 @@ window.VehicleNavigation = {
 
         this.show(
 
-            this.current
+            this.getInitialSection()
 
         );
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Initial Section (dari URL hash, supaya section aktif tidak
+    | balik ke "Informasi Kendaraan" setiap kali halaman di-reload)
+    |--------------------------------------------------------------------------
+    */
+
+    getInitialSection() {
+
+        const hash = window.location.hash.replace('#', '');
+
+        if (hash && this.sections[hash]) {
+
+            return hash;
+
+        }
+
+        return this.current;
 
     },
 
@@ -121,6 +142,16 @@ window.VehicleNavigation = {
         this.setActive(
 
             name
+
+        );
+
+        history.replaceState(
+
+            null,
+
+            '',
+
+            `#${name}`
 
         );
 

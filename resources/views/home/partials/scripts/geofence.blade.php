@@ -289,11 +289,15 @@ document.addEventListener(
 
             );
 
-            polygon.addTo(
+            if (this.isGeofenceTypeVisible(type)) {
 
-                this.getGeofenceLayerGroup(type)
+                polygon.addTo(
 
-            );
+                    this.getGeofenceLayerGroup(type)
+
+                );
+
+            }
 
         };
 
@@ -1474,11 +1478,15 @@ document.addEventListener(
 
             );
 
-            circle.addTo(
+            if (this.isGeofenceTypeVisible('radius')) {
 
-                this.getGeofenceLayerGroup('radius')
+                circle.addTo(
 
-            );
+                    this.getGeofenceLayerGroup('radius')
+
+                );
+
+            }
 
         };
 
@@ -1617,6 +1625,37 @@ document.addEventListener(
 
         };
 
+        /*
+        |--------------------------------------------------------------------------
+        | Cek Visibilitas Tipe (mengikuti checkbox saat ini)
+        |--------------------------------------------------------------------------
+        | Dipakai saat render supaya geofence yang baru ditambahkan tidak
+        | "memaksa" muncul di peta kalau checkbox tipe tsb sedang unchecked.
+        | Checkbox hanya di-reset ke semua-tercentang saat halaman benar-benar
+        | di-refresh (nilai default HTML), bukan setiap kali render ulang.
+        |--------------------------------------------------------------------------
+        */
+
+        GPSTracker.isGeofenceTypeVisible = function (type) {
+
+            const ids = {
+
+                radius: 'toggleRadius',
+
+                administrative: 'toggleAdministrative',
+
+                custom: 'toggleCustom',
+
+            };
+
+            const checkbox = document.getElementById(
+                ids[type]
+            );
+
+            return checkbox ? checkbox.checked : true;
+
+        };
+
         GPSTracker.refreshGeofenceCheckbox = function () {
 
             const all = document.getElementById('toggleAllGeofence');
@@ -1651,34 +1690,23 @@ document.addEventListener(
 
         };
 
+        /*
+        |--------------------------------------------------------------------------
+        | Load Geofences
+        |--------------------------------------------------------------------------
+        | Halaman Home adalah halaman monitoring SELURUH kendaraan, jadi
+        | seluruh geofence milik user (bukan hanya kendaraan yang sedang
+        | dipilih) yang dimuat dan dirender di peta.
+        |--------------------------------------------------------------------------
+        */
+
         GPSTracker.loadGeofences = async function () {
-
-            console.log('========================');
-            console.log('LOAD GEOFENCES');
-
-            const deviceId = this.getSelectedVehicle();
-
-            console.log('Selected Vehicle :', deviceId);
-
-            if (
-                deviceId === null ||
-                deviceId === undefined ||
-                deviceId === ''
-            ) {
-
-                console.warn('Device ID kosong');
-
-                this.geofences = [];
-
-                return;
-
-            }
 
             try {
 
                 const response = await fetch(
 
-                    `/geofence/device/${deviceId}`,
+                    '/geofences',
 
                     {
 
@@ -1694,8 +1722,6 @@ document.addEventListener(
 
                 );
 
-                console.log('Response Status :', response.status);
-
                 if (!response.ok) {
 
                     throw new Error(
@@ -1705,8 +1731,6 @@ document.addEventListener(
                 }
 
                 const result = await response.json();
-
-                console.log('Response :', result);
 
                 if (!result.success) {
 
@@ -1721,16 +1745,14 @@ document.addEventListener(
                     ? result.data
                     : [];
 
-                console.log(
-                    'Loaded Geofences :',
-                    this.geofences
-                );
-
             }
 
             catch (error) {
 
-                console.error(error);
+                console.error(
+                    '[Geofence] Gagal memuat geofence:',
+                    error
+                );
 
                 this.geofences = [];
 
@@ -3445,7 +3467,7 @@ document.addEventListener(
         |--------------------------------------------------------------------------
         */
 
-        GPSTracker.initializeGeofence = function () {
+        GPSTracker.initializeGeofence = async function () {
 
             if (
 
@@ -3463,7 +3485,15 @@ document.addEventListener(
                 return;
             }
 
+            await this.loadGeofences();
+
             this.renderGeofences();
+
+            requestAnimationFrame(() => {
+
+                this.refreshGeofenceCheckbox();
+
+            });
 
             if (!this.geofence.eventsBound) {
 

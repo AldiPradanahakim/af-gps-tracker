@@ -125,6 +125,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'all'
     ])->name('geofences.all');
 
+    Route::get('/geofences/types', [
+        GeofenceController::class,
+        'types'
+    ])->name('geofences.types');
+
     Route::get('/geofence/device/{device}', [
         GeofenceController::class,
         'index'
@@ -184,6 +189,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         GeofenceController::class,
         'destroy'
     ])->name('geofences.destroy');
+
+    /**
+     * Update Geofence (nama, status, geometry)
+     */
+    Route::patch('/geofences/{geofence}', [
+        GeofenceController::class,
+        'update'
+    ])->name('geofences.update');
 
     /**
      * Enable / Disable Geofence

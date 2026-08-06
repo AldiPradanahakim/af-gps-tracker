@@ -368,7 +368,7 @@ class VehicleRepository
             ->firstWhere('type', 'administrative');
 
         $polygon = $device->geofences
-            ->firstWhere('type', 'polygon');
+            ->firstWhere('type', 'custom');
 
         /*
         |--------------------------------------------------------------------------

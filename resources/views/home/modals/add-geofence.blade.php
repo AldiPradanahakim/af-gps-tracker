@@ -162,6 +162,13 @@
 
                         </option>
 
+                        <option
+                            value="all">
+
+                            Semua Kendaraan
+
+                        </option>
+
                         @foreach($devices as $device)
 
                             <option
@@ -1847,6 +1854,36 @@
 
                 }
 
+                /*
+                |--------------------------------------------------------------------------
+                | Semua Kendaraan: tidak ada satu titik spesifik, tiap
+                | kendaraan akan pakai titik home/GPS miliknya sendiri
+                | saat disimpan di backend.
+                |--------------------------------------------------------------------------
+                */
+
+                if (option.value === 'all') {
+
+                    latitudeInput.value = '';
+
+                    longitudeInput.value = '';
+
+                    latitudePreview.value = '';
+
+                    longitudePreview.value = '';
+
+                    radiusCoordinate.innerHTML =
+
+                        'Setiap kendaraan akan menggunakan titik '
+                        + (radiusHome.checked ? 'Home Location' : 'GPS terakhir')
+                        + ' miliknya masing-masing.';
+
+                    GPSTracker.removePreviewLayer?.();
+
+                    return;
+
+                }
+
                 let lat = null;
 
                 let lng = null;
@@ -2717,7 +2754,9 @@
 
             if (
 
-                radiusType.checked
+                radiusType.checked &&
+
+                deviceSelect.value !== 'all'
 
             ) {
 
@@ -3048,6 +3087,213 @@
 
         /*
         |--------------------------------------------------------------------------
+        | Geofence Availability (BR-01)
+        |--------------------------------------------------------------------------
+        | 1 kendaraan maksimal 1 geofence per tipe (radius / administrative /
+        | custom). Tipe/kendaraan yang sudah lengkap dinonaktifkan supaya
+        | tidak bisa ditambahkan lagi dari sini.
+        |--------------------------------------------------------------------------
+        */
+
+        const GEOFENCE_TYPES = ['radius', 'administrative', 'custom'];
+
+        let geofenceTypesByDevice = {};
+
+        async function loadGeofenceAvailability() {
+
+            try {
+
+                const response = await fetch(
+                    '/geofences/types',
+                    {
+                        headers: {
+                            Accept: 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                    }
+                );
+
+                const result = await response.json();
+
+                geofenceTypesByDevice = result.data ?? {};
+
+            } catch (error) {
+
+                console.error(error);
+
+                geofenceTypesByDevice = {};
+
+            }
+
+            applyDeviceAvailability();
+
+            applyTypeAvailability();
+
+        }
+
+        function deviceHasAllTypes(deviceId) {
+
+            const types = geofenceTypesByDevice[deviceId] ?? [];
+
+            return GEOFENCE_TYPES.every(
+                type => types.includes(type)
+            );
+
+        }
+
+        function applyDeviceAvailability() {
+
+            let anyAvailable = false;
+
+            Array.from(deviceSelect.options).forEach(option => {
+
+                if (!option.value || option.value === 'all') {
+                    return;
+                }
+
+                const exhausted = deviceHasAllTypes(option.value);
+
+                option.disabled = exhausted;
+
+                if (!exhausted) {
+                    anyAvailable = true;
+                }
+
+            });
+
+            const allOption = deviceSelect.querySelector(
+                'option[value="all"]'
+            );
+
+            if (allOption) {
+                allOption.disabled = !anyAvailable;
+            }
+
+            const addTrigger = document.getElementById('addGeofence');
+
+            if (addTrigger) {
+
+                addTrigger.disabled = !anyAvailable;
+
+                addTrigger.classList.toggle('opacity-50', !anyAvailable);
+
+                addTrigger.classList.toggle('cursor-not-allowed', !anyAvailable);
+
+                addTrigger.title = anyAvailable
+                    ? ''
+                    : 'Semua kendaraan sudah memiliki seluruh tipe geofence';
+
+            }
+
+        }
+
+        function isTypeAvailable(type) {
+
+            const selected = deviceSelect.value;
+
+            if (!selected) {
+                return true;
+            }
+
+            if (selected === 'all') {
+
+                return Array.from(deviceSelect.options).some(option => {
+
+                    if (!option.value || option.value === 'all') {
+                        return false;
+                    }
+
+                    const types = geofenceTypesByDevice[option.value] ?? [];
+
+                    return !types.includes(type);
+
+                });
+
+            }
+
+            const types = geofenceTypesByDevice[selected] ?? [];
+
+            return !types.includes(type);
+
+        }
+
+        function applyTypeAvailability() {
+
+            const availability = {
+
+                radius: isTypeAvailable('radius'),
+
+                administrative: isTypeAvailable('administrative'),
+
+                custom: isTypeAvailable('custom'),
+
+            };
+
+            radiusType.disabled = !availability.radius;
+
+            administrativeType.disabled = !availability.administrative;
+
+            customType.disabled = !availability.custom;
+
+            radiusCard.classList.toggle('opacity-40', !availability.radius);
+            radiusCard.classList.toggle('cursor-not-allowed', !availability.radius);
+
+            administrativeCard.classList.toggle('opacity-40', !availability.administrative);
+            administrativeCard.classList.toggle('cursor-not-allowed', !availability.administrative);
+
+            customCard.classList.toggle('opacity-40', !availability.custom);
+            customCard.classList.toggle('cursor-not-allowed', !availability.custom);
+
+            /*
+            |--------------------------------------------------------------------------
+            | Kalau tipe yang lagi dipilih ternyata tidak tersedia,
+            | pindah otomatis ke tipe pertama yang masih tersedia.
+            |--------------------------------------------------------------------------
+            */
+
+            const current =
+                radiusType.checked ? 'radius'
+                : administrativeType.checked ? 'administrative'
+                : 'custom';
+
+            if (!availability[current]) {
+
+                const fallback = GEOFENCE_TYPES.find(
+                    type => availability[type]
+                );
+
+                if (fallback === 'radius') radiusType.checked = true;
+                if (fallback === 'administrative') administrativeType.checked = true;
+                if (fallback === 'custom') customType.checked = true;
+
+                toggleType();
+
+            }
+
+        }
+
+        deviceSelect.addEventListener(
+            'change',
+            applyTypeAvailability
+        );
+
+        openButton?.addEventListener(
+            'click',
+            loadGeofenceAvailability
+        );
+
+        document.addEventListener(
+            'gpstracker:geofence-created',
+            loadGeofenceAvailability
+        );
+
+        document.addEventListener(
+            'gpstracker:geofence-deleted',
+            loadGeofenceAvailability
+        );
+
+        /*
+        |--------------------------------------------------------------------------
         | Initialize
         |--------------------------------------------------------------------------
         */
@@ -3065,6 +3311,8 @@
                     updateRadiusSource();
 
                 }
+
+                loadGeofenceAvailability();
 
             }
 

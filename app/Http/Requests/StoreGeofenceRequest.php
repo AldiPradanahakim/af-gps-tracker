@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Device;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -41,8 +42,19 @@ class StoreGeofenceRequest extends FormRequest
 
             'device_id' => [
                 'required',
-                'integer',
-                'exists:devices,id',
+                function ($attribute, $value, $fail) {
+
+                    if ($value === 'all') {
+                        return;
+                    }
+
+                    if (
+                        ! is_numeric($value) ||
+                        ! Device::whereKey($value)->exists()
+                    ) {
+                        $fail('Kendaraan tidak ditemukan.');
+                    }
+                },
             ],
 
             /*

@@ -34,6 +34,40 @@
                 Seluruh pengaturan dilakukan langsung pada halaman ini.
             </p>
 
+            {{-- ========================================================= --}}
+            {{-- Filter Tampilan Peta --}}
+            {{-- ========================================================= --}}
+
+            <div
+                class="mt-5 flex flex-wrap items-center gap-5 border-t border-slate-100 pt-4"
+            >
+
+                <span class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                    Tampilkan di Peta
+                </span>
+
+                <label class="flex cursor-pointer items-center gap-2 text-[13px] text-slate-700">
+                    <input id="toggleAllGeofenceMap" type="checkbox" checked class="h-4 w-4 rounded border-slate-300 text-blue-600">
+                    Semua
+                </label>
+
+                <label class="flex cursor-pointer items-center gap-2 text-[13px] text-slate-700">
+                    <input id="toggleRadiusMap" type="checkbox" checked class="h-4 w-4 rounded border-slate-300 text-blue-600">
+                    Radius
+                </label>
+
+                <label class="flex cursor-pointer items-center gap-2 text-[13px] text-slate-700">
+                    <input id="toggleAdministrativeMap" type="checkbox" checked class="h-4 w-4 rounded border-slate-300 text-emerald-600">
+                    Administrative
+                </label>
+
+                <label class="flex cursor-pointer items-center gap-2 text-[13px] text-slate-700">
+                    <input id="togglePolygonMap" type="checkbox" checked class="h-4 w-4 rounded border-slate-300 text-violet-600">
+                    Polygon
+                </label>
+
+            </div>
+
         </div>
 
     </section>
@@ -145,23 +179,7 @@
                                 </span>
 
                                 <span class="font-semibold text-slate-900">
-                                    {{ number_format($radius->radius) }} Meter
-                                </span>
-
-                            </div>
-
-                            <div class="grid grid-cols-[110px_15px_1fr]">
-
-                                <span class="text-[12px] text-slate-500">
-                                    Trigger
-                                </span>
-
-                                <span class="text-slate-400">
-                                    :
-                                </span>
-
-                                <span class="font-semibold text-slate-900">
-                                    {{ ucfirst($radius->trigger_type) }}
+                                    {{ number_format($radius->config['radius'] ?? 0) }} Meter
                                 </span>
 
                             </div>
@@ -178,7 +196,7 @@
 
                                 <span>
 
-                                    @if($radius->is_active)
+                                    @if($radius->status)
 
                                         <span
                                             class="rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-semibold text-emerald-700"
@@ -340,6 +358,10 @@
                     class="space-y-5"
                 >
 
+                    <input id="editRadiusId" type="hidden" value="{{ $radius->id ?? '' }}">
+                    <input id="editRadiusLatitude" type="hidden" value="{{ $radius->config['center']['lat'] ?? '' }}">
+                    <input id="editRadiusLongitude" type="hidden" value="{{ $radius->config['center']['lng'] ?? '' }}">
+
                     {{-- Nama --}}
 
                     <div>
@@ -384,47 +406,11 @@
 
                             type="number"
 
-                            value="{{ $radius->radius ?? '' }}"
+                            value="{{ $radius->config['radius'] ?? '' }}"
 
                             class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none transition focus:border-blue-500"
 
                         >
-
-                    </div>
-
-                    {{-- Trigger --}}
-
-                    <div>
-
-                        <label
-                            class="mb-2 block text-[12px] font-medium text-slate-700"
-                        >
-                            Trigger
-                        </label>
-
-                        <select
-
-                            id="editRadiusTrigger"
-
-                            name="trigger"
-
-                            class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none"
-
-                        >
-
-                            <option value="enter">
-                                Enter
-                            </option>
-
-                            <option value="exit">
-                                Exit
-                            </option>
-
-                            <option value="both">
-                                Enter & Exit
-                            </option>
-
-                        </select>
 
                     </div>
 
@@ -448,11 +434,11 @@
 
                         >
 
-                            <option value="1">
+                            <option value="1" @selected(($radius->status ?? true))>
                                 Aktif
                             </option>
 
-                            <option value="0">
+                            <option value="0" @selected(! ($radius->status ?? true))>
                                 Nonaktif
                             </option>
 
@@ -475,11 +461,12 @@
                             ></i>
 
                             <p
+                                id="radiusCenterStatus"
                                 class="text-[12px] leading-6 text-amber-700"
                             >
                                 Jika ingin mengubah titik pusat Radius,
-                                klik <b>Ubah Titik Radius</b>,
-                                kemudian pilih lokasi baru pada peta.
+                                klik <b>Ubah Titik</b>,
+                                kemudian klik lokasi baru pada peta.
                             </p>
 
                         </div>
@@ -637,7 +624,7 @@
                             <div class="grid grid-cols-[110px_15px_1fr]">
 
                                 <span class="text-[12px] text-slate-500">
-                                    Provinsi
+                                    Wilayah
                                 </span>
 
                                 <span class="text-slate-400">
@@ -645,7 +632,7 @@
                                 </span>
 
                                 <span class="font-semibold text-slate-900">
-                                    {{ $administrative->province }}
+                                    {{ $administrative->config['display_name'] ?? '-' }}
                                 </span>
 
                             </div>
@@ -653,7 +640,7 @@
                             <div class="grid grid-cols-[110px_15px_1fr]">
 
                                 <span class="text-[12px] text-slate-500">
-                                    Kota / Kab.
+                                    Tipe Wilayah
                                 </span>
 
                                 <span class="text-slate-400">
@@ -661,39 +648,7 @@
                                 </span>
 
                                 <span class="font-semibold text-slate-900">
-                                    {{ $administrative->city }}
-                                </span>
-
-                            </div>
-
-                            <div class="grid grid-cols-[110px_15px_1fr]">
-
-                                <span class="text-[12px] text-slate-500">
-                                    Kecamatan
-                                </span>
-
-                                <span class="text-slate-400">
-                                    :
-                                </span>
-
-                                <span class="font-semibold text-slate-900">
-                                    {{ $administrative->district }}
-                                </span>
-
-                            </div>
-
-                            <div class="grid grid-cols-[110px_15px_1fr]">
-
-                                <span class="text-[12px] text-slate-500">
-                                    Trigger
-                                </span>
-
-                                <span class="text-slate-400">
-                                    :
-                                </span>
-
-                                <span class="font-semibold text-slate-900">
-                                    {{ ucfirst($administrative->trigger_type) }}
+                                    {{ $administrative->config['administrative_type'] === 'village' ? 'Kelurahan' : 'Kecamatan' }}
                                 </span>
 
                             </div>
@@ -710,7 +665,7 @@
 
                                 <span>
 
-                                    @if($administrative->is_active)
+                                    @if($administrative->status)
 
                                         <span
                                             class="rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-semibold text-emerald-700"
@@ -866,6 +821,11 @@
 
                 >
 
+                    <input id="editAdministrativeId" type="hidden" value="{{ $administrative->id ?? '' }}">
+                    <input id="editAdministrativeGeojson" type="hidden" value="">
+                    <input id="editAdministrativeDisplayName" type="hidden" value="{{ $administrative->config['display_name'] ?? '' }}">
+                    <input id="editAdministrativeAreaType" type="hidden" value="{{ $administrative->config['administrative_type'] ?? '' }}">
+
                     {{-- Nama --}}
 
                     <div>
@@ -892,191 +852,72 @@
 
                     </div>
 
-                    {{-- Provinsi --}}
+                    {{-- Cari Wilayah --}}
 
                     <div>
 
                         <label
                             class="mb-2 block text-[12px] font-medium text-slate-700"
                         >
-                            Provinsi
+                            Wilayah (opsional, biarkan kosong jika tidak diubah)
                         </label>
 
-                        <select
+                        <div class="relative">
 
-                            id="editAdministrativeProvince"
+                            <input
 
-                            name="province"
+                                id="editAdministrativeSearch"
 
-                            class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none focus:border-emerald-500"
+                                type="text"
 
-                        >
+                                autocomplete="off"
 
-                            <option value="">
-                                Pilih Provinsi
-                            </option>
+                                value="{{ $administrative->config['display_name'] ?? '' }}"
 
-                        </select>
+                                placeholder="Cari kecamatan atau kelurahan..."
 
-                    </div>
-
-                    {{-- Kota & Kecamatan --}}
-
-                    <div
-                        class="grid grid-cols-2 gap-4"
-                    >
-
-                        <div>
-
-                            <label
-                                class="mb-2 block text-[12px] font-medium text-slate-700"
-                            >
-                                Kota / Kabupaten
-                            </label>
-
-                            <select
-
-                                id="editAdministrativeCity"
-
-                                name="city"
-
-                                class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none focus:border-emerald-500"
+                                class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none transition focus:border-emerald-500"
 
                             >
 
-                                <option value="">
-                                    Pilih Kota
-                                </option>
-
-                            </select>
-
-                        </div>
-
-                        <div>
-
-                            <label
-                                class="mb-2 block text-[12px] font-medium text-slate-700"
-                            >
-                                Kecamatan
-                            </label>
-
-                            <select
-
-                                id="editAdministrativeDistrict"
-
-                                name="district"
-
-                                class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none focus:border-emerald-500"
-
-                            >
-
-                                <option value="">
-                                    Pilih Kecamatan
-                                </option>
-
-                            </select>
+                            <div
+                                id="editAdministrativeResult"
+                                class="absolute left-0 right-0 top-full z-[100] mt-2 hidden max-h-64 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-lg"
+                            ></div>
 
                         </div>
 
                     </div>
 
-                    {{-- Kelurahan --}}
+                    {{-- Status --}}
 
                     <div>
 
                         <label
                             class="mb-2 block text-[12px] font-medium text-slate-700"
                         >
-                            Kelurahan / Desa
+                            Status
                         </label>
 
                         <select
 
-                            id="editAdministrativeVillage"
+                            id="editAdministrativeStatus"
 
-                            name="village"
+                            name="status"
 
-                            class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none focus:border-emerald-500"
+                            class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none"
 
                         >
 
-                            <option value="">
-                                Pilih Kelurahan
+                            <option value="1" @selected(($administrative->status ?? true))>
+                                Aktif
+                            </option>
+
+                            <option value="0" @selected(! ($administrative->status ?? true))>
+                                Nonaktif
                             </option>
 
                         </select>
-
-                    </div>
-
-                    {{-- Trigger & Status --}}
-
-                    <div
-                        class="grid grid-cols-2 gap-4"
-                    >
-
-                        <div>
-
-                            <label
-                                class="mb-2 block text-[12px] font-medium text-slate-700"
-                            >
-                                Trigger
-                            </label>
-
-                            <select
-
-                                id="editAdministrativeTrigger"
-
-                                name="trigger"
-
-                                class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none"
-
-                            >
-
-                                <option value="enter">
-                                    Enter
-                                </option>
-
-                                <option value="exit">
-                                    Exit
-                                </option>
-
-                                <option value="both">
-                                    Enter & Exit
-                                </option>
-
-                            </select>
-
-                        </div>
-
-                        <div>
-
-                            <label
-                                class="mb-2 block text-[12px] font-medium text-slate-700"
-                            >
-                                Status
-                            </label>
-
-                            <select
-
-                                id="editAdministrativeStatus"
-
-                                name="status"
-
-                                class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none"
-
-                            >
-
-                                <option value="1">
-                                    Aktif
-                                </option>
-
-                                <option value="0">
-                                    Nonaktif
-                                </option>
-
-                            </select>
-
-                        </div>
 
                     </div>
 
@@ -1268,60 +1109,7 @@
                                 <span
                                     class="font-semibold text-slate-900"
                                 >
-                                    {{ $polygon->total_point ?? '-' }}
-                                </span>
-
-                            </div>
-
-                            {{-- Luas Area --}}
-
-                            <div
-                                class="grid grid-cols-[110px_15px_1fr]"
-                            >
-
-                                <span
-                                    class="text-[12px] text-slate-500"
-                                >
-                                    Luas Area
-                                </span>
-
-                                <span
-                                    class="text-slate-400"
-                                >
-                                    :
-                                </span>
-
-                                <span
-                                    class="font-semibold text-slate-900"
-                                >
-                                    {{ $polygon->area ?? '-' }}
-                                    m²
-                                </span>
-
-                            </div>
-
-                            {{-- Trigger --}}
-
-                            <div
-                                class="grid grid-cols-[110px_15px_1fr]"
-                            >
-
-                                <span
-                                    class="text-[12px] text-slate-500"
-                                >
-                                    Trigger
-                                </span>
-
-                                <span
-                                    class="text-slate-400"
-                                >
-                                    :
-                                </span>
-
-                                <span
-                                    class="font-semibold text-slate-900"
-                                >
-                                    {{ ucfirst($polygon->trigger_type) }}
+                                    {{ count($polygon->config['geometry']['coordinates'][0] ?? []) }}
                                 </span>
 
                             </div>
@@ -1346,7 +1134,7 @@
 
                                 <span>
 
-                                    @if($polygon->is_active)
+                                    @if($polygon->status)
 
                                         <span
                                             class="rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-semibold text-emerald-700"
@@ -1524,6 +1312,9 @@
 
                 >
 
+                    <input id="editPolygonId" type="hidden" value="{{ $polygon->id ?? '' }}">
+                    <input id="editPolygonGeojson" type="hidden" value="">
+
                     {{-- Nama Polygon --}}
 
                     <div>
@@ -1550,75 +1341,35 @@
 
                     </div>
 
-                    {{-- Trigger & Status --}}
+                    {{-- Status --}}
 
-                    <div
-                        class="grid grid-cols-2 gap-4"
-                    >
+                    <div>
 
-                        <div>
+                        <label
+                            class="mb-2 block text-[12px] font-medium text-slate-700"
+                        >
+                            Status
+                        </label>
 
-                            <label
-                                class="mb-2 block text-[12px] font-medium text-slate-700"
-                            >
-                                Trigger
-                            </label>
+                        <select
 
-                            <select
+                            id="editPolygonStatus"
 
-                                id="editPolygonTrigger"
+                            name="status"
 
-                                name="trigger"
+                            class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none transition focus:border-violet-500"
 
-                                class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none transition focus:border-violet-500"
+                        >
 
-                            >
+                            <option value="1" @selected(($polygon->status ?? true))>
+                                Aktif
+                            </option>
 
-                                <option value="enter">
-                                    Enter
-                                </option>
+                            <option value="0" @selected(! ($polygon->status ?? true))>
+                                Nonaktif
+                            </option>
 
-                                <option value="exit">
-                                    Exit
-                                </option>
-
-                                <option value="both">
-                                    Enter & Exit
-                                </option>
-
-                            </select>
-
-                        </div>
-
-                        <div>
-
-                            <label
-                                class="mb-2 block text-[12px] font-medium text-slate-700"
-                            >
-                                Status
-                            </label>
-
-                            <select
-
-                                id="editPolygonStatus"
-
-                                name="status"
-
-                                class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none transition focus:border-violet-500"
-
-                            >
-
-                                <option value="1">
-                                    Aktif
-                                </option>
-
-                                <option value="0">
-                                    Nonaktif
-                                </option>
-
-                            </select>
-
-                        </div>
+                        </select>
 
                     </div>
 
@@ -1809,6 +1560,8 @@
 
                     <input
 
+                        id="createRadiusName"
+
                         name="name"
 
                         type="text"
@@ -1818,6 +1571,38 @@
                         placeholder="Contoh : Rumah"
 
                     >
+
+                </div>
+
+                {{-- Sumber Titik --}}
+
+                <div>
+
+                    <label
+                        class="mb-2 block text-[12px] font-semibold text-slate-700"
+                    >
+                        Titik Pusat
+                    </label>
+
+                    <select
+
+                        id="createRadiusSource"
+
+                        name="radius_source"
+
+                        class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none transition focus:border-blue-500"
+
+                    >
+
+                        <option value="home_location">
+                            Home Location
+                        </option>
+
+                        <option value="current_location">
+                            Lokasi GPS Terakhir
+                        </option>
+
+                    </select>
 
                 </div>
 
@@ -1833,49 +1618,23 @@
 
                     <input
 
+                        id="createRadiusValue"
+
                         name="radius"
 
                         type="number"
+
+                        min="50"
+
+                        max="50000"
+
+                        value="500"
 
                         class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none transition focus:border-blue-500"
 
                         placeholder="100"
 
                     >
-
-                </div>
-
-                {{-- Trigger --}}
-
-                <div>
-
-                    <label
-                        class="mb-2 block text-[12px] font-semibold text-slate-700"
-                    >
-                        Trigger
-                    </label>
-
-                    <select
-
-                        name="trigger"
-
-                        class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none transition focus:border-blue-500"
-
-                    >
-
-                        <option value="enter">
-                            Enter
-                        </option>
-
-                        <option value="exit">
-                            Exit
-                        </option>
-
-                        <option value="both">
-                            Enter & Exit
-                        </option>
-
-                    </select>
 
                 </div>
 
@@ -1890,6 +1649,8 @@
                     </label>
 
                     <select
+
+                        id="createRadiusStatus"
 
                         name="status"
 
@@ -1926,9 +1687,10 @@
                         <p
                             class="text-[12px] leading-6 text-blue-700"
                         >
-                            Setelah menekan tombol <b>Simpan</b>,
-                            silakan klik pada peta untuk menentukan
-                            titik pusat Radius Geofence.
+                            Radius akan menggunakan koordinat
+                            <b>Home Location</b> atau
+                            <b>Lokasi GPS Terakhir</b> kendaraan ini
+                            sesuai pilihan Anda.
                         </p>
 
                     </div>
@@ -1964,6 +1726,8 @@
                     id="saveCreateRadius"
 
                     type="submit"
+
+                    form="createRadiusForm"
 
                     class="rounded-xl bg-blue-600 px-5 py-2.5 text-[13px] font-semibold text-white transition hover:bg-blue-700"
 
@@ -2067,6 +1831,8 @@
 
                     <input
 
+                        id="createAdministrativeName"
+
                         name="name"
 
                         type="text"
@@ -2079,179 +1845,79 @@
 
                 </div>
 
-                {{-- Provinsi --}}
+                <input id="createAdministrativeGeojson" type="hidden">
+                <input id="createAdministrativeDisplayName" type="hidden">
+                <input id="createAdministrativeAreaType" type="hidden">
+
+                {{-- Cari Wilayah --}}
 
                 <div>
 
                     <label
                         class="mb-2 block text-[12px] font-semibold text-slate-700"
                     >
-                        Provinsi
+                        Cari Wilayah
                     </label>
 
-                    <select
+                    <div class="relative">
 
-                        name="province"
+                        <input
 
-                        class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none focus:border-emerald-500"
+                            id="createAdministrativeSearch"
 
-                    >
+                            type="text"
 
-                        <option value="">
-                            Pilih Provinsi
-                        </option>
+                            autocomplete="off"
 
-                    </select>
-
-                </div>
-
-                {{-- Kota & Kecamatan --}}
-
-                <div
-                    class="grid grid-cols-2 gap-4"
-                >
-
-                    <div>
-
-                        <label
-                            class="mb-2 block text-[12px] font-semibold text-slate-700"
-                        >
-                            Kota / Kabupaten
-                        </label>
-
-                        <select
-
-                            name="city"
+                            placeholder="Cari kecamatan atau kelurahan..."
 
                             class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none focus:border-emerald-500"
 
                         >
 
-                            <option value="">
-                                Pilih Kota
-                            </option>
-
-                        </select>
-
-                    </div>
-
-                    <div>
-
-                        <label
-                            class="mb-2 block text-[12px] font-semibold text-slate-700"
-                        >
-                            Kecamatan
-                        </label>
-
-                        <select
-
-                            name="district"
-
-                            class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none focus:border-emerald-500"
-
-                        >
-
-                            <option value="">
-                                Pilih Kecamatan
-                            </option>
-
-                        </select>
+                        <div
+                            id="createAdministrativeResult"
+                            class="absolute left-0 right-0 top-full z-[100] mt-2 hidden max-h-64 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-lg"
+                        ></div>
 
                     </div>
+
+                    <p
+                        id="createAdministrativeSelected"
+                        class="mt-2 hidden text-[12px] font-semibold text-emerald-700"
+                    ></p>
 
                 </div>
 
-                {{-- Kelurahan --}}
+                {{-- Status --}}
 
                 <div>
 
                     <label
                         class="mb-2 block text-[12px] font-semibold text-slate-700"
                     >
-                        Kelurahan / Desa
+                        Status
                     </label>
 
                     <select
 
-                        name="village"
+                        id="createAdministrativeStatus"
+
+                        name="status"
 
                         class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none focus:border-emerald-500"
 
                     >
 
-                        <option value="">
-                            Pilih Kelurahan
+                        <option value="1">
+                            Aktif
+                        </option>
+
+                        <option value="0">
+                            Nonaktif
                         </option>
 
                     </select>
-
-                </div>
-
-                {{-- Trigger --}}
-
-                <div
-                    class="grid grid-cols-2 gap-4"
-                >
-
-                    <div>
-
-                        <label
-                            class="mb-2 block text-[12px] font-semibold text-slate-700"
-                        >
-                            Trigger
-                        </label>
-
-                        <select
-
-                            name="trigger"
-
-                            class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none focus:border-emerald-500"
-
-                        >
-
-                            <option value="enter">
-                                Enter
-                            </option>
-
-                            <option value="exit">
-                                Exit
-                            </option>
-
-                            <option value="both">
-                                Enter & Exit
-                            </option>
-
-                        </select>
-
-                    </div>
-
-                    <div>
-
-                        <label
-                            class="mb-2 block text-[12px] font-semibold text-slate-700"
-                        >
-                            Status
-                        </label>
-
-                        <select
-
-                            name="status"
-
-                            class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none focus:border-emerald-500"
-
-                        >
-
-                            <option value="1">
-                                Aktif
-                            </option>
-
-                            <option value="0">
-                                Nonaktif
-                            </option>
-
-                        </select>
-
-                    </div>
 
                 </div>
 
@@ -2310,6 +1976,8 @@
                     id="saveCreateAdministrative"
 
                     type="submit"
+
+                    form="createAdministrativeForm"
 
                     class="rounded-xl bg-emerald-600 px-5 py-2.5 text-[13px] font-semibold text-white hover:bg-emerald-700"
 
@@ -2415,6 +2083,8 @@
 
                     <input
 
+                        id="createPolygonName"
+
                         name="name"
 
                         type="text"
@@ -2427,71 +2097,37 @@
 
                 </div>
 
-                {{-- Trigger --}}
+                <input id="createPolygonGeojson" type="hidden">
 
-                <div
-                    class="grid grid-cols-2 gap-4"
-                >
+                {{-- Status --}}
 
-                    <div>
+                <div>
 
-                        <label
-                            class="mb-2 block text-[12px] font-semibold text-slate-700"
-                        >
-                            Trigger
-                        </label>
+                    <label
+                        class="mb-2 block text-[12px] font-semibold text-slate-700"
+                    >
+                        Status
+                    </label>
 
-                        <select
+                    <select
 
-                            name="trigger"
+                        id="createPolygonStatus"
 
-                            class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none transition focus:border-violet-500"
+                        name="status"
 
-                        >
+                        class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none transition focus:border-violet-500"
 
-                            <option value="enter">
-                                Enter
-                            </option>
+                    >
 
-                            <option value="exit">
-                                Exit
-                            </option>
+                        <option value="1">
+                            Aktif
+                        </option>
 
-                            <option value="both">
-                                Enter & Exit
-                            </option>
+                        <option value="0">
+                            Nonaktif
+                        </option>
 
-                        </select>
-
-                    </div>
-
-                    <div>
-
-                        <label
-                            class="mb-2 block text-[12px] font-semibold text-slate-700"
-                        >
-                            Status
-                        </label>
-
-                        <select
-
-                            name="status"
-
-                            class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none transition focus:border-violet-500"
-
-                        >
-
-                            <option value="1">
-                                Aktif
-                            </option>
-
-                            <option value="0">
-                                Nonaktif
-                            </option>
-
-                        </select>
-
-                    </div>
+                    </select>
 
                 </div>
 
@@ -2584,6 +2220,8 @@
                     id="saveCreatePolygon"
 
                     type="submit"
+
+                    form="createPolygonForm"
 
                     class="rounded-xl bg-violet-600 px-5 py-2.5 text-[13px] font-semibold text-white transition hover:bg-violet-700"
 
