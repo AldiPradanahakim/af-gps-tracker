@@ -195,6 +195,96 @@ window.VehicleGeofence = {
 
         this.bindDelete();
 
+        this.bindNotificationEvents();
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Notifikasi Geofence (auto-save saat toggle diubah)
+    |--------------------------------------------------------------------------
+    */
+
+    bindNotificationEvents() {
+
+        document.getElementById('geofenceEmailNotification')
+            ?.addEventListener('change', () => this.saveNotificationSetting());
+
+        document.getElementById('geofenceWhatsappNotification')
+            ?.addEventListener('change', () => this.saveNotificationSetting());
+
+    },
+
+    async saveNotificationSetting() {
+
+        const emailInput = document.getElementById('geofenceEmailNotification');
+
+        const whatsappInput = document.getElementById('geofenceWhatsappNotification');
+
+        try {
+
+            const response = await fetch(
+
+                `/vehicles/${this.state.device.id}/notification-setting`,
+
+                {
+
+                    method: 'PATCH',
+
+                    headers: {
+
+                        'Content-Type': 'application/json',
+
+                        'Accept': 'application/json',
+
+                        'X-CSRF-TOKEN': document
+                            .querySelector('meta[name="csrf-token"]')
+                            .content,
+
+                        'X-Requested-With': 'XMLHttpRequest',
+
+                    },
+
+                    body: JSON.stringify({
+
+                        email_notification: Boolean(emailInput?.checked),
+
+                        whatsapp_notification: Boolean(whatsappInput?.checked),
+
+                    }),
+
+                }
+
+            );
+
+            const json = await response.json();
+
+            if (!response.ok || !json.success) {
+
+                const message = json.errors
+                    ? Object.values(json.errors).flat().join('\n')
+                    : (json.message ?? 'Gagal menyimpan pengaturan notifikasi.');
+
+                this.toast('error', 'Gagal', message);
+
+                return;
+
+            }
+
+            this.toast(
+                'success',
+                'Berhasil',
+                json.message ?? 'Pengaturan notifikasi berhasil disimpan.'
+            );
+
+        } catch (error) {
+
+            console.error(error);
+
+            this.toast('error', 'Error', 'Terjadi kesalahan pada server.');
+
+        }
+
     },
 
     bindCheckboxes() {

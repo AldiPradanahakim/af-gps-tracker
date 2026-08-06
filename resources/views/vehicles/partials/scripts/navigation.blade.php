@@ -24,8 +24,6 @@ window.VehicleNavigation = {
 
         stop: 'vehicleStopSection',
 
-        setting: 'vehicleSettingSection',
-
     },
 
     /*

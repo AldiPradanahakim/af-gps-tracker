@@ -475,17 +475,9 @@
 
         id="stopDetectionEditContainer"
 
-        class="hidden"
+        class="hidden p-6"
 
     >
-
-        <div
-
-            id="stopDetectionEditContainer"
-
-            class="hidden p-6"
-
-        >
 
             <form
 
@@ -565,29 +557,28 @@
                         class="flex items-center gap-3"
                     >
 
-                        <input
+                        <select
 
                             id="stopMinutes"
 
                             name="stop_minutes"
 
-                            type="number"
-
-                            min="1"
-
-                            max="120"
-
-                            value="{{ $stopDetection?->stop_minutes ?? 5 }}"
-
-                            class="h-11 w-28 rounded-xl border border-slate-300 text-center text-[14px] font-semibold outline-none transition focus:border-blue-500"
+                            class="h-11 w-40 rounded-xl border border-slate-300 px-4 text-center text-[14px] font-semibold outline-none transition focus:border-blue-500"
 
                         >
 
-                        <span
-                            class="text-[13px] text-slate-500"
-                        >
-                            Menit
-                        </span>
+                            @foreach([1, 5, 10, 15] as $minuteOption)
+
+                                <option
+                                    value="{{ $minuteOption }}"
+                                    @selected(($stopDetection?->stop_minutes ?? 5) == $minuteOption)
+                                >
+                                    {{ $minuteOption }} Menit
+                                </option>
+
+                            @endforeach
+
+                        </select>
 
                     </div>
 
@@ -628,31 +619,17 @@
                                 class="mt-1 text-[12px] text-slate-500"
                             >
                                 Menampilkan notifikasi pada dashboard aplikasi.
+                                Selalu aktif dan tidak dapat dinonaktifkan.
                             </p>
 
                         </div>
 
-                        <label class="relative inline-flex cursor-pointer items-center">
-
-                            <input
-
-                                id="systemNotification"
-
-                                name="system_notification"
-
-                                type="checkbox"
-
-                                class="peer sr-only"
-
-                                @checked($stopDetection?->system_notification)
-
-                            >
-
-                            <div
-                                class="h-7 w-12 rounded-full bg-slate-300 transition peer-checked:bg-blue-600 after:absolute after:left-1 after:top-1 after:h-5 after:w-5 after:rounded-full after:bg-white after:transition-all peer-checked:after:translate-x-5"
-                            ></div>
-
-                        </label>
+                        <span
+                            class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-[12px] font-semibold text-emerald-600"
+                        >
+                            <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+                            Selalu Aktif
+                        </span>
 
                     </div>
 
@@ -795,8 +772,6 @@
                 </div>
 
             </form>
-
-        </div>
 
     </div>
 

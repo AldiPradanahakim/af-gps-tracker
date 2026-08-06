@@ -146,8 +146,9 @@
 
             <div class="mt-5">
 
-                <a
-                    href="{{ route('vehicles.create') }}"
+                <button
+                    id="sidebarAddVehicleButton"
+                    type="button"
                     class="flex h-11 w-full items-center justify-center gap-2 rounded-2xl border border-blue-200 bg-white text-[12px] font-semibold text-blue-700 transition-all duration-200 hover:border-blue-300 hover:bg-blue-50"
                 >
 
@@ -157,7 +158,7 @@
                         Tambah Kendaraan
                     </span>
 
-                </a>
+                </button>
 
             </div>
 
@@ -296,34 +297,13 @@
 
                     </button>
 
-                    {{-- ====================================== --}}
-                    {{-- Setting --}}
-                    {{-- ====================================== --}}
-
-                    <button
-                        type="button"
-                        data-section="setting"
-                        class="vehicle-menu-btn group flex w-full items-center gap-2.5 rounded-2xl px-3 py-2.5 text-left transition-all duration-200 hover:bg-slate-50"
-                    >
-                        <span
-                            class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition group-hover:bg-blue-50 group-hover:text-blue-600"
-                        >
-                            <i class="fa-solid fa-gear text-[13px]"></i>
-                        </span>
-
-                        <span
-                            class="text-[12px] font-semibold text-slate-700 transition group-hover:text-blue-600"
-                        >
-                            Pengaturan
-                        </span>
-
-                    </button>
-
                 </nav>
 
             </div>
 
-                    {{-- ========================================================= --}}
+        </div>
+
+        {{-- ========================================================= --}}
         {{-- Bottom Action --}}
         {{-- ========================================================= --}}
 
@@ -333,7 +313,13 @@
 
             <button
 
+                id="sidebarDeleteVehicleButton"
+
                 type="button"
+
+                data-device-id="{{ $device->id }}"
+
+                data-vehicle-name="{{ $device->vehicle->vehicle_name ?? $device->device_id }}"
 
                 class="flex h-11 w-full items-center justify-center gap-2
                        rounded-2xl

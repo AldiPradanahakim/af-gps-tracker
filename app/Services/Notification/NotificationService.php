@@ -157,15 +157,12 @@ class NotificationService
             |--------------------------------------------------------------------------
             | Email
             |--------------------------------------------------------------------------
+            | Notifikasi tipe "stop" memakai pengaturan Stop Detection
+            | (device.stop_setting), bukan pengaturan notifikasi umum.
+            |--------------------------------------------------------------------------
             */
 
-            if (
-                data_get(
-                    $notification->device,
-                    'notification_setting.email',
-                    false
-                )
-            ) {
+            if ($this->isChannelEnabled($notification, 'email')) {
 
                 $this->sendEmail(
                     $notification
@@ -178,13 +175,7 @@ class NotificationService
             |--------------------------------------------------------------------------
             */
 
-            if (
-                data_get(
-                    $notification->device,
-                    'notification_setting.whatsapp',
-                    false
-                )
-            ) {
+            if ($this->isChannelEnabled($notification, 'whatsapp')) {
 
                 $this->sendWhatsapp(
                     $notification
@@ -212,6 +203,33 @@ class NotificationService
 
             ]);
         }
+    }
+
+    /**
+     * Cek apakah channel notifikasi (email/whatsapp) aktif untuk
+     * notifikasi ini. Notifikasi tipe "stop" mengikuti pengaturan
+     * Stop Detection (device.stop_setting), tipe lain mengikuti
+     * pengaturan notifikasi umum (device.notification_setting).
+     */
+    protected function isChannelEnabled(
+        Notification $notification,
+        string $channel
+    ): bool {
+
+        if ($notification->type === 'stop') {
+
+            return (bool) data_get(
+                $notification->device,
+                "stop_setting.{$channel}_notification",
+                false
+            );
+        }
+
+        return (bool) data_get(
+            $notification->device,
+            "notification_setting.{$channel}",
+            false
+        );
     }
 
     /**

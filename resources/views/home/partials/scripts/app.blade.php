@@ -2155,41 +2155,6 @@ window.GPSTracker = {
 
 };
 
-    GPSTracker.showTemporaryGeoJson = function (
-        geojson
-    ) {
-
-        if (
-            !this.hasMap() ||
-            !geojson
-        ) {
-            return;
-        }
-
-        this.clearTemporary();
-
-        const layer = L.geoJSON(
-            geojson,
-            {
-                style: {
-                    color: '#2563EB',
-                    weight: 3,
-                    opacity: 1,
-                    fillOpacity: 0.15
-                }
-            }
-        );
-
-        layer.addTo(
-            this.getTemporaryLayer()
-        );
-
-        this.fitBounds(
-            layer.getBounds()
-        );
-
-    };
-
     GPSTracker.showTemporaryMarker = function (
         latitude,
         longitude,

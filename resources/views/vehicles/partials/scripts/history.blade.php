@@ -14,7 +14,9 @@ window.VehicleHistory = {
 
     activeHistory: null,
 
-    selectedDate: null,
+    startDate: null,
+
+    endDate: null,
 
     /*
     |--------------------------------------------------------------------------
@@ -26,25 +28,15 @@ window.VehicleHistory = {
 
         this.state = state;
 
-        this.selectedDate = this.today();
+        this.startDate = this.today();
 
-        this.setDateInput();
+        this.endDate = this.today();
+
+        this.setDateInputs();
 
         this.bindEvents();
 
         this.load();
-
-        document.addEventListener(
-
-            'vehicle.location.updated',
-
-            () => {
-
-                this.renderSummary();
-
-            }
-
-        );
 
     },
 
@@ -56,71 +48,48 @@ window.VehicleHistory = {
 
     bindEvents() {
 
-        document.getElementById(
+        document.getElementById('historyLoadButton')
+            ?.addEventListener('click', () => {
 
-            'historyLoadButton'
+                this.startDate = document.getElementById('historyStartDate').value;
 
-        )?.addEventListener(
-
-            'click',
-
-            () => {
-
-                this.selectedDate =
-
-                    document.getElementById(
-
-                        'historyDate'
-
-                    ).value;
+                this.endDate = document.getElementById('historyEndDate').value;
 
                 this.load();
 
-            }
+            });
 
-        );
+        document.getElementById('historyTodayButton')
+            ?.addEventListener('click', () => {
 
-        document.getElementById(
+                this.startDate = this.today();
 
-            'historyTodayButton'
+                this.endDate = this.today();
 
-        )?.addEventListener(
-
-            'click',
-
-            () => {
-
-                this.selectedDate =
-
-                    this.today();
-
-                this.setDateInput();
+                this.setDateInputs();
 
                 this.load();
 
-            }
+            });
 
-        );
+        document.getElementById('historyPlaybackButton')
+            ?.addEventListener('click', () => {
 
-        document.getElementById(
+                if (!this.histories.length) {
 
-            'historyPlaybackButton'
+                    GPSTracker.showToast(
+                        'error',
+                        'Tidak Ada Data',
+                        'Tidak ada riwayat perjalanan untuk dimainkan.'
+                    );
 
-        )?.addEventListener(
+                    return;
 
-            'click',
+                }
 
-            () => {
+                VehiclePlayback.load(this.histories);
 
-                VehiclePlayback.load(
-
-                    this.histories
-
-                );
-
-            }
-
-        );
+            });
 
     },
 
@@ -136,17 +105,13 @@ window.VehicleHistory = {
 
             const response = await VehicleApi.history(
 
-                this.selectedDate
+                this.startDate,
+
+                this.endDate
 
             );
 
-            if (
-
-                !response ||
-
-                !response.success
-
-            ) {
+            if (!response || !response.success) {
 
                 this.histories = [];
 
@@ -156,9 +121,7 @@ window.VehicleHistory = {
 
             }
 
-            this.histories =
-
-                response.data ?? [];
+            this.histories = response.data ?? [];
 
             this.render();
 
@@ -166,19 +129,19 @@ window.VehicleHistory = {
 
         catch (error) {
 
-            console.error(
+            console.error('[VehicleHistory]', error);
 
-                '[VehicleHistory]',
-
-                error
-
+            GPSTracker.showToast(
+                'error',
+                'Gagal',
+                'Gagal mengambil riwayat perjalanan.'
             );
 
         }
 
     },
 
-        /*
+    /*
     |--------------------------------------------------------------------------
     | Render
     |--------------------------------------------------------------------------
@@ -186,11 +149,35 @@ window.VehicleHistory = {
 
     render() {
 
+        this.toggleEmptyState();
+
         this.renderSummary();
 
         this.renderTimeline();
 
         this.renderMapPoints();
+
+        this.renderMapLine();
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Empty State
+    |--------------------------------------------------------------------------
+    */
+
+    toggleEmptyState() {
+
+        const empty = document.getElementById('historyEmptyState');
+
+        const content = document.getElementById('historyContent');
+
+        const hasData = this.histories.length > 0;
+
+        empty?.classList.toggle('hidden', hasData);
+
+        content?.classList.toggle('hidden', !hasData);
 
     },
 
@@ -243,11 +230,15 @@ window.VehicleHistory = {
             );
 
             point.bindPopup(`
-                <div class="min-w-[200px] p-1">
+                <div class="min-w-[220px] p-1">
                     <div class="text-sm font-semibold text-slate-900">${history.address ?? 'Lokasi tidak diketahui'}</div>
                     <div class="mt-1 text-xs text-slate-500">${history.received_at ?? '-'}</div>
+                    <div class="mt-2 grid grid-cols-2 gap-2 text-xs text-slate-600">
+                        <div>Lat: <b>${Number(history.lat).toFixed(6)}</b></div>
+                        <div>Lng: <b>${Number(history.lng).toFixed(6)}</b></div>
+                    </div>
                     <div class="mt-2 text-xs font-medium ${isMoving ? 'text-blue-600' : 'text-orange-600'}">
-                        ${Number(history.speed ?? 0).toFixed(0)} km/jam ${isMoving ? '' : '&middot; Berhenti'}
+                        ${Number(history.speed ?? 0).toFixed(0)} km/jam ${isMoving ? '&middot; Bergerak' : '&middot; Berhenti'}
                     </div>
                 </div>
             `);
@@ -270,57 +261,223 @@ window.VehicleHistory = {
 
     /*
     |--------------------------------------------------------------------------
+    | Render Map Line
+    |--------------------------------------------------------------------------
+    | Menggambar garis rute perjalanan menghubungkan seluruh titik GPS
+    | pada rentang tanggal yang dipilih, tanpa perlu menekan Playback.
+    |--------------------------------------------------------------------------
+    */
+
+    renderMapLine() {
+
+        if (!window.VehicleMap) {
+
+            return;
+
+        }
+
+        VehicleMap.removeOverlay('history-line');
+
+        const points = this.histories
+
+            .filter(history => history.lat != null && history.lng != null)
+
+            .map(history => [history.lat, history.lng]);
+
+        if (points.length < 2) {
+
+            return;
+
+        }
+
+        const line = L.polyline(points, {
+
+            color: '#2563eb',
+
+            weight: 4,
+
+            opacity: 0.75,
+
+            lineJoin: 'round',
+
+            lineCap: 'round',
+
+        });
+
+        VehicleMap.addOverlay('history-line', line);
+
+        if (
+            window.VehicleMap.fitBounds &&
+            typeof line.getBounds === 'function'
+        ) {
+
+            VehicleMap.fitBounds(line.getBounds());
+
+        }
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
     | Render Summary
     |--------------------------------------------------------------------------
     */
 
     renderSummary() {
 
-        let maxSpeed = 0;
+        const histories = this.histories;
 
-        this.histories.forEach(history => {
+        this.setText('historyTotalPoint', histories.length);
 
-            const speed = Number(
+        if (!histories.length) {
 
-                history.speed ?? 0
+            this.setText('historyTotalDistance', '0 km');
+            this.setText('historyTotalDuration', '-');
+            this.setText('historyMaxSpeed', '0 km/jam');
+            this.setText('historyAverageSpeed', '0 km/jam');
+            this.setText('historyFirstTime', '-');
+            this.setText('historyLastTime', '-');
 
-            );
+            return;
 
-            if (speed > maxSpeed) {
+        }
 
-                maxSpeed = speed;
+        /*
+        |--------------------------------------------------------------------------
+        | Kecepatan
+        |--------------------------------------------------------------------------
+        */
+
+        const speeds = histories.map(
+            history => Number(history.speed ?? 0)
+        );
+
+        const maxSpeed = Math.max(...speeds);
+
+        const averageSpeed = speeds.reduce((sum, speed) => sum + speed, 0) / speeds.length;
+
+        this.setText('historyMaxSpeed', `${maxSpeed.toFixed(0)} km/jam`);
+
+        this.setText('historyAverageSpeed', `${averageSpeed.toFixed(0)} km/jam`);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Jarak (Haversine antar titik berurutan)
+        |--------------------------------------------------------------------------
+        */
+
+        let totalDistance = 0;
+
+        for (let i = 1; i < histories.length; i++) {
+
+            const previous = histories[i - 1];
+
+            const current = histories[i];
+
+            if (
+                previous.lat == null || previous.lng == null ||
+                current.lat == null || current.lng == null
+            ) {
+
+                continue;
 
             }
 
-        });
+            totalDistance += this.haversineMeters(
 
-        this.setText(
+                previous.lat,
+                previous.lng,
+                current.lat,
+                current.lng
 
-            'historyTotalPoint',
+            );
 
-            this.histories.length
+        }
 
-        );
+        this.setText('historyTotalDistance', `${(totalDistance / 1000).toFixed(2)} km`);
 
-        this.setText(
+        /*
+        |--------------------------------------------------------------------------
+        | Waktu Awal / Akhir / Durasi
+        |--------------------------------------------------------------------------
+        */
 
-            'historyMaxSpeed',
+        const first = histories[0];
 
-            `${maxSpeed.toFixed(0)} km/jam`
+        const last = histories[histories.length - 1];
 
-        );
+        this.setText('historyFirstTime', first.received_at ?? '-');
 
-        this.setText(
+        this.setText('historyLastTime', last.received_at ?? '-');
 
-            'historyTotalDistance',
+        if (first.received_at && last.received_at) {
 
-            '-'
+            const durationSeconds = Math.max(
+                0,
+                (new Date(last.received_at) - new Date(first.received_at)) / 1000
+            );
 
-        );
+            this.setText('historyTotalDuration', this.formatDuration(durationSeconds));
+
+        } else {
+
+            this.setText('historyTotalDuration', '-');
+
+        }
 
     },
 
-        /*
+    /*
+    |--------------------------------------------------------------------------
+    | Haversine Distance (Meter)
+    |--------------------------------------------------------------------------
+    */
+
+    haversineMeters(lat1, lng1, lat2, lng2) {
+
+        const earthRadius = 6371000;
+
+        const toRad = degree => degree * Math.PI / 180;
+
+        const dLat = toRad(lat2 - lat1);
+
+        const dLng = toRad(lng2 - lng1);
+
+        const a =
+            Math.sin(dLat / 2) ** 2 +
+            Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+
+        const c = 2 * Math.asin(Math.sqrt(a));
+
+        return earthRadius * c;
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Format Duration
+    |--------------------------------------------------------------------------
+    */
+
+    formatDuration(seconds) {
+
+        seconds = Number(seconds) || 0;
+
+        const hours = Math.floor(seconds / 3600);
+
+        const minutes = Math.floor((seconds % 3600) / 60);
+
+        if (hours > 0) {
+
+            return `${hours}j ${minutes}m`;
+
+        }
+
+        return `${minutes}m`;
+
+    },
+
+    /*
     |--------------------------------------------------------------------------
     | Timeline
     |--------------------------------------------------------------------------
@@ -328,11 +485,7 @@ window.VehicleHistory = {
 
     renderTimeline() {
 
-        const container = document.getElementById(
-
-            'historyTimeline'
-
-        );
+        const container = document.getElementById('historyTimeline');
 
         if (!container) {
 
@@ -340,22 +493,12 @@ window.VehicleHistory = {
 
         }
 
-        if (
-
-            !this.histories.length
-
-        ) {
+        if (!this.histories.length) {
 
             container.innerHTML = `
-
-                <div
-                    class="py-10 text-center text-slate-500"
-                >
-
+                <div class="py-10 text-center text-slate-500">
                     Belum ada histori.
-
                 </div>
-
             `;
 
             return;
@@ -364,11 +507,7 @@ window.VehicleHistory = {
 
         container.innerHTML = this.histories.map(
 
-            history => this.timelineItem(
-
-                history
-
-            )
+            history => this.timelineItem(history)
 
         ).join('');
 
@@ -376,13 +515,15 @@ window.VehicleHistory = {
 
     },
 
-        /*
+    /*
     |--------------------------------------------------------------------------
     | Timeline Item
     |--------------------------------------------------------------------------
     */
 
     timelineItem(history) {
+
+        const isMoving = Number(history.speed ?? 0) > 0;
 
         return `
 
@@ -396,36 +537,42 @@ window.VehicleHistory = {
 
             >
 
-                <div class="flex items-center justify-between">
+                <div class="flex items-center justify-between gap-4">
 
-                    <div>
+                    <div class="min-w-0">
 
-                        <h4 class="font-semibold">
+                        <div class="flex items-center gap-2">
 
+                            <span class="inline-flex items-center gap-1.5 rounded-full ${isMoving ? 'bg-blue-50 text-blue-600' : 'bg-orange-50 text-orange-600'} px-2.5 py-0.5 text-[10px] font-semibold">
+                                <span class="h-1.5 w-1.5 rounded-full ${isMoving ? 'bg-blue-500' : 'bg-orange-500'}"></span>
+                                ${isMoving ? 'Bergerak' : 'Berhenti'}
+                            </span>
+
+                            <p class="text-xs text-slate-400">
+                                ${history.received_at ?? '-'}
+                            </p>
+
+                        </div>
+
+                        <h4 class="mt-1.5 truncate font-semibold text-slate-900">
                             ${history.address ?? '-'}
-
                         </h4>
 
-                        <p class="mt-1 text-sm text-slate-500">
-
-                            ${history.received_at}
-
+                        <p class="mt-1 text-xs text-slate-400">
+                            Lat ${history.lat != null ? Number(history.lat).toFixed(6) : '-'},
+                            Lng ${history.lng != null ? Number(history.lng).toFixed(6) : '-'}
                         </p>
 
                     </div>
 
-                    <div class="text-right">
+                    <div class="flex-shrink-0 text-right">
 
-                        <div class="font-semibold">
+                        <div class="text-lg font-semibold text-slate-900">
+                            ${Number(history.speed ?? 0).toFixed(0)}
+                        </div>
 
-                            ${Number(
-
-                                history.speed ?? 0
-
-                            ).toFixed(0)}
-
+                        <div class="text-[11px] text-slate-400">
                             km/jam
-
                         </div>
 
                     </div>
@@ -438,7 +585,7 @@ window.VehicleHistory = {
 
     },
 
-        /*
+    /*
     |--------------------------------------------------------------------------
     | Bind Timeline
     |--------------------------------------------------------------------------
@@ -446,73 +593,50 @@ window.VehicleHistory = {
 
     bindTimeline() {
 
-        document.querySelectorAll(
+        document.querySelectorAll('#historyTimeline button').forEach(button => {
 
-            '#historyTimeline button'
+            button.addEventListener('click', () => {
 
-        ).forEach(
+                const history = this.histories.find(
 
-            button => {
-
-                button.addEventListener(
-
-                    'click',
-
-                    () => {
-
-                        const history = this.histories.find(
-
-                            item =>
-
-                                item.id ==
-
-                                button.dataset.id
-
-                        );
-
-                        if (!history) {
-
-                            return;
-
-                        }
-
-                        this.activeHistory = history.id;
-
-                        this.highlight();
-
-                        this.state.latestLocation = {
-
-                            ...history
-
-                        };
-
-                        Vehicle.updateLatestLocation({
-
-                            lat: history.lat,
-
-                            lng: history.lng,
-
-                            speed: history.speed,
-
-                            heading: history.heading,
-
-                            battery: history.battery,
-
-                            satellite: history.satellite,
-
-                            address: history.address,
-
-                            received_at: history.received_at,
-
-                        });
-
-                    }
+                    item => item.id == button.dataset.id
 
                 );
 
-            }
+                if (!history) {
 
-        );
+                    return;
+
+                }
+
+                this.activeHistory = history.id;
+
+                this.highlight();
+
+                if (history.lat != null && history.lng != null && window.VehicleMap) {
+
+                    VehicleMap.flyTo(history.lat, history.lng, 17);
+
+                }
+
+                this.state.latestLocation = { ...history };
+
+                Vehicle.updateLatestLocation({
+
+                    lat: history.lat,
+                    lng: history.lng,
+                    speed: history.speed,
+                    heading: history.heading,
+                    battery: history.battery,
+                    satellite: history.satellite,
+                    address: history.address,
+                    received_at: history.received_at,
+
+                });
+
+            });
+
+        });
 
     },
 
@@ -524,89 +648,47 @@ window.VehicleHistory = {
 
     highlight() {
 
-        document.querySelectorAll(
+        document.querySelectorAll('#historyTimeline button').forEach(button => {
 
-            '#historyTimeline button'
+            button.classList.remove('bg-blue-50', 'border-l-4', 'border-blue-500');
 
-        ).forEach(
+            if (Number(button.dataset.id) === this.activeHistory) {
 
-            button => {
-
-                button.classList.remove(
-
-                    'bg-blue-50',
-
-                    'border-l-4',
-
-                    'border-blue-500'
-
-                );
-
-                if (
-
-                    Number(button.dataset.id) ===
-
-                    this.activeHistory
-
-                ) {
-
-                    button.classList.add(
-
-                        'bg-blue-50',
-
-                        'border-l-4',
-
-                        'border-blue-500'
-
-                    );
-
-                }
+                button.classList.add('bg-blue-50', 'border-l-4', 'border-blue-500');
 
             }
 
-        );
+        });
 
     },
 
-        /*
+    /*
     |--------------------------------------------------------------------------
     | Helpers
     |--------------------------------------------------------------------------
     */
 
-    setDateInput() {
+    setDateInputs() {
 
-        const input = document.getElementById(
+        const start = document.getElementById('historyStartDate');
 
-            'historyDate'
+        const end = document.getElementById('historyEndDate');
 
-        );
+        if (start) start.value = this.startDate;
 
-        if (input) {
-
-            input.value = this.selectedDate;
-
-        }
+        if (end) end.value = this.endDate;
 
     },
 
     today() {
 
-        return new Date()
-
-            .toISOString()
-
-            .split('T')[0];
+        return new Date().toISOString().split('T')[0];
 
     },
 
     setText(id, value) {
 
-        const element = document.getElementById(
-
-            id
-
-        );
+        const element = document.getElementById(id);
 
         if (element) {
 
@@ -628,6 +710,8 @@ window.VehicleHistory = {
 
             VehicleMap.removeOverlay('history-points');
 
+            VehicleMap.removeOverlay('history-line');
+
         }
 
         this.histories = [];
@@ -635,6 +719,7 @@ window.VehicleHistory = {
         this.activeHistory = null;
 
     },
+
 };
 
 </script>

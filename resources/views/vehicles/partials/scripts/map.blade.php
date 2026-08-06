@@ -507,7 +507,61 @@ window.VehicleMap = {
 
         );
 
-    }
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Temporary Marker (dipakai oleh hasil pencarian lokasi/tempat)
+    |--------------------------------------------------------------------------
+    */
+
+    showTemporaryMarker(lat, lng, title = '') {
+
+        if (
+
+            !this.map ||
+
+            lat === null ||
+
+            lng === null
+
+        ) {
+
+            return;
+
+        }
+
+        const marker = L.marker([
+
+            Number(lat),
+
+            Number(lng),
+
+        ]);
+
+        if (title) {
+
+            marker.bindPopup(title);
+
+        }
+
+        this.addOverlay('temporarySearch', marker);
+
+        marker.openPopup();
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Clear Temporary Marker
+    |--------------------------------------------------------------------------
+    */
+
+    clearTemporary() {
+
+        this.removeOverlay('temporarySearch');
+
+    },
 
 };
 

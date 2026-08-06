@@ -39,6 +39,54 @@ class VehicleService
     }
 
     /**
+     * --------------------------------------------------------------------------
+     * Hapus Kendaraan
+     * --------------------------------------------------------------------------
+     */
+    public function destroy(Device $device): void
+    {
+        $this->vehicleRepository->destroy($device);
+    }
+
+    /**
+     * --------------------------------------------------------------------------
+     * Update Stop Detection Setting
+     * --------------------------------------------------------------------------
+     */
+    public function updateStopSetting(
+        Device $device,
+        array $data
+    ): object {
+
+        return $this->vehicleRepository->updateStopSetting(
+
+            $device,
+
+            $data
+
+        );
+    }
+
+    /**
+     * --------------------------------------------------------------------------
+     * Update Notifikasi Geofence Setting
+     * --------------------------------------------------------------------------
+     */
+    public function updateNotificationSetting(
+        Device $device,
+        array $data
+    ): object {
+
+        return $this->vehicleRepository->updateNotificationSetting(
+
+            $device,
+
+            $data
+
+        );
+    }
+
+    /**
      * Latest Location.
      */
     public function latest(
@@ -54,14 +102,17 @@ class VehicleService
      */
     public function history(
         Device $device,
-        ?string $date = null
+        ?string $startDate = null,
+        ?string $endDate = null
     ): array {
 
         return $this->vehicleRepository->history(
 
             $device,
 
-            $date
+            $startDate,
+
+            $endDate
 
         );
     }

@@ -9,9 +9,11 @@
 @include('vehicles.partials.scripts.home-location')
 @include('vehicles.partials.scripts.geofence')
 @include('vehicles.partials.scripts.playback')
-@include('vehicles.partials.scripts.setting')
 @include('vehicles.partials.scripts.navigation')
 @include('vehicles.partials.scripts.realtime')
+@include('vehicles.partials.scripts.vehicle-actions')
+@include('vehicles.partials.scripts.profile')
+@include('vehicles.partials.scripts.search')
 @include('vehicles.partials.scripts.app')
 
 <script>
@@ -30,8 +32,6 @@
             history: document.getElementById('vehicleHistorySection'),
 
             stop: document.getElementById('vehicleStopSection'),
-
-            setting: document.getElementById('vehicleSettingSection')
 
         };
 

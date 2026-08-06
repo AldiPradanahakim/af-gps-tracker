@@ -409,6 +409,16 @@ class VehicleRepository
 
         /*
         |--------------------------------------------------------------------------
+        | Stop Detection
+        |--------------------------------------------------------------------------
+        */
+
+        $stopDetection = $this->buildStopDetection($device);
+
+        $stopSummary = $this->buildStopSummary($device);
+
+        /*
+        |--------------------------------------------------------------------------
         | Return
         |--------------------------------------------------------------------------
         */
@@ -441,9 +451,181 @@ class VehicleRepository
 
             'travelHistories' => $travelHistories,
 
-            'stopDetection' => $device->stopDetection,
+            'stopDetection' => $stopDetection,
+
+            'stopSummary' => $stopSummary,
+
+            'notificationSetting' => $this->buildNotificationSetting($device),
 
         ];
+    }
+
+    /**
+     * --------------------------------------------------------------------------
+     * Bangun objek pengaturan Notifikasi Geofence dari
+     * device.notification_setting (JSON).
+     * --------------------------------------------------------------------------
+     */
+    protected function buildNotificationSetting(Device $device): object
+    {
+        $setting = $device->notification_setting ?? [];
+
+        return (object) [
+
+            'email_notification' => (bool) ($setting['email'] ?? false),
+
+            'whatsapp_notification' => (bool) ($setting['whatsapp'] ?? false),
+
+        ];
+    }
+
+    /**
+     * --------------------------------------------------------------------------
+     * Bangun objek pengaturan Stop Detection dari device.stop_setting (JSON).
+     * --------------------------------------------------------------------------
+     */
+    protected function buildStopDetection(Device $device): object
+    {
+        $setting = $device->stop_setting ?? [];
+
+        return (object) [
+
+            'enabled' => (bool) ($setting['enabled'] ?? false),
+
+            'stop_minutes' => (int) ($setting['minutes'] ?? 5),
+
+            'system_notification' => true,
+
+            'email_notification' => (bool) ($setting['email_notification'] ?? false),
+
+            'whatsapp_notification' => (bool) ($setting['whatsapp_notification'] ?? false),
+
+        ];
+    }
+
+    /**
+     * --------------------------------------------------------------------------
+     * Ringkasan Stop Detection (total, hari ini, durasi terlama, total durasi).
+     * --------------------------------------------------------------------------
+     */
+    protected function buildStopSummary(Device $device): array
+    {
+        $stops = $device->stopHistories()->get();
+
+        $today = $stops->filter(
+
+            fn(StopHistory $stop) => $stop->start_time?->isToday()
+
+        );
+
+        $longestSeconds = (int) $stops->max('duration_seconds');
+
+        $totalSeconds = (int) $stops->sum('duration_seconds');
+
+        return [
+
+            'total_stop' => $stops->count(),
+
+            'today_stop' => $today->count(),
+
+            'longest_stop' => $this->formatDuration($longestSeconds),
+
+            'total_duration' => $this->formatDuration($totalSeconds),
+
+        ];
+    }
+
+    /**
+     * --------------------------------------------------------------------------
+     * Format detik -> "Xj Ym" / "Ym".
+     * --------------------------------------------------------------------------
+     */
+    protected function formatDuration(int $seconds): string
+    {
+        if ($seconds <= 0) {
+            return '-';
+        }
+
+        $hours = intdiv($seconds, 3600);
+
+        $minutes = intdiv($seconds % 3600, 60);
+
+        if ($hours > 0) {
+            return "{$hours}j {$minutes}m";
+        }
+
+        return "{$minutes}m";
+    }
+
+    /**
+     * --------------------------------------------------------------------------
+     * Update Stop Detection Setting
+     * --------------------------------------------------------------------------
+     */
+    public function updateStopSetting(
+        Device $device,
+        array $data
+    ): object {
+
+        $device->update([
+
+            'stop_setting' => [
+
+                'enabled' => (bool) $data['enabled'],
+
+                'minutes' => (int) $data['stop_minutes'],
+
+                'email_notification' => (bool) $data['email_notification'],
+
+                'whatsapp_notification' => (bool) $data['whatsapp_notification'],
+
+            ],
+
+        ]);
+
+        return $this->buildStopDetection(
+            $device->fresh()
+        );
+    }
+
+    /**
+     * --------------------------------------------------------------------------
+     * Update Notifikasi Geofence Setting
+     * --------------------------------------------------------------------------
+     */
+    public function updateNotificationSetting(
+        Device $device,
+        array $data
+    ): object {
+
+        $device->update([
+
+            'notification_setting' => [
+
+                'email' => (bool) $data['email_notification'],
+
+                'whatsapp' => (bool) $data['whatsapp_notification'],
+
+            ],
+
+        ]);
+
+        return $this->buildNotificationSetting(
+            $device->fresh()
+        );
+    }
+
+    /**
+     * --------------------------------------------------------------------------
+     * Hapus Kendaraan (Device)
+     * --------------------------------------------------------------------------
+     * Vehicle, DeviceLog, TravelHistory, StopHistory, Geofence, dan
+     * Notification ikut terhapus otomatis lewat cascade delete di database.
+     * --------------------------------------------------------------------------
+     */
+    public function destroy(Device $device): void
+    {
+        $device->delete();
     }
 
     /**
@@ -546,21 +728,29 @@ class VehicleRepository
      */
     public function history(
         Device $device,
-        ?string $date = null
+        ?string $startDate = null,
+        ?string $endDate = null
     ): array {
 
         $query = $device->travelHistories()
 
-            ->orderByDesc('received_at');
+            ->orderBy('received_at');
 
-        if ($date) {
+        if ($startDate) {
 
             $query->whereDate(
-
                 'received_at',
+                '>=',
+                $startDate
+            );
+        }
 
-                $date
+        if ($endDate) {
 
+            $query->whereDate(
+                'received_at',
+                '<=',
+                $endDate
             );
         }
 

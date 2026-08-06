@@ -143,7 +143,6 @@ class MQTTSubscriberService
 
             $this->gpsProcessingService
                 ->process(
-                    $topic,
                     $payload
                 );
         } catch (Throwable $exception) {

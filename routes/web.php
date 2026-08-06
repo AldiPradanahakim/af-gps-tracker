@@ -115,10 +115,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'show'
     ])->name('vehicles.show');
 
+    Route::delete('/vehicles/{device}', [
+        VehicleController::class,
+        'destroy'
+    ])->name('vehicles.destroy');
+
     Route::patch('/vehicles/{device}/information', [
         VehicleController::class,
         'updateInformation'
     ])->name('vehicles.information.update');
+
+    Route::patch('/vehicles/{device}/stop-setting', [
+        VehicleController::class,
+        'updateStopSetting'
+    ])->name('vehicles.stop-setting.update');
+
+    Route::patch('/vehicles/{device}/notification-setting', [
+        VehicleController::class,
+        'updateNotificationSetting'
+    ])->name('vehicles.notification-setting.update');
 
     Route::get('/geofences', [
         GeofenceController::class,

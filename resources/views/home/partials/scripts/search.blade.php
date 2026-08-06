@@ -1065,21 +1065,9 @@ document.addEventListener('gpstracker:map-ready', () => {
 
     GPSTracker.getSearchIcon = function (type) {
 
-        switch (type) {
-
-            case 'vehicle':
-                return '🚗';
-
-            case 'administrative':
-                return '🗺️';
-
-            case 'location':
-                return '📍';
-
-            default:
-                return '📍';
-
-        }
+        return type === 'vehicle'
+            ? '🚗'
+            : '📍';
 
     }
 
@@ -1531,48 +1519,6 @@ document.addEventListener('gpstracker:map-ready', () => {
                     result.title
 
                 );
-
-                break;
-            
-            case 'administrative':
-
-                if (
-
-                    result.geojson
-
-                ) {
-
-                    this.showTemporaryGeoJson(
-
-                        result.geojson
-
-                    );
-
-                }
-
-                else {
-
-                    this.flyToLocation(
-
-                        result.latitude,
-
-                        result.longitude,
-
-                        14
-
-                    );
-
-                    this.showTemporaryMarker(
-
-                        result.latitude,
-
-                        result.longitude,
-
-                        result.title
-
-                    );
-
-                }
 
                 break;
 

@@ -4,12 +4,16 @@
         <div class="border-b border-slate-100 px-6 py-5">
             <p class="text-xs uppercase tracking-[0.3em] text-slate-400">Riwayat Perjalanan</p>
             <h2 class="mt-2 text-xl font-semibold text-slate-900">Lihat Histori Perjalanan</h2>
-            <p class="mt-1 text-sm text-slate-500">Filter perjalanan berdasarkan tanggal atau langsung mainkan kembali perjalanan hari ini.</p>
+            <p class="mt-1 text-sm text-slate-500">Filter perjalanan berdasarkan rentang tanggal atau langsung mainkan kembali perjalanan hari ini.</p>
         </div>
-        <div class="grid gap-4 p-6 lg:grid-cols-4">
+        <div class="grid gap-4 p-6 lg:grid-cols-5">
             <div>
-                <label class="mb-2 block text-sm font-medium text-slate-700">Tanggal</label>
-                <input id="historyDate" type="date" class="w-full rounded-[20px] border border-slate-300 px-4 py-3" />
+                <label class="mb-2 block text-sm font-medium text-slate-700">Tanggal Mulai</label>
+                <input id="historyStartDate" type="date" class="w-full rounded-[20px] border border-slate-300 px-4 py-3" />
+            </div>
+            <div>
+                <label class="mb-2 block text-sm font-medium text-slate-700">Tanggal Selesai</label>
+                <input id="historyEndDate" type="date" class="w-full rounded-[20px] border border-slate-300 px-4 py-3" />
             </div>
             <div class="flex items-end">
                 <button id="historyLoadButton" type="button" class="w-full rounded-[20px] bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700">Tampilkan</button>
@@ -18,33 +22,109 @@
                 <button id="historyTodayButton" type="button" class="w-full rounded-[20px] border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-100">Hari Ini</button>
             </div>
             <div class="flex items-end">
-                <button id="historyPlaybackButton" type="button" class="w-full rounded-[20px] bg-emerald-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700">Playback</button>
+                <button id="historyPlaybackButton" type="button" class="w-full rounded-[20px] bg-emerald-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700">
+                    <i class="fa-solid fa-play mr-1"></i>
+                    Playback
+                </button>
             </div>
         </div>
+
+        {{-- ========================================================= --}}
+        {{-- Kecepatan Playback --}}
+        {{-- ========================================================= --}}
+
+        <div class="flex flex-wrap items-center gap-3 border-t border-slate-100 px-6 py-4">
+
+            <span class="text-[13px] font-medium text-slate-700">Kecepatan Playback</span>
+
+            <div class="ml-auto grid grid-cols-4 gap-2">
+                <button type="button" data-speed="2000" class="playback-speed rounded-[14px] border border-slate-300 px-4 py-2 text-sm font-semibold transition hover:bg-slate-100">0.5x</button>
+                <button type="button" data-speed="1000" class="playback-speed rounded-[14px] bg-blue-600 px-4 py-2 text-sm font-semibold text-white">1x</button>
+                <button type="button" data-speed="500" class="playback-speed rounded-[14px] border border-slate-300 px-4 py-2 text-sm font-semibold transition hover:bg-slate-100">2x</button>
+                <button type="button" data-speed="250" class="playback-speed rounded-[14px] border border-slate-300 px-4 py-2 text-sm font-semibold transition hover:bg-slate-100">4x</button>
+            </div>
+
+        </div>
+
+        {{-- ========================================================= --}}
+        {{-- Kontrol Playback (muncul saat playback berjalan/dijeda) --}}
+        {{-- ========================================================= --}}
+
+        <div id="historyPlaybackControls" class="hidden flex-wrap items-center gap-3 border-t border-slate-100 px-6 py-4">
+
+            <button id="historyPlaybackPauseButton" type="button" class="hidden rounded-[16px] border border-amber-300 bg-amber-50 px-4 py-2.5 text-sm font-semibold text-amber-700 transition hover:bg-amber-100">
+                <i class="fa-solid fa-pause mr-1.5"></i>
+                Jeda
+            </button>
+
+            <button id="historyPlaybackResumeButton" type="button" class="hidden rounded-[16px] border border-emerald-300 bg-emerald-50 px-4 py-2.5 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-100">
+                <i class="fa-solid fa-play mr-1.5"></i>
+                Lanjutkan
+            </button>
+
+            <button id="historyPlaybackStopButton" type="button" class="rounded-[16px] border border-red-300 bg-red-50 px-4 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-100">
+                <i class="fa-solid fa-stop mr-1.5"></i>
+                Berhenti
+            </button>
+
+            <span id="historyPlaybackProgress" class="ml-auto text-[13px] font-medium text-slate-500">
+                Titik 0 dari 0
+            </span>
+
+        </div>
     </div>
 
-    <div class="grid gap-6 lg:grid-cols-3">
-        <div class="rounded-[28px] border border-slate-200 bg-white vehicle-panel-shadow p-6">
-            <p class="text-xs uppercase tracking-[0.18em] text-slate-400">Total Titik GPS</p>
-            <p id="historyTotalPoint" class="mt-3 text-3xl font-semibold text-slate-900">0</p>
+    <div id="historyEmptyState" class="hidden rounded-[28px] border border-slate-200 bg-white vehicle-panel-shadow px-6 py-14 text-center">
+        <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
+            <i class="fa-solid fa-route text-2xl text-slate-400"></i>
         </div>
-        <div class="rounded-[28px] border border-slate-200 bg-white vehicle-panel-shadow p-6">
-            <p class="text-xs uppercase tracking-[0.18em] text-slate-400">Total Jarak</p>
-            <p id="historyTotalDistance" class="mt-3 text-3xl font-semibold text-slate-900">0 km</p>
-        </div>
-        <div class="rounded-[28px] border border-slate-200 bg-white vehicle-panel-shadow p-6">
-            <p class="text-xs uppercase tracking-[0.18em] text-slate-400">Kecepatan Maksimum</p>
-            <p id="historyMaxSpeed" class="mt-3 text-3xl font-semibold text-slate-900">0 km/jam</p>
-        </div>
+        <h4 class="mt-5 text-[15px] font-semibold text-slate-900">Tidak ada riwayat perjalanan</h4>
+        <p class="mt-2 text-[13px] text-slate-500">Tidak ada data GPS pada rentang tanggal yang dipilih.</p>
     </div>
 
-    <div class="rounded-[28px] border border-slate-200 bg-white vehicle-panel-shadow">
-        <div class="border-b border-slate-100 px-6 py-5">
-            <p class="text-xs uppercase tracking-[0.3em] text-slate-400">Timeline Perjalanan</p>
-            <h2 class="mt-2 text-lg font-semibold text-slate-900">Detail Titik Perjalanan</h2>
+    <div id="historyContent">
+
+        <div class="grid gap-5 lg:grid-cols-4">
+            <div class="rounded-[24px] border border-slate-200 bg-white vehicle-panel-shadow p-5">
+                <p class="text-[11px] uppercase tracking-[0.18em] text-slate-400">Total Titik GPS</p>
+                <p id="historyTotalPoint" class="mt-3 text-2xl font-semibold text-slate-900">0</p>
+            </div>
+            <div class="rounded-[24px] border border-slate-200 bg-white vehicle-panel-shadow p-5">
+                <p class="text-[11px] uppercase tracking-[0.18em] text-slate-400">Total Jarak</p>
+                <p id="historyTotalDistance" class="mt-3 text-2xl font-semibold text-slate-900">0 km</p>
+            </div>
+            <div class="rounded-[24px] border border-slate-200 bg-white vehicle-panel-shadow p-5">
+                <p class="text-[11px] uppercase tracking-[0.18em] text-slate-400">Total Durasi</p>
+                <p id="historyTotalDuration" class="mt-3 text-2xl font-semibold text-slate-900">-</p>
+            </div>
+            <div class="rounded-[24px] border border-slate-200 bg-white vehicle-panel-shadow p-5">
+                <p class="text-[11px] uppercase tracking-[0.18em] text-slate-400">Kecepatan Maksimum</p>
+                <p id="historyMaxSpeed" class="mt-3 text-2xl font-semibold text-slate-900">0 km/jam</p>
+            </div>
+            <div class="rounded-[24px] border border-slate-200 bg-white vehicle-panel-shadow p-5">
+                <p class="text-[11px] uppercase tracking-[0.18em] text-slate-400">Kecepatan Rata-rata</p>
+                <p id="historyAverageSpeed" class="mt-3 text-2xl font-semibold text-slate-900">0 km/jam</p>
+            </div>
+            <div class="rounded-[24px] border border-slate-200 bg-white vehicle-panel-shadow p-5">
+                <p class="text-[11px] uppercase tracking-[0.18em] text-slate-400">Waktu Awal</p>
+                <p id="historyFirstTime" class="mt-3 text-lg font-semibold text-slate-900">-</p>
+            </div>
+            <div class="rounded-[24px] border border-slate-200 bg-white vehicle-panel-shadow p-5">
+                <p class="text-[11px] uppercase tracking-[0.18em] text-slate-400">Waktu Akhir</p>
+                <p id="historyLastTime" class="mt-3 text-lg font-semibold text-slate-900">-</p>
+            </div>
         </div>
-        <div id="historyTimeline" class="divide-y divide-slate-100 p-6">
-            <div class="py-12 text-center text-slate-500">Belum ada data histori.</div>
+
+        <div class="mt-6 rounded-[28px] border border-slate-200 bg-white vehicle-panel-shadow">
+            <div class="border-b border-slate-100 px-6 py-5">
+                <p class="text-xs uppercase tracking-[0.3em] text-slate-400">Timeline Perjalanan</p>
+                <h2 class="mt-2 text-lg font-semibold text-slate-900">Detail Titik Perjalanan</h2>
+            </div>
+            <div id="historyTimeline" class="divide-y divide-slate-100 p-6">
+                <div class="py-12 text-center text-slate-500">Belum ada data histori.</div>
+            </div>
         </div>
+
     </div>
+
 </div>

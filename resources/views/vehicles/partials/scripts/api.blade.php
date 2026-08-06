@@ -140,21 +140,23 @@ window.VehicleApi = {
     |--------------------------------------------------------------------------
     */
 
-    history(date = null) {
+    history(startDate = null, endDate = null) {
 
-        let url =
+        const params = new URLSearchParams();
 
-            `/vehicles/${this.deviceId}/history`;
-
-        if (date) {
-
-            url += `?date=${date}`;
-
+        if (startDate) {
+            params.set('start_date', startDate);
         }
+
+        if (endDate) {
+            params.set('end_date', endDate);
+        }
+
+        const query = params.toString();
 
         return this.request(
 
-            url
+            `/vehicles/${this.deviceId}/history${query ? `?${query}` : ''}`
 
         );
 

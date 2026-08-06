@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Vehicle;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UpdateNotificationSettingRequest;
+use App\Http\Requests\UpdateStopSettingRequest;
 use App\Models\Device;
 use App\Services\Vehicle\VehicleService;
 use Illuminate\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class VehicleController extends Controller
 {
@@ -78,6 +81,93 @@ class VehicleController extends Controller
 
     /**
      * --------------------------------------------------------------------------
+     * Hapus Kendaraan
+     * --------------------------------------------------------------------------
+     */
+    public function destroy(Device $device): JsonResponse
+    {
+        if ($device->user_id !== Auth::id()) {
+
+            return response()->json([
+
+                'success' => false,
+
+                'message' => 'Kendaraan tidak ditemukan.',
+
+            ], 403);
+        }
+
+        $this->vehicleService->destroy($device);
+
+        return response()->json([
+
+            'success' => true,
+
+            'message' => 'Kendaraan berhasil dihapus.',
+
+        ]);
+    }
+
+    /**
+     * --------------------------------------------------------------------------
+     * Update Stop Detection Setting
+     * --------------------------------------------------------------------------
+     */
+    public function updateStopSetting(
+        UpdateStopSettingRequest $request,
+        Device $device
+    ): JsonResponse {
+
+        $setting = $this->vehicleService->updateStopSetting(
+
+            $device,
+
+            $request->validated()
+
+        );
+
+        return response()->json([
+
+            'success' => true,
+
+            'message' => 'Pengaturan Stop Detection berhasil diperbarui.',
+
+            'data' => $setting,
+
+        ]);
+    }
+
+    /**
+     * --------------------------------------------------------------------------
+     * Update Notifikasi Geofence Setting
+     * --------------------------------------------------------------------------
+     */
+    public function updateNotificationSetting(
+        UpdateNotificationSettingRequest $request,
+        Device $device
+    ): JsonResponse {
+
+        $setting = $this->vehicleService->updateNotificationSetting(
+
+            $device,
+
+            $request->validated()
+
+        );
+
+        return response()->json([
+
+            'success' => true,
+
+            'message' => 'Pengaturan notifikasi Geofence berhasil diperbarui.',
+
+            'data' => $setting,
+
+        ]);
+    }
+
+    /**
+     * --------------------------------------------------------------------------
      * Latest Location
      * --------------------------------------------------------------------------
      */
@@ -114,7 +204,9 @@ class VehicleController extends Controller
 
             $device,
 
-            $request->query('date')
+            $request->query('start_date'),
+
+            $request->query('end_date')
 
         );
 

@@ -12,8 +12,6 @@ window.VehicleStop = {
 
     stops: [],
 
-    selectedStop: null,
-
     /*
     |--------------------------------------------------------------------------
     | Initialize
@@ -24,379 +22,318 @@ window.VehicleStop = {
 
         this.state = state;
 
-        this.bindEvents();
+        this.bindSettingEvents();
 
-        this.load();
+        this.bindHistoryEvents();
 
-    },
-
-    /*
-    |--------------------------------------------------------------------------
-    | Bind Events
-    |--------------------------------------------------------------------------
-    */
-
-    bindEvents() {
-
-        document.getElementById(
-
-            'reloadStopButton'
-
-        )?.addEventListener(
-
-            'click',
-
-            () => {
-
-                this.reload();
-
-            }
-
-        );
-
-        document.addEventListener(
-
-            'click',
-
-            event => {
-
-                const button =
-
-                    event.target.closest(
-
-                        '.stop-focus'
-
-                    );
-
-                if (!button) {
-
-                    return;
-
-                }
-
-                this.focus(
-
-                    button.dataset.id
-
-                );
-
-            }
-
-        );
+        this.loadHistory();
 
     },
 
     /*
     |--------------------------------------------------------------------------
-    | Load
+    | Setting: Bind Events
     |--------------------------------------------------------------------------
     */
 
-    async load() {
+    bindSettingEvents() {
+
+        document.getElementById('editStopDetectionButton')
+            ?.addEventListener('click', () => this.showEdit());
+
+        document.getElementById('cancelStopDetectionEdit')
+            ?.addEventListener('click', () => this.hideEdit());
+
+        document.getElementById('stopDetectionForm')
+            ?.addEventListener('submit', async (event) => {
+
+                event.preventDefault();
+
+                await this.saveSetting();
+
+            });
+
+    },
+
+    showEdit() {
+
+        document.getElementById('stopDetectionReadContainer')?.classList.add('hidden');
+
+        document.getElementById('stopDetectionStatusCard')?.classList.add('hidden');
+
+        document.getElementById('stopDetectionEditContainer')?.classList.remove('hidden');
+
+    },
+
+    hideEdit() {
+
+        document.getElementById('stopDetectionEditContainer')?.classList.add('hidden');
+
+        document.getElementById('stopDetectionReadContainer')?.classList.remove('hidden');
+
+        document.getElementById('stopDetectionStatusCard')?.classList.remove('hidden');
+
+    },
+
+    async saveSetting() {
+
+        const button = document.getElementById('saveStopDetection');
 
         try {
 
-            const response =
+            if (button) {
+                button.disabled = true;
+            }
 
-                await VehicleApi.stop();
+            const payload = {
 
-            if (
+                enabled: document.getElementById('stopDetectionEnabled').checked,
 
-                !response ||
+                stop_minutes: document.getElementById('stopMinutes').value,
 
-                !response.success
+                email_notification: document.getElementById('emailNotification').checked,
 
-            ) {
+                whatsapp_notification: document.getElementById('whatsappNotification').checked,
+
+            };
+
+            const response = await fetch(
+
+                `/vehicles/${this.state.device.id}/stop-setting`,
+
+                {
+
+                    method: 'PATCH',
+
+                    headers: {
+
+                        'Content-Type': 'application/json',
+
+                        'Accept': 'application/json',
+
+                        'X-CSRF-TOKEN': document
+                            .querySelector('meta[name="csrf-token"]')
+                            .content,
+
+                        'X-Requested-With': 'XMLHttpRequest',
+
+                    },
+
+                    body: JSON.stringify(payload),
+
+                }
+
+            );
+
+            const json = await response.json();
+
+            if (!response.ok || !json.success) {
+
+                const message = json.errors
+                    ? Object.values(json.errors).flat().join('\n')
+                    : (json.message ?? 'Gagal menyimpan pengaturan.');
+
+                GPSTracker.showToast('error', 'Gagal', message);
 
                 return;
 
             }
 
-            this.stops =
-
-                response.data ?? [];
-
-            this.render();
-
-        }
-
-        catch (error) {
-
-            console.error(
-
-                '[VehicleStop]',
-
-                error
-
+            GPSTracker.showToast(
+                'success',
+                'Berhasil',
+                json.message ?? 'Pengaturan Stop Detection berhasil disimpan.'
             );
 
+            /*
+            |--------------------------------------------------------------------------
+            | Pastikan setelah reload tetap membuka section Stop Detection.
+            |--------------------------------------------------------------------------
+            */
+
+            history.replaceState(null, '', '#stop');
+
+            setTimeout(() => window.location.reload(), 800);
+
+        } catch (error) {
+
+            console.error(error);
+
+            GPSTracker.showToast('error', 'Error', 'Terjadi kesalahan pada server.');
+
+        } finally {
+
+            if (button) {
+                button.disabled = false;
+            }
+
         }
-
-    },
-
-        /*
-    |--------------------------------------------------------------------------
-    | Render
-    |--------------------------------------------------------------------------
-    */
-
-    render() {
-
-        this.renderSummary();
-
-        this.renderList();
 
     },
 
     /*
     |--------------------------------------------------------------------------
-    | Summary
+    | History: Bind Events
     |--------------------------------------------------------------------------
     */
 
-    renderSummary() {
+    bindHistoryEvents() {
 
-        const stops =
-
-            this.stops ?? [];
-
-        this.setText(
-
-            'stopTotal',
-
-            stops.length
-
-        );
-
-        this.setText(
-
-            'stopToday',
-
-            stops.length
-
-        );
-
-        this.setText(
-
-            'stopLongest',
-
-            '-'
-
-        );
-
-        this.setText(
-
-            'stopAverage',
-
-            '-'
-
-        );
+        document.getElementById('refreshStopHistory')
+            ?.addEventListener('click', () => this.loadHistory());
 
     },
 
-        /*
-    |--------------------------------------------------------------------------
-    | Render List
-    |--------------------------------------------------------------------------
-    */
+    async loadHistory() {
 
-    renderList() {
+        const table = document.getElementById('stopHistoryTable');
 
-        const container =
+        if (!table) {
+            return;
+        }
 
-            document.getElementById(
+        try {
 
-                'stopList'
+            const response = await fetch(
+
+                `/vehicles/${this.state.device.id}/stop`,
+
+                {
+
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+
+                }
 
             );
 
-        const empty =
+            const json = await response.json();
 
-            document.getElementById(
+            if (!json.success) {
 
-                'stopEmpty'
+                this.stops = [];
 
-            );
+                this.renderHistory();
 
-        if (
+                return;
 
-            !container ||
+            }
 
-            !empty
+            this.stops = json.data ?? [];
 
-        ) {
+            this.renderHistory();
+
+        } catch (error) {
+
+            console.error('[VehicleStop]', error);
+
+            this.stops = [];
+
+            this.renderHistory();
+
+        }
+
+    },
+
+    renderHistory() {
+
+        const table = document.getElementById('stopHistoryTable');
+
+        const empty = document.getElementById('stopHistoryEmpty');
+
+        if (!table) {
+            return;
+        }
+
+        if (!this.stops.length) {
+
+            table.innerHTML = '';
+
+            empty?.classList.remove('hidden');
 
             return;
 
         }
 
-        if (
+        empty?.classList.add('hidden');
 
-            !this.stops.length
+        table.innerHTML = this.stops.map(stop => this.row(stop)).join('');
 
-        ) {
-
-            container.innerHTML = '';
-
-            empty.classList.remove(
-
-                'hidden'
-
-            );
-
-            return;
-
-        }
-
-        empty.classList.add(
-
-            'hidden'
-
-        );
-
-        container.innerHTML =
-
-            this.stops.map(
-
-                stop =>
-
-                    this.item(
-
-                        stop
-
-                    )
-
-            ).join('');
+        this.bindRowActions();
 
     },
 
-        /*
-    |--------------------------------------------------------------------------
-    | Item
-    |--------------------------------------------------------------------------
-    */
+    row(stop) {
 
-    item(stop) {
+        const isOngoing = !stop.ended_at;
+
+        const duration = this.formatDuration(stop.duration_seconds ?? 0);
 
         return `
-
-            <div
-                class="flex items-center justify-between px-6 py-5"
-            >
-
-                <div>
-
-                    <h4
-                        class="font-semibold"
+            <tr class="hover:bg-slate-50">
+                <td class="px-6 py-4 text-[13px] text-slate-700">${stop.started_at ?? '-'}</td>
+                <td class="px-6 py-4 text-[13px] text-slate-700">${stop.ended_at ?? '-'}</td>
+                <td class="px-6 py-4 text-[13px] font-semibold text-slate-900">${duration}</td>
+                <td class="px-6 py-4 text-[13px] text-slate-700">${stop.address ?? '-'}</td>
+                <td class="px-6 py-4 text-center">
+                    <span class="inline-flex items-center gap-2 rounded-full ${isOngoing ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600'} px-3 py-1 text-[11px] font-semibold">
+                        <span class="h-2 w-2 rounded-full ${isOngoing ? 'bg-amber-500' : 'bg-emerald-500'}"></span>
+                        ${isOngoing ? 'Sedang Berhenti' : 'Selesai'}
+                    </span>
+                </td>
+                <td class="px-6 py-4 text-center">
+                    <button
+                        type="button"
+                        class="stop-focus rounded-lg border border-slate-300 px-4 py-2 text-[12px] font-semibold text-slate-700 transition hover:bg-slate-100"
+                        data-id="${stop.id}"
                     >
-
-                        ${stop.address ?? '-'}
-
-                    </h4>
-
-                    <p
-                        class="mt-1 text-sm text-slate-500"
-                    >
-
-                        ${stop.started_at ?? '-'}
-
-                    </p>
-
-                </div>
-
-                <button
-
-                    class="stop-focus rounded-lg border border-slate-300 px-4 py-2"
-
-                    data-id="${stop.id}"
-
-                >
-
-                    Lihat
-
-                </button>
-
-            </div>
-
+                        Lihat di Peta
+                    </button>
+                </td>
+            </tr>
         `;
 
     },
 
-        /*
-    |--------------------------------------------------------------------------
-    | Focus
-    |--------------------------------------------------------------------------
-    */
+    bindRowActions() {
 
-    focus(id) {
+        document.querySelectorAll('.stop-focus').forEach(button => {
 
-        const stop =
+            button.addEventListener('click', () => {
 
-            this.stops.find(
+                const stop = this.stops.find(
+                    item => String(item.id) === String(button.dataset.id)
+                );
 
-                item =>
+                if (!stop || stop.lat == null || stop.lng == null) {
+                    return;
+                }
 
-                    item.id == id
+                if (window.VehicleMap) {
+                    VehicleMap.flyTo(stop.lat, stop.lng, 17);
+                }
 
-            );
-
-        if (!stop) {
-
-            return;
-
-        }
-
-        this.selectedStop = stop.id;
-
-        Vehicle.updateLatestLocation({
-
-            lat: stop.lat,
-
-            lng: stop.lng,
-
-            address: stop.address,
-
-            received_at: stop.started_at,
+            });
 
         });
 
     },
 
-        /*
-    |--------------------------------------------------------------------------
-    | Reload
-    |--------------------------------------------------------------------------
-    */
+    formatDuration(seconds) {
 
-    async reload() {
+        seconds = Number(seconds) || 0;
 
-        await this.load();
+        const hours = Math.floor(seconds / 3600);
 
-    },
+        const minutes = Math.floor((seconds % 3600) / 60);
 
-    /*
-    |--------------------------------------------------------------------------
-    | Helper
-    |--------------------------------------------------------------------------
-    */
-
-    setText(id, value) {
-
-        const element =
-
-            document.getElementById(
-
-                id
-
-            );
-
-        if (element) {
-
-            element.textContent =
-
-                value ?? '-';
-
+        if (hours > 0) {
+            return `${hours}j ${minutes}m`;
         }
+
+        return `${minutes}m`;
 
     },
 
@@ -410,11 +347,9 @@ window.VehicleStop = {
 
         this.stops = [];
 
-        this.selectedStop = null;
-
         this.state = null;
 
-    }
+    },
 
 };
 

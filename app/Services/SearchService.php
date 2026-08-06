@@ -47,7 +47,6 @@ class SearchService
                     'q' => $keyword,
                     'format' => 'jsonv2',
                     'addressdetails' => 1,
-                    'polygon_geojson' => 1,
                     'limit' => 8,
                     'countrycodes' => 'id',
                 ]
@@ -62,7 +61,7 @@ class SearchService
 
                 return [
 
-                    'type' => $this->resolveType($item),
+                    'type' => 'location',
 
                     'id' => $item['place_id'] ?? null,
 
@@ -78,8 +77,6 @@ class SearchService
                         ? (float) $item['lon']
                         : null,
 
-                    'geojson' => $item['geojson'] ?? null,
-
                     'osm_id' => $item['osm_id'] ?? null,
 
                     'osm_type' => $item['osm_type'] ?? null,
@@ -90,40 +87,5 @@ class SearchService
             })
             ->values()
             ->toArray();
-    }
-
-    /**
-     * Menentukan tipe hasil pencarian.
-     */
-    private function resolveType(array $item): string
-    {
-        $administrativeTypes = [
-
-            'administrative',
-
-            'city',
-
-            'town',
-
-            'municipality',
-
-            'county',
-
-            'province',
-
-            'state',
-
-            'village',
-
-            'suburb',
-
-        ];
-
-        return in_array(
-            $item['type'] ?? '',
-            $administrativeTypes
-        )
-            ? 'administrative'
-            : 'location';
     }
 }

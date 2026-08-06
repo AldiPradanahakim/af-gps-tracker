@@ -49,7 +49,9 @@ window.Vehicle = {
 
     geofence: null,
 
-    setting: null,
+    profile: null,
+
+    search: null,
 
     navigation: null,
 
@@ -102,18 +104,6 @@ window.Vehicle = {
             this.history = window.VehicleHistory;
 
             this.history.init(
-
-                this.state
-
-            );
-
-        }
-
-        if (window.VehicleSetting) {
-
-            this.setting = window.VehicleSetting;
-
-            this.setting.init(
 
                 this.state
 
@@ -220,6 +210,22 @@ window.Vehicle = {
             this.homeLocation = window.VehicleHomeLocation;
 
             this.homeLocation.init(this.state);
+
+        }
+
+        if (window.VehicleProfile) {
+
+            this.profile = window.VehicleProfile;
+
+            this.profile.init(this.state);
+
+        }
+
+        if (window.VehicleSearch) {
+
+            this.search = window.VehicleSearch;
+
+            this.search.init(this.state);
 
         }
 

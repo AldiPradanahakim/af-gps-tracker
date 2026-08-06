@@ -68,7 +68,7 @@
 
                     id="vehicleSearchResult"
 
-                    class="absolute left-0 right-0 top-full z-50 mt-2 hidden overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl"
+                    class="absolute left-0 right-0 top-full z-[9999] mt-2 hidden overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl"
 
                 ></div>
 
@@ -178,7 +178,7 @@
 
                 <div
                     id="profileDropdown"
-                    class="absolute right-0 mt-3 hidden w-64 rounded-2xl border border-slate-200 bg-white shadow-2xl">
+                    class="absolute right-0 z-[9999] mt-3 hidden w-64 rounded-2xl border border-slate-200 bg-white shadow-2xl">
 
                 </div>
 

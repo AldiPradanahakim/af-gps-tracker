@@ -73,6 +73,88 @@
     </section>
 
     {{-- ========================================================= --}}
+    {{-- Notifikasi Geofence --}}
+    {{-- ========================================================= --}}
+
+    <section
+        class="overflow-hidden rounded-[20px] border border-slate-200 bg-white vehicle-panel-shadow"
+    >
+
+        <div class="border-b border-slate-100 px-6 py-5">
+            <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-400">Notifikasi</p>
+            <h2 class="mt-2 text-[18px] font-bold text-slate-900">Notifikasi Geofence</h2>
+            <p class="mt-1 text-[13px] text-slate-500">Kirim pemberitahuan ketika kendaraan keluar dari area Geofence.</p>
+        </div>
+
+        <div class="space-y-4 p-6">
+
+            {{-- ============================== --}}
+            {{-- Sistem (selalu aktif) --}}
+            {{-- ============================== --}}
+
+            <div class="flex items-center justify-between rounded-2xl border border-slate-200 p-4">
+                <div>
+                    <h4 class="text-[13px] font-semibold text-slate-900">Notifikasi Sistem</h4>
+                    <p class="mt-1 text-[12px] text-slate-500">
+                        Menampilkan notifikasi pada dashboard aplikasi.
+                        Selalu aktif dan tidak dapat dinonaktifkan.
+                    </p>
+                </div>
+                <span class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-[12px] font-semibold text-emerald-600">
+                    <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+                    Selalu Aktif
+                </span>
+            </div>
+
+            {{-- ============================== --}}
+            {{-- Email --}}
+            {{-- ============================== --}}
+
+            <div class="flex items-center justify-between rounded-2xl border border-slate-200 p-4">
+                <div>
+                    <h4 class="text-[13px] font-semibold text-slate-900">Notifikasi Email</h4>
+                    <p class="mt-1 text-[12px] text-slate-500">
+                        Mengirim email ketika kendaraan keluar dari area Geofence.
+                    </p>
+                </div>
+                <label class="relative inline-flex cursor-pointer items-center">
+                    <input
+                        id="geofenceEmailNotification"
+                        type="checkbox"
+                        class="peer sr-only"
+                        @checked($notificationSetting?->email_notification)
+                    >
+                    <div class="h-7 w-12 rounded-full bg-slate-300 transition peer-checked:bg-blue-600 after:absolute after:left-1 after:top-1 after:h-5 after:w-5 after:rounded-full after:bg-white after:transition-all peer-checked:after:translate-x-5"></div>
+                </label>
+            </div>
+
+            {{-- ============================== --}}
+            {{-- WhatsApp --}}
+            {{-- ============================== --}}
+
+            <div class="flex items-center justify-between rounded-2xl border border-slate-200 p-4">
+                <div>
+                    <h4 class="text-[13px] font-semibold text-slate-900">Notifikasi WhatsApp</h4>
+                    <p class="mt-1 text-[12px] text-slate-500">
+                        Mengirim WhatsApp ketika kendaraan keluar dari area Geofence.
+                    </p>
+                </div>
+                <label class="relative inline-flex cursor-pointer items-center">
+                    <input
+                        id="geofenceWhatsappNotification"
+                        type="checkbox"
+                        class="peer sr-only"
+                        @checked($notificationSetting?->whatsapp_notification)
+                    >
+                    <div class="h-7 w-12 rounded-full bg-slate-300 transition peer-checked:bg-blue-600 after:absolute after:left-1 after:top-1 after:h-5 after:w-5 after:rounded-full after:bg-white after:transition-all peer-checked:after:translate-x-5"></div>
+                </label>
+            </div>
+
+        </div>
+
+    </section>
+
+    {{-- ========================================================= --}}
     {{-- CARD --}}
     {{-- ========================================================= --}}
 

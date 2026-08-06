@@ -63,18 +63,23 @@
                     @include('vehicles.partials.sections.stop')
                 </section>
 
-                <section
-                    id="vehicleSettingSection"
-                    class="hidden mt-5 px-5 mb-5"
-                >
-                    @include('vehicles.partials.sections.setting')
-                </section>
-
             </div>
 
         </main>
 
     </div>
+
+    {{-- ========================================================= --}}
+    {{-- Tambah / Hapus Kendaraan --}}
+    {{-- ========================================================= --}}
+
+    @include('home.modals.activate-device')
+
+    @include('home.modals.vehicle-information')
+
+    @include('home.modals.profile')
+
+    @include('vehicles.partials.modals.delete-vehicle')
 
 </div>
 
