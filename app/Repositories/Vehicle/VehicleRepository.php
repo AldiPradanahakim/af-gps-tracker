@@ -3,6 +3,7 @@
 namespace App\Repositories\Vehicle;
 
 use App\Models\Device;
+use App\Models\StopHistory;
 use App\Models\TravelHistory;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -823,5 +824,56 @@ class VehicleRepository
             ->toArray();
 
         return $activities;
+    }
+
+    /**
+     * --------------------------------------------------------------------------
+     * Stop History
+     * --------------------------------------------------------------------------
+     */
+    public function stop(
+        Device $device
+    ): array {
+
+        return $device->stopHistories()
+
+            ->orderByDesc('start_time')
+
+            ->get()
+
+            ->map(function (StopHistory $stop) {
+
+                $location = $stop->location ?? [];
+
+                return [
+
+                    'id' => $stop->id,
+
+                    'lat' => isset($location['lat'])
+                        ? (float) $location['lat']
+                        : null,
+
+                    'lng' => isset($location['lng'])
+                        ? (float) $location['lng']
+                        : null,
+
+                    'address' => $stop->search_address,
+
+                    'started_at' => optional(
+                        $stop->start_time
+                    )?->toDateTimeString(),
+
+                    'ended_at' => optional(
+                        $stop->end_time
+                    )?->toDateTimeString(),
+
+                    'duration_seconds' => $stop->duration_seconds,
+
+                ];
+            })
+
+            ->values()
+
+            ->toArray();
     }
 }

@@ -106,4 +106,16 @@ class VehicleService
             $device
         );
     }
+
+    /**
+     * Stop History.
+     */
+    public function stop(
+        Device $device
+    ): array {
+
+        return $this->vehicleRepository->stop(
+            $device
+        );
+    }
 }

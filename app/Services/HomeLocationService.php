@@ -3,9 +3,8 @@
 namespace App\Services;
 
 use App\Models\Device;
-use Illuminate\Support\Facades\Auth;
-use App\Repositories\HomeLocationRepository;
 use Illuminate\Database\Eloquent\Collection;
+use App\Repositories\HomeLocationRepository;
 
 class HomeLocationService
 {
@@ -13,40 +12,58 @@ class HomeLocationService
         protected HomeLocationRepository $repository
     ) {}
 
-    public function save(array $data): Device|Collection
+    /**
+     * ----------------------------------------------------------
+     * Simpan atau perbarui Home Location untuk satu Device.
+     *
+     * Validasi ownership dilakukan di Controller.
+     * ----------------------------------------------------------
+     */
+    public function save(int $deviceId, array $data): Device
     {
-        if ($data['device_id'] === 'all') {
+        return $this->repository->save(
 
-            $deviceIds = Device::where(
-                'user_id',
-                Auth::id()
-            )->pluck('id')->toArray();
-        } else {
+            $deviceId,
 
-            $deviceIds = [
-                (int) $data['device_id']
-            ];
-        }
-
-        $this->repository->update(
-            $deviceIds,
             [
-                'lat' => (float) $data['latitude'],
-                'lng' => (float) $data['longitude'],
+                'latitude'     => $data['latitude'],
+                'longitude'    => $data['longitude'],
                 'display_name' => $data['display_name'],
             ]
+
         );
+    }
 
-        if ($data['device_id'] === 'all') {
+    /**
+     * ----------------------------------------------------------
+     * Simpan Home Location yang sama ke semua Device milik User
+     * yang belum memiliki Home Location (opsi "Semua Kendaraan").
+     * ----------------------------------------------------------
+     */
+    public function saveToAll(int $userId, array $data): Collection
+    {
+        return $this->repository->saveToAll(
 
-            return Device::whereIn(
-                'id',
-                $deviceIds
-            )->get();
-        }
+            $userId,
 
-        return Device::findOrFail(
-            $deviceIds[0]
+            [
+                'latitude'     => $data['latitude'],
+                'longitude'    => $data['longitude'],
+                'display_name' => $data['display_name'],
+            ]
+
         );
+    }
+
+    /**
+     * ----------------------------------------------------------
+     * Hapus Home Location (set null).
+     *
+     * Tidak menghapus Device.
+     * ----------------------------------------------------------
+     */
+    public function delete(int $deviceId): Device
+    {
+        return $this->repository->delete($deviceId);
     }
 }

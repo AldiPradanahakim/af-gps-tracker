@@ -30,8 +30,6 @@ window.VehiclePlayback = {
 
         this.state = state;
 
-        this.bindEvents();
-
     },
 
     /*

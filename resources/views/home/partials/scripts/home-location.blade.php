@@ -2,37 +2,191 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    const button = document.getElementById('homeLocationButton');
+    /*
+    |--------------------------------------------------------------------------
+    | GPSTracker Extensions for Home Location
+    |--------------------------------------------------------------------------
+    */
+    if (window.GPSTracker) {
+        
+        GPSTracker.previewHomeLocation = function(lat, lng) {
+            if (!this.map) return;
+            
+            if (this.temporaryLayer) {
+                this.temporaryLayer.clearLayers();
+            }
+            
+            const icon = L.divIcon({
+                className: "",
+                iconSize: [40, 40],
+                iconAnchor: [20, 40],
+                html: `
+                    <div style="width:40px; height:40px; display:flex; justify-content:center; align-items:center;">
+                        <div style="width:32px; height:32px; border-radius:50%; background:#f59e0b; border:3px solid white; box-shadow:0 4px 10px rgba(0,0,0,0.3); display:flex; justify-content:center; align-items:center;">
+                            <i class="fa-solid fa-house" style="font-size:14px; color:white;"></i>
+                        </div>
+                    </div>
+                `
+            });
+            
+            const marker = L.marker([lat, lng], {
+                icon: icon,
+                draggable: true,
+                zIndexOffset: 1000
+            });
+            
+            marker.on('dragend', function(e) {
+                const position = marker.getLatLng();
+                document.dispatchEvent(new CustomEvent('gpstracker:home-preview-moved', {
+                    detail: {
+                        lat: position.lat,
+                        lng: position.lng
+                    }
+                }));
+            });
+            
+            marker.addTo(this.temporaryLayer);
+            this.map.setView([lat, lng], 18, { animate: true });
+        };
 
-    const modal = document.getElementById('homeLocationModal');
+        GPSTracker.saveHomeLocationSuccess = function(data) {
+            if (this.temporaryLayer) {
+                this.temporaryLayer.clearLayers();
+            }
+            this.renderHomeLocations();
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        };
 
-    const close = document.getElementById('closeHomeLocation');
+        GPSTracker.renderHomeLocations = function() {
+            if (!this.homeLayer) return;
+            
+            this.homeLayer.clearLayers();
+            
+            const locations = window.GPSHomeLocations || [];
+            
+            locations.forEach(device => {
+                if (device.home_location && device.home_location.lat && device.home_location.lng) {
+                    const lat = device.home_location.lat;
+                    const lng = device.home_location.lng;
+                    
+                    const icon = L.divIcon({
+                        className: "",
+                        iconSize: [40, 40],
+                        iconAnchor: [20, 40],
+                        popupAnchor: [0, -40],
+                        html: `
+                            <div style="width:40px; height:40px; display:flex; justify-content:center; align-items:center;">
+                                <div style="width:32px; height:32px; border-radius:50%; background:#2563eb; border:3px solid white; box-shadow:0 4px 10px rgba(0,0,0,0.3); display:flex; justify-content:center; align-items:center;">
+                                    <i class="fa-solid fa-house" style="font-size:14px; color:white;"></i>
+                                </div>
+                            </div>
+                        `
+                    });
+                    
+                    const marker = L.marker([lat, lng], {
+                        icon: icon
+                    });
+                    
+                    const title = device.vehicle_name || device.device_id;
+                    const address = device.home_location.display_name || 'Home Location';
 
-    const cancel = document.getElementById('cancelHomeLocation');
+                    /*
+                    | Halaman Home hanya bisa menambah Home Location.
+                    | Edit/Hapus hanya tersedia di halaman Detail Kendaraan.
+                    */
+                    marker.bindPopup(`
+                        <div class="p-2 min-w-[200px]">
+                            <div class="font-bold text-slate-800 mb-1 border-b pb-1">${title}</div>
+                            <div class="text-xs text-slate-500">${address}</div>
+                        </div>
+                    `);
 
-    const save = document.getElementById('saveHomeLocation');
+                    marker.addTo(this.homeLayer);
+                }
+            });
+        };
 
-    const device = document.getElementById('homeDevice');
+    }
 
-    const search = document.getElementById('homeSearch');
+    document.addEventListener('gpstracker:map-ready', () => {
+        if (window.GPSTracker && typeof window.GPSTracker.renderHomeLocations === 'function') {
+            window.GPSTracker.renderHomeLocations();
+        }
+    });
 
-    const result = document.getElementById('homeSearchResult');
+    /*
+    |--------------------------------------------------------------------------
+    | Elements
+    |--------------------------------------------------------------------------
+    */
 
-    const loading = document.getElementById('homeSearchLoading');
-
+    const button    = document.getElementById('homeLocationButton');
+    const modal     = document.getElementById('homeLocationModal');
+    const close     = document.getElementById('closeHomeLocation');
+    const cancel    = document.getElementById('cancelHomeLocation');
+    const save      = document.getElementById('saveHomeLocation');
+    const search    = document.getElementById('homeSearch');
+    const result    = document.getElementById('homeSearchResult');
+    const loading   = document.getElementById('homeSearchLoading');
     const coordinate = document.getElementById('homeCoordinate');
-
-    const latitude = document.getElementById('homeLatitude');
-
+    const latitude  = document.getElementById('homeLatitude');
     const longitude = document.getElementById('homeLongitude');
-
-    const latitudePreview = document.getElementById('homeLatitudePreview');
-
+    const latitudePreview  = document.getElementById('homeLatitudePreview');
     const longitudePreview = document.getElementById('homeLongitudePreview');
-
     const displayName = document.getElementById('homeDisplayName');
 
     let debounce = null;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cek apakah tombol Home aktif
+    | (tombol disabled jika semua device sudah punya home location)
+    |--------------------------------------------------------------------------
+    */
+
+    function refreshHomeButtonState() {
+
+        if (!button) {
+            return;
+        }
+
+        const locations = window.GPSHomeLocations ?? [];
+
+        const anyAvailable = locations.some(d => !d.home_location);
+
+        if (anyAvailable) {
+
+            button.disabled = false;
+
+            button.classList.remove(
+                'opacity-50', 'cursor-not-allowed'
+            );
+
+            button.title = 'Tambah Home Location';
+
+        } else {
+
+            button.disabled = true;
+
+            button.classList.add(
+                'opacity-50', 'cursor-not-allowed'
+            );
+
+            button.title = 'Semua kendaraan sudah memiliki Home Location';
+
+        }
+
+    }
+
+    refreshHomeButtonState();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Open / Close Modal
+    |--------------------------------------------------------------------------
+    */
 
     function openModal() {
 
@@ -54,31 +208,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function resetForm() {
 
-        search.value = '';
+        if (search) search.value = '';
 
-        result.innerHTML = '';
+        if (result) {
+            result.innerHTML = '';
+            result.classList.add('hidden');
+        }
 
-        result.classList.add('hidden');
+        if (coordinate) coordinate.textContent = 'Belum memilih lokasi.';
 
-        coordinate.textContent = 'Belum memilih lokasi.';
-
-        latitude.value = '';
-
-        longitude.value = '';
-
-        displayName.value = '';
-
-        latitudePreview.value = '';
-
-        longitudePreview.value = '';
+        if (latitude)  latitude.value  = '';
+        if (longitude) longitude.value = '';
+        if (displayName) displayName.value = '';
+        if (latitudePreview)  latitudePreview.value  = '';
+        if (longitudePreview) longitudePreview.value = '';
 
     }
 
-    button?.addEventListener('click', openModal);
+    button?.addEventListener('click', () => {
+
+        if (button.disabled) {
+            return;
+        }
+
+        openModal();
+
+    });
 
     close?.addEventListener('click', closeModal);
 
     cancel?.addEventListener('click', closeModal);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Search
+    |--------------------------------------------------------------------------
+    */
 
     search?.addEventListener('input', () => {
 
@@ -88,12 +253,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (keyword.length < 3) {
 
-            result.innerHTML = '';
-
-            result.classList.add('hidden');
+            if (result) {
+                result.innerHTML = '';
+                result.classList.add('hidden');
+            }
 
             return;
-
         }
 
         debounce = setTimeout(() => {
@@ -106,20 +271,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function searchLocation(keyword) {
 
-        loading.classList.remove('hidden');
+        loading?.classList.remove('hidden');
 
         try {
 
             const response = await fetch(
-
                 `/api/location/search?q=${encodeURIComponent(keyword)}`
-
             );
 
             if (!response.ok) {
-
                 throw new Error('Search gagal.');
-
             }
 
             const items = await response.json();
@@ -130,23 +291,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
             console.error(error);
 
-            result.innerHTML = `
-                <div class="p-4 text-sm text-red-600">
-                    Gagal mencari lokasi.
-                </div>
-            `;
-
-            result.classList.remove('hidden');
+            if (result) {
+                result.innerHTML = `
+                    <div class="p-4 text-sm text-red-600">
+                        Gagal mencari lokasi.
+                    </div>
+                `;
+                result.classList.remove('hidden');
+            }
 
         } finally {
 
-            loading.classList.add('hidden');
+            loading?.classList.add('hidden');
 
         }
 
     }
 
-        function renderResult(items) {
+    function renderResult(items) {
+
+        if (!result) return;
 
         result.innerHTML = '';
 
@@ -161,7 +325,6 @@ document.addEventListener('DOMContentLoaded', () => {
             result.classList.remove('hidden');
 
             return;
-
         }
 
         items.forEach(item => {
@@ -199,28 +362,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function selectLocation(item) {
 
-        latitude.value = item.lat;
-
-        longitude.value = item.lon;
-
-        displayName.value = item.display_name;
-
-        latitudePreview.value = Number(item.lat).toFixed(6);
-
-        longitudePreview.value = Number(item.lon).toFixed(6);
-
-        coordinate.textContent = item.display_name;
-
-        result.classList.add('hidden');
-
-        search.value = item.display_name;
+        if (latitude)  latitude.value  = item.lat;
+        if (longitude) longitude.value = item.lon;
+        if (displayName) displayName.value = item.display_name;
+        if (latitudePreview)  latitudePreview.value  = Number(item.lat).toFixed(6);
+        if (longitudePreview) longitudePreview.value = Number(item.lon).toFixed(6);
+        if (coordinate) coordinate.textContent = item.display_name;
+        if (result) result.classList.add('hidden');
+        if (search) search.value = item.display_name;
 
         try {
 
-            await reverseGeocode(
-                item.lat,
-                item.lon
-            );
+            await reverseGeocode(item.lat, item.lon);
 
         } catch (error) {
 
@@ -248,34 +401,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Reverse Geocoding
+    |--------------------------------------------------------------------------
+    */
+
     async function reverseGeocode(lat, lon) {
 
         try {
 
+            /*
+            | Endpoint menggunakan 'latitude' dan 'longitude' sebagai param
+            | (sesuai LocationController::reverse)
+            */
             const response = await fetch(
-
-                `/api/location/reverse?lat=${lat}&lon=${lon}`
-
+                `/api/location/reverse?latitude=${lat}&longitude=${lon}`
             );
 
             if (!response.ok) {
-
                 return;
-
             }
 
             const location = await response.json();
 
-            if (
-                location &&
-                location.display_name
-            ) {
+            if (location && location.display_name) {
 
-                coordinate.textContent =
-                    location.display_name;
-
-                displayName.value =
-                    location.display_name;
+                if (coordinate) coordinate.textContent = location.display_name;
+                if (displayName) displayName.value     = location.display_name;
 
             }
 
@@ -287,12 +440,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     }
 
-        async function saveHomeLocation() {
+    /*
+    |--------------------------------------------------------------------------
+    | Save Home Location
+    |--------------------------------------------------------------------------
+    */
 
-        if (
-            latitude.value === '' ||
-            longitude.value === ''
-        ) {
+    async function saveHomeLocation() {
+
+        const deviceEl = document.getElementById('homeDevice');
+
+        if (!deviceEl) {
+
+            GPSTracker.showToast(
+                'warning',
+                'Peringatan',
+                'Tidak ada kendaraan yang tersedia untuk ditambahkan Home Location.'
+            );
+
+            return;
+        }
+
+        if (!latitude?.value || !longitude?.value) {
 
             GPSTracker.showToast(
                 'warning',
@@ -306,9 +475,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
 
-            save.disabled = true;
-
-            save.innerHTML = 'Menyimpan...';
+            if (save) {
+                save.disabled = true;
+                save.innerHTML = 'Menyimpan...';
+            }
 
             const response = await fetch(
                 '/api/home-location',
@@ -323,13 +493,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     },
                     body: JSON.stringify({
 
-                        device_id: device.value,
+                        device_id:    deviceEl.value,
 
-                        latitude: latitude.value,
+                        latitude:     latitude.value,
 
-                        longitude: longitude.value,
+                        longitude:    longitude.value,
 
-                        display_name: displayName.value
+                        display_name: displayName?.value || coordinate?.textContent
 
                     })
                 }
@@ -339,22 +509,54 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!response.ok) {
 
-                GPSTracker.showToast(
-                    'error',
-                    'Gagal',
-                    data.message ??
-                    'Home Location gagal disimpan.'
-                );
+                let msg = data.message ?? 'Home Location gagal disimpan.';
+
+                if (data.errors) {
+                    msg = Object.values(data.errors).flat().join('\n');
+                }
+
+                GPSTracker.showToast('error', 'Gagal', msg);
 
                 return;
 
             }
 
-            GPSTracker.showToast(
-                'success',
-                'Berhasil',
-                'Home Location berhasil disimpan.'
-            );
+            /*
+            |--------------------------------------------------------------
+            | Update GPSHomeLocations state — tandai device sudah punya HL
+            | (bisa 1 device atau banyak device sekaligus jika "Semua
+            | Kendaraan" yang dipilih)
+            |--------------------------------------------------------------
+            */
+
+            if (window.GPSHomeLocations && Array.isArray(data.devices)) {
+
+                const updated = new Map(
+                    data.devices.map(device => [device.id, device.home_location])
+                );
+
+                window.GPSHomeLocations = window.GPSHomeLocations.map(d => {
+
+                    if (updated.has(d.id)) {
+
+                        return {
+                            ...d,
+                            home_location: updated.get(d.id)
+                        };
+
+                    }
+
+                    return d;
+
+                });
+
+            }
+
+            /*
+            |--------------------------------------------------------------
+            | Update Home Marker di peta
+            |--------------------------------------------------------------
+            */
 
             if (
                 window.GPSTracker &&
@@ -364,6 +566,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 GPSTracker.saveHomeLocationSuccess(data);
 
             }
+
+            /*
+            |--------------------------------------------------------------
+            | Refresh tombol Home
+            |--------------------------------------------------------------
+            */
+
+            refreshHomeButtonState();
+
+            GPSTracker.showToast(
+                'success',
+                'Berhasil',
+                data.message ?? 'Home Location berhasil disimpan.'
+            );
 
             closeModal();
 
@@ -379,13 +595,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } finally {
 
-            save.disabled = false;
-
-            save.innerHTML = 'Simpan';
+            if (save) {
+                save.disabled = false;
+                save.innerHTML = 'Simpan';
+            }
 
         }
 
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Event: Drag marker (update lat/lng dari peta Home)
+    |--------------------------------------------------------------------------
+    */
 
     document.addEventListener(
 
@@ -394,16 +617,12 @@ document.addEventListener('DOMContentLoaded', () => {
         async function (event) {
 
             const lat = event.detail.lat;
-
             const lng = event.detail.lng;
 
-            latitude.value = lat;
-
-            longitude.value = lng;
-
-            latitudePreview.value = Number(lat).toFixed(6);
-
-            longitudePreview.value = Number(lng).toFixed(6);
+            if (latitude)  latitude.value  = lat;
+            if (longitude) longitude.value = lng;
+            if (latitudePreview)  latitudePreview.value  = Number(lat).toFixed(6);
+            if (longitudePreview) longitudePreview.value = Number(lng).toFixed(6);
 
             try {
 
@@ -419,10 +638,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     );
 
-    save?.addEventListener(
-        'click',
-        saveHomeLocation
-    );
+    save?.addEventListener('click', saveHomeLocation);
 
 });
 

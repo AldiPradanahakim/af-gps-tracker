@@ -42,53 +42,64 @@
         {{-- Header Action --}}
         {{-- ============================================== --}}
 
-        <div id="homeLocationHeaderAction">
+        <div
+            id="homeLocationHeaderAction"
+            class="flex items-center gap-3"
+        >
 
-            @if($homeLocation)
+            {{-- Tambah --}}
 
-                <div class="flex items-center gap-3">
+            <button
 
-                    <button
-                        id="editHomeLocationButton"
-                        type="button"
-                        class="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-300 bg-white px-5 text-[13px] font-semibold text-slate-700 transition hover:border-blue-500 hover:text-blue-600"
-                    >
+                id="createHomeLocationButton"
 
-                        <i class="fa-solid fa-pen"></i>
+                type="button"
 
-                        Edit
+                class="{{ $homeLocation ? 'hidden' : 'inline-flex' }} h-10 items-center gap-2 rounded-xl bg-blue-600 px-5 text-[13px] font-semibold text-white transition hover:bg-blue-700"
 
-                    </button>
+            >
 
-                    <button
-                        id="deleteHomeLocationButton"
-                        type="button"
-                        class="inline-flex h-10 items-center gap-2 rounded-xl border border-red-300 bg-white px-5 text-[13px] font-semibold text-red-600 transition hover:bg-red-50"
-                    >
+                <i class="fa-solid fa-plus"></i>
 
-                        <i class="fa-solid fa-trash"></i>
+                Tambah Home Location
 
-                        Hapus
+            </button>
 
-                    </button>
+            {{-- Edit --}}
 
-                </div>
+            <button
 
-            @else
+                id="editHomeLocationButton"
 
-                <button
-                    id="createHomeLocationButton"
-                    type="button"
-                    class="inline-flex h-10 items-center gap-2 rounded-xl bg-blue-600 px-5 text-[13px] font-semibold text-white transition hover:bg-blue-700"
-                >
+                type="button"
 
-                    <i class="fa-solid fa-plus"></i>
+                class="{{ $homeLocation ? 'inline-flex' : 'hidden' }} h-10 items-center gap-2 rounded-xl border border-slate-300 bg-white px-5 text-[13px] font-semibold text-slate-700 transition hover:border-blue-500 hover:text-blue-600"
 
-                    Tambah Home Location
+            >
 
-                </button>
+                <i class="fa-solid fa-pen"></i>
 
-            @endif
+                Edit
+
+            </button>
+
+            {{-- Delete --}}
+
+            <button
+
+                id="deleteHomeLocationButton"
+
+                type="button"
+
+                class="{{ $homeLocation ? 'inline-flex' : 'hidden' }} h-10 items-center gap-2 rounded-xl border border-red-300 bg-white px-5 text-[13px] font-semibold text-red-600 transition hover:bg-red-50"
+
+            >
+
+                <i class="fa-solid fa-trash"></i>
+
+                Hapus
+
+            </button>
 
         </div>
 
@@ -102,7 +113,7 @@
 
         id="homeLocationReadContainer"
 
-        class="px-6 py-6"
+        class="{{ $homeLocation ? 'px-6 py-6' : 'hidden px-6 py-6' }}"
 
     >
 
@@ -131,14 +142,35 @@
                 @if($homeLocation)
 
                     <span
-                        class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-[12px] font-semibold text-emerald-600"
+
+                        id="homeLocationStatusBadge"
+
+                        class="inline-flex items-center gap-2 rounded-full
+                        {{ $homeLocation
+                            ? 'bg-emerald-50 text-emerald-600'
+                            : 'bg-red-50 text-red-600'
+                        }}
+                        px-3 py-1 text-[12px] font-semibold"
+
                     >
 
                         <span
-                            class="h-2 w-2 rounded-full bg-emerald-500"
+
+                            id="homeLocationStatusDot"
+
+                            class="h-2 w-2 rounded-full
+                            {{ $homeLocation
+                                ? 'bg-emerald-500'
+                                : 'bg-red-500'
+                            }}"
+
                         ></span>
 
-                        Sudah Ditentukan
+                        <span id="homeLocationStatusText">
+
+                            {{ $homeLocation ? 'Sudah Ditentukan' : 'Belum Ditentukan' }}
+
+                        </span>
 
                     </span>
 
@@ -177,9 +209,15 @@
             </div>
 
             <div
+
+                id="homeLocationReadAddress"
+
                 class="font-medium leading-6 text-slate-900"
+
             >
-                {{ $homeLocation->address ?? '-' }}
+
+                {{ $homeLocation['display_name'] ?? '-' }}
+
             </div>
 
             {{-- ============================================== --}}
@@ -199,9 +237,15 @@
             </div>
 
             <div
+
+                id="homeLocationReadLatitude"
+
                 class="font-semibold text-slate-900"
+
             >
-                {{ $homeLocation->latitude ?? '-' }}
+
+                {{ isset($homeLocation['lat']) ? number_format((float)$homeLocation['lat'], 6) : '-' }}
+
             </div>
 
             {{-- ============================================== --}}
@@ -221,9 +265,15 @@
             </div>
 
             <div
+
+                id="homeLocationReadLongitude"
+
                 class="font-semibold text-slate-900"
+
             >
-                {{ $homeLocation->longitude ?? '-' }}
+
+                {{ isset($homeLocation['lng']) ? number_format((float)$homeLocation['lng'], 6) : '-' }}
+
             </div>
 
         </div>
@@ -249,9 +299,15 @@
                 </p>
 
                 <h4
+
+                    id="homeLocationMarkerStatus"
+
                     class="mt-3 text-[18px] font-bold text-slate-900"
+
                 >
-                    Aktif
+
+                    {{ $homeLocation ? 'Aktif' : '-' }}
+
                 </h4>
 
             </div>
@@ -269,9 +325,15 @@
                 </p>
 
                 <h4
+
+                    id="homeLocationSearchStatus"
+
                     class="mt-3 text-[18px] font-bold text-slate-900"
+
                 >
+
                     Tersedia
+
                 </h4>
 
             </div>
@@ -289,9 +351,15 @@
                 </p>
 
                 <h4
+
+                    id="homeLocationDragStatus"
+
                     class="mt-3 text-[18px] font-bold text-slate-900"
+
                 >
-                    Aktif Saat Edit
+
+                    {{ $homeLocation ? 'Aktif Saat Edit' : '-' }}
+
                 </h4>
 
             </div>
@@ -308,7 +376,7 @@
 
         id="homeLocationEmptyContainer"
 
-        class="hidden px-8 py-16"
+        class="{{ $homeLocation ? 'hidden px-8 py-16' : 'px-8 py-16' }}"
 
     >
 
@@ -406,7 +474,7 @@
 
                         autocomplete="off"
 
-                        value="{{ $homeLocation->address ?? '' }}"
+                        value="{{ $homeLocation['display_name'] ?? '' }}"
 
                         placeholder="Cari alamat atau lokasi..."
 
@@ -458,7 +526,7 @@
 
                         readonly
 
-                        value="{{ $homeLocation->latitude ?? '' }}"
+                        value="{{ isset($homeLocation['lat']) ? number_format((float)$homeLocation['lat'], 6) : '' }}"
 
                         class="h-11 w-full rounded-xl border border-slate-300 bg-slate-50 px-4 text-[13px]"
 
@@ -486,7 +554,7 @@
 
                         readonly
 
-                        value="{{ $homeLocation->longitude ?? '' }}"
+                        value="{{ isset($homeLocation['lng']) ? number_format((float)$homeLocation['lng'], 6) : '' }}"
 
                         class="h-11 w-full rounded-xl border border-slate-300 bg-slate-50 px-4 text-[13px]"
 
@@ -520,7 +588,7 @@
 
                     class="w-full rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-[13px] leading-6"
 
-                >{{ $homeLocation->address ?? '' }}</textarea>
+                >{{ $homeLocation['display_name'] ?? '' }}</textarea>
 
             </div>
 

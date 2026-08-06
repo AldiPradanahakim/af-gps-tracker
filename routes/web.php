@@ -155,6 +155,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'activity'
     ])->name('vehicles.activity');
 
+    Route::get('/vehicles/{device}/stop', [
+        VehicleController::class,
+        'stop'
+    ])->name('vehicles.stop');
+
     /**
      * Store Geofence
      */
@@ -228,7 +233,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post(
         '/api/home-location',
         [LocationController::class, 'save']
-    );
+    )->name('api.home-location.save');
+
+    Route::delete(
+        '/api/home-location',
+        [LocationController::class, 'destroy']
+    )->name('api.home-location.destroy');
 });
 
 require __DIR__ . '/auth.php';

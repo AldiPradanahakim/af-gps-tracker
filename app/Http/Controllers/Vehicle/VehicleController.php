@@ -205,4 +205,28 @@ class VehicleController extends Controller
 
         ]);
     }
+
+    /**
+     * --------------------------------------------------------------------------
+     * Stop History
+     * --------------------------------------------------------------------------
+     */
+    public function stop(
+        Device $device
+    ): JsonResponse {
+
+        $stops = $this->vehicleService->stop(
+            $device
+        );
+
+        return response()->json([
+
+            'success' => true,
+
+            'message' => 'Riwayat kendaraan berhenti berhasil diambil.',
+
+            'data' => $stops,
+
+        ]);
+    }
 }

@@ -44,10 +44,16 @@
         <div class="ml-8 flex items-center gap-3">
 
             {{-- HOME --}}
+            @php
+                $hasAvailableDevice = collect($devices)->some(fn($d) => empty($d['home_location']));
+            @endphp
+
             <button
                 id="homeLocationButton"
                 type="button"
-                class="flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
+                @if(!$hasAvailableDevice) disabled @endif
+                title="{{ $hasAvailableDevice ? 'Tambah Home Location' : 'Semua kendaraan sudah memiliki Home Location' }}"
+                class="flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50 {{ !$hasAvailableDevice ? 'opacity-50 cursor-not-allowed' : '' }}">
 
                 <svg
                     xmlns="http://www.w3.org/2000/svg"

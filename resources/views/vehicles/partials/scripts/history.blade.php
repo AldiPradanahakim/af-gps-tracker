@@ -190,6 +190,82 @@ window.VehicleHistory = {
 
         this.renderTimeline();
 
+        this.renderMapPoints();
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Render Map Points
+    |--------------------------------------------------------------------------
+    */
+
+    renderMapPoints() {
+
+        if (!window.VehicleMap) {
+
+            return;
+
+        }
+
+        VehicleMap.removeOverlay('history-points');
+
+        if (!this.histories.length) {
+
+            return;
+
+        }
+
+        const group = L.layerGroup();
+
+        this.histories.forEach(history => {
+
+            if (
+                history.lat == null ||
+                history.lng == null
+            ) {
+
+                return;
+
+            }
+
+            const isMoving = Number(history.speed ?? 0) > 0;
+
+            const point = L.circleMarker(
+                [history.lat, history.lng],
+                {
+                    radius: 5,
+                    weight: 2,
+                    color: '#ffffff',
+                    fillColor: isMoving ? '#2563eb' : '#f97316',
+                    fillOpacity: 1,
+                }
+            );
+
+            point.bindPopup(`
+                <div class="min-w-[200px] p-1">
+                    <div class="text-sm font-semibold text-slate-900">${history.address ?? 'Lokasi tidak diketahui'}</div>
+                    <div class="mt-1 text-xs text-slate-500">${history.received_at ?? '-'}</div>
+                    <div class="mt-2 text-xs font-medium ${isMoving ? 'text-blue-600' : 'text-orange-600'}">
+                        ${Number(history.speed ?? 0).toFixed(0)} km/jam ${isMoving ? '' : '&middot; Berhenti'}
+                    </div>
+                </div>
+            `);
+
+            point.on('click', () => {
+
+                this.activeHistory = history.id;
+
+                this.highlight();
+
+            });
+
+            point.addTo(group);
+
+        });
+
+        VehicleMap.addOverlay('history-points', group);
+
     },
 
     /*
@@ -547,6 +623,12 @@ window.VehicleHistory = {
     */
 
     destroy() {
+
+        if (window.VehicleMap) {
+
+            VehicleMap.removeOverlay('history-points');
+
+        }
 
         this.histories = [];
 

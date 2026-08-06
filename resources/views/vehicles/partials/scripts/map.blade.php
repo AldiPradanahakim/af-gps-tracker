@@ -46,21 +46,34 @@ window.VehicleMap = {
 
         this.setInitialView();
 
-        document.dispatchEvent(
+        /*
+        |--------------------------------------------------------------------------
+        | Dispatch async: modul lain (Marker, Path) mendaftarkan listener
+        | 'vehicle.map.ready' saat init-nya masing-masing dipanggil SETELAH
+        | VehicleMap.init() ini. Dispatch harus ditunda ke tick berikutnya
+        | supaya listener-listener itu sempat terpasang lebih dulu.
+        |--------------------------------------------------------------------------
+        */
 
-            new CustomEvent(
+        setTimeout(() => {
 
-                'vehicle.map.ready',
+            document.dispatchEvent(
 
-                {
+                new CustomEvent(
 
-                    detail: this.map
+                    'vehicle.map.ready',
 
-                }
+                    {
 
-            )
+                        detail: this.map
 
-        );
+                    }
+
+                )
+
+            );
+
+        }, 0);
 
     },
 
@@ -220,6 +233,7 @@ window.VehicleMap = {
     |--------------------------------------------------------------------------
     | Add Overlay
     |--------------------------------------------------------------------------
+    */
 
     addOverlay(name, layer) {
 

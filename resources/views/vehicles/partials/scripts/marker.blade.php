@@ -50,37 +50,85 @@ window.VehicleMarker = {
 
     createIcon() {
 
-        if (this.icon) {
-
-            return this.icon;
-
-        }
-
         const vehicle = this.state.device.vehicle ?? {};
 
-        const defaultIcon = `<span class="vehicle-marker-icon"><i class="fa-solid fa-motorcycle"></i></span>`;
+        const color = this.getMarkerColor(vehicle);
 
-        const iconHtml = vehicle.marker_icon
-
-            ? `<span class="vehicle-marker-icon"><img src="${vehicle.marker_icon}" alt="Marker" class="h-5 w-5 object-contain"/></span>`
-
-            : defaultIcon;
+        const iconClass = this.getMarkerIconClass(vehicle);
 
         this.icon = L.divIcon({
 
-            html: `<span class="vehicle-marker-icon-wrapper">${iconHtml}</span>`,
+            html: `
+                <div style="width:56px;height:56px;display:flex;align-items:center;justify-content:center;">
+                    <div style="width:46px;height:46px;border-radius:50%;background:${color};border:4px solid white;box-shadow:0 6px 16px rgba(15,23,42,0.35);display:flex;align-items:center;justify-content:center;">
+                        <i class="${iconClass}" style="font-size:20px;color:white;"></i>
+                    </div>
+                </div>
+            `,
 
             className: '',
 
-            iconSize: [48, 58],
+            iconSize: [56, 56],
 
-            iconAnchor: [24, 58],
+            iconAnchor: [28, 28],
 
-            popupAnchor: [0, -52],
+            popupAnchor: [0, -28],
 
         });
 
         return this.icon;
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Marker Color
+    |--------------------------------------------------------------------------
+    */
+
+    getMarkerColor(vehicle) {
+
+        const colors = {
+
+            green: '#22c55e',
+            blue: '#2563eb',
+            red: '#ef4444',
+            orange: '#f97316',
+            yellow: '#eab308',
+            purple: '#9333ea',
+            black: '#111827',
+            gray: '#6b7280',
+
+        };
+
+        return colors[vehicle.marker_color] ?? colors.blue;
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Marker Icon Class
+    |--------------------------------------------------------------------------
+    */
+
+    getMarkerIconClass(vehicle) {
+
+        const icons = {
+
+            motorcycle: 'fa-solid fa-motorcycle',
+            car: 'fa-solid fa-car',
+            pickup: 'fa-solid fa-truck-pickup',
+            truck: 'fa-solid fa-truck',
+            bus: 'fa-solid fa-bus',
+            ambulance: 'fa-solid fa-truck-medical',
+            police: 'fa-solid fa-shield-halved',
+            bicycle: 'fa-solid fa-bicycle',
+            van: 'fa-solid fa-van-shuttle',
+            taxi: 'fa-solid fa-taxi',
+
+        };
+
+        return icons[vehicle.marker_icon] ?? icons.motorcycle;
 
     },
 

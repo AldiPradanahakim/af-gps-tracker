@@ -47,27 +47,40 @@
 
                 </label>
 
-                <select
-                    id="homeDevice"
-                    class="w-full rounded-xl border border-slate-300 px-4 py-3">
+                @php
+                    $devicesWithoutHome = collect($devices)->filter(
+                        fn($d) => empty($d['home_location'])
+                    )->values();
+                @endphp
 
-                    <option value="all">
+                @if($devicesWithoutHome->isEmpty())
 
-                        Semua Kendaraan
+                    <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+                        <strong>Semua kendaraan</strong> sudah memiliki Home Location.
+                        Hapus Home Location pada salah satu kendaraan terlebih dahulu untuk menambahkan yang baru.
+                    </div>
 
-                    </option>
+                @else
 
-                    @foreach($devices as $device)
+                    <select
+                        id="homeDevice"
+                        class="w-full rounded-xl border border-slate-300 px-4 py-3">
 
-                        <option value="{{ $device['id'] }}">
+                        <option value="all">Semua Kendaraan</option>
 
-                            {{ $device['vehicle_name'] }}
+                        @foreach($devicesWithoutHome as $device)
 
-                        </option>
+                            <option value="{{ $device['id'] }}">
 
-                    @endforeach
+                                {{ $device['vehicle_name'] ?? $device['device_id'] }}
 
-                </select>
+                            </option>
+
+                        @endforeach
+
+                    </select>
+
+                @endif
 
             </div>
 

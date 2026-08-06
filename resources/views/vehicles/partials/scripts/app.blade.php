@@ -215,6 +215,14 @@ window.Vehicle = {
 
         }
 
+        if (window.VehicleHomeLocation) {
+
+            this.homeLocation = window.VehicleHomeLocation;
+
+            this.homeLocation.init(this.state);
+
+        }
+
     },
 
     /*
