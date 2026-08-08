@@ -21,5 +21,5 @@ Broadcast::channel('vehicle.{deviceId}', function ($user, $deviceId) {
 
 Broadcast::channel('user.{userId}', function ($user, $userId) {
 
-    return (int) $user->id === (int) $userId;
+    return hash_equals((string) $user->id, (string) $userId);
 });

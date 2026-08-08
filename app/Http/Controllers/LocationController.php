@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 class LocationController extends Controller
 {
@@ -77,7 +78,7 @@ class LocationController extends Controller
      * Save (Create) Home Location
      *
      * Mendukung dua mode:
-     * - device_id = integer → simpan ke satu device
+     * - device_id = uuid    → simpan ke satu device
      * - device_id = "all"   → simpan lokasi yang sama ke semua
      *                         device milik user yang belum
      *                         memiliki Home Location
@@ -90,8 +91,9 @@ class LocationController extends Controller
         $data = $request->validate([
             'device_id'    => [
                 'required',
+                'string',
                 function ($attribute, $value, $fail) {
-                    if ($value !== 'all' && !is_numeric($value)) {
+                    if ($value !== 'all' && !Str::isUuid($value)) {
                         $fail('Kendaraan tidak valid.');
                     }
                 },
@@ -118,7 +120,7 @@ class LocationController extends Controller
             | Pastikan device milik user yang login
             |----------------------------------------------------------
             */
-            $device = Device::where('id', (int) $data['device_id'])
+            $device = Device::where('id', $data['device_id'])
                 ->where('user_id', Auth::id())
                 ->firstOrFail();
 
@@ -149,7 +151,7 @@ class LocationController extends Controller
     public function destroy(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'device_id' => ['required', 'integer'],
+            'device_id' => ['required', 'string', 'uuid'],
         ]);
 
         /*
@@ -162,7 +164,7 @@ class LocationController extends Controller
             ->firstOrFail();
 
         $device = $this->service->delete(
-            (int) $data['device_id']
+            $data['device_id']
         );
 
         return response()->json([

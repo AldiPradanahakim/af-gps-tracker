@@ -596,7 +596,7 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         const index = this.vehicles.findIndex(item => {
 
-            return Number(item.device_id) === Number(vehicle.device_id);
+            return String(item.device_id) === String(vehicle.device_id);
 
         });
 

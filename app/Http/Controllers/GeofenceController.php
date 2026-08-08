@@ -24,7 +24,7 @@ class GeofenceController extends Controller
      * --------------------------------------------------------------------------
      */
     public function index(
-        int $device
+        string $device
     ): JsonResponse {
 
         $geofences = $this->geofenceService->getByDevice(
@@ -109,7 +109,7 @@ class GeofenceController extends Controller
      */
     public function update(
         UpdateGeofenceRequest $request,
-        int $geofence
+        string $geofence
     ): JsonResponse {
 
         try {
@@ -148,7 +148,7 @@ class GeofenceController extends Controller
      */
     public function updateStatus(
         UpdateGeofenceStatusRequest $request,
-        int $geofence
+        string $geofence
     ): JsonResponse {
 
         $geofence = $this->geofenceService->updateStatus(
@@ -176,7 +176,7 @@ class GeofenceController extends Controller
      * --------------------------------------------------------------------------
      */
     public function destroy(
-        int $geofence
+        string $geofence
     ): JsonResponse {
 
         $this->geofenceService->destroy(

@@ -80,7 +80,7 @@ class SearchRepository
     /**
      * Mengambil device berdasarkan id.
      */
-    public function findDevice(int $deviceId): ?Device
+    public function findDevice(string $deviceId): ?Device
     {
         return Device::query()
 

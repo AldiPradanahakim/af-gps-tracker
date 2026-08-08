@@ -29,7 +29,7 @@ class DeleteGeofenceRequest extends FormRequest
 
             'geofence_ids.*' => [
                 'required',
-                'integer',
+                'uuid',
                 'distinct',
                 'exists:geofences,id',
             ],
@@ -56,7 +56,7 @@ class DeleteGeofenceRequest extends FormRequest
             'geofence_ids.*.required' =>
             'ID geofence wajib diisi.',
 
-            'geofence_ids.*.integer' =>
+            'geofence_ids.*.uuid' =>
             'ID geofence tidak valid.',
 
             'geofence_ids.*.distinct' =>

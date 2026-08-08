@@ -11,7 +11,7 @@ use Illuminate\Validation\ValidationException;
 class ProfileService
 {
 
-    public function createUser(array $data, int $deviceId): User
+    public function createUser(array $data, string $deviceId): User
     {
         return DB::transaction(function () use ($data, $deviceId) {
 

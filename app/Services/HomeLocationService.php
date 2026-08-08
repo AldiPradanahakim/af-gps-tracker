@@ -19,7 +19,7 @@ class HomeLocationService
      * Validasi ownership dilakukan di Controller.
      * ----------------------------------------------------------
      */
-    public function save(int $deviceId, array $data): Device
+    public function save(string $deviceId, array $data): Device
     {
         return $this->repository->save(
 
@@ -40,7 +40,7 @@ class HomeLocationService
      * yang belum memiliki Home Location (opsi "Semua Kendaraan").
      * ----------------------------------------------------------
      */
-    public function saveToAll(int $userId, array $data): Collection
+    public function saveToAll(string $userId, array $data): Collection
     {
         return $this->repository->saveToAll(
 
@@ -62,7 +62,7 @@ class HomeLocationService
      * Tidak menghapus Device.
      * ----------------------------------------------------------
      */
-    public function delete(int $deviceId): Device
+    public function delete(string $deviceId): Device
     {
         return $this->repository->delete($deviceId);
     }

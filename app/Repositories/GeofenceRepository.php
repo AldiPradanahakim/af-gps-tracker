@@ -11,7 +11,7 @@ class GeofenceRepository
     /**
      * Seluruh geofence milik user.
      */
-    public function getByUser(int $userId): Collection
+    public function getByUser(string $userId): Collection
     {
         return Geofence::query()
             ->with([
@@ -28,7 +28,7 @@ class GeofenceRepository
     /**
      * Geofence berdasarkan device.
      */
-    public function getByDevice(int $deviceId): Collection
+    public function getByDevice(string $deviceId): Collection
     {
         return Geofence::query()
             ->where('device_id', $deviceId)
@@ -39,7 +39,7 @@ class GeofenceRepository
     /**
      * Cari geofence.
      */
-    public function find(int $id): ?Geofence
+    public function find(string $id): ?Geofence
     {
         return Geofence::query()
             ->with([
@@ -53,8 +53,8 @@ class GeofenceRepository
      * Cari geofence milik user.
      */
     public function findOwnedByUser(
-        int $id,
-        int $userId
+        string $id,
+        string $userId
     ): ?Geofence {
 
         return Geofence::query()
@@ -73,7 +73,7 @@ class GeofenceRepository
      * Cari device.
      */
     public function findDevice(
-        int $deviceId
+        string $deviceId
     ): ?Device {
 
         return Device::query()
@@ -89,8 +89,8 @@ class GeofenceRepository
      * Cari device milik user.
      */
     public function findDeviceByUser(
-        int $deviceId,
-        int $userId
+        string $deviceId,
+        string $userId
     ): ?Device {
 
         return Device::query()
@@ -119,7 +119,7 @@ class GeofenceRepository
     /**
      * Semua device milik user (untuk opsi "Semua Kendaraan").
      */
-    public function getDevicesByUser(int $userId): Collection
+    public function getDevicesByUser(string $userId): Collection
     {
         return Device::query()
 
@@ -136,7 +136,7 @@ class GeofenceRepository
      * Cek apakah device sudah memiliki geofence dengan tipe tertentu.
      * (BR-01: 1 device maksimal 1 geofence per tipe)
      */
-    public function hasType(int $deviceId, string $type): bool
+    public function hasType(string $deviceId, string $type): bool
     {
         return Geofence::query()
 
@@ -151,7 +151,7 @@ class GeofenceRepository
      * Daftar tipe geofence yang sudah dimiliki tiap device milik user.
      * Bentuk: [deviceId => ['radius', 'administrative', ...]]
      */
-    public function getTypesByUser(int $userId): array
+    public function getTypesByUser(string $userId): array
     {
         return Geofence::query()
 

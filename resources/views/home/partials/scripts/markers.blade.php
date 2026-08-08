@@ -1190,7 +1190,7 @@ document.addEventListener(
 
                 vehicle =>
 
-                    Number(vehicle.device_id) === Number(deviceId)
+                    String(vehicle.device_id) === String(deviceId)
 
             );
 
@@ -1834,7 +1834,7 @@ document.addEventListener(
 
                 vehicle =>
 
-                    Number(vehicle.device_id) === Number(payload.device_id)
+                    String(vehicle.device_id) === String(payload.device_id)
 
             );
 
@@ -1936,11 +1936,11 @@ document.addEventListener(
 
                 this.getSelectedVehicle() !== null &&
 
-                Number(
+                String(
 
                     this.getSelectedVehicle()
 
-                ) === Number(
+                ) === String(
 
                     vehicle.device_id
 

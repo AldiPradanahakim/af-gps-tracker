@@ -4,10 +4,13 @@ namespace App\Models;
 
 use App\Models\Device;
 use App\Models\Notification;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
 class StopHistory extends Model
 {
+    use HasUuids;
+
     protected $fillable = [
         'device_id',
         'location',

@@ -15,7 +15,7 @@ class HomeLocationRepository
      *   { "lat": float, "lng": float, "display_name": string }
      * ----------------------------------------------------------
      */
-    public function save(int $deviceId, array $data): Device
+    public function save(string $deviceId, array $data): Device
     {
         $device = Device::findOrFail($deviceId);
 
@@ -44,7 +44,7 @@ class HomeLocationRepository
      * Dipakai oleh halaman Home (opsi "Semua Kendaraan").
      * ----------------------------------------------------------
      */
-    public function saveToAll(int $userId, array $data): Collection
+    public function saveToAll(string $userId, array $data): Collection
     {
         $devices = Device::where('user_id', $userId)
             ->whereNull('home_location')
@@ -77,7 +77,7 @@ class HomeLocationRepository
      * Tidak menghapus Device.
      * ----------------------------------------------------------
      */
-    public function delete(int $deviceId): Device
+    public function delete(string $deviceId): Device
     {
         $device = Device::findOrFail($deviceId);
 

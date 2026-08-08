@@ -12,18 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('notifications', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
 
-            $table->foreignId('device_id')
+            $table->foreignUuid('device_id')
                 ->constrained()
                 ->cascadeOnDelete();
 
-            $table->foreignId('geofence_id')
+            $table->foreignUuid('geofence_id')
                 ->nullable()
                 ->constrained()
                 ->nullOnDelete();
 
-            $table->foreignId('stop_history_id')
+            $table->foreignUuid('stop_history_id')
                 ->nullable()
                 ->constrained()
                 ->nullOnDelete();

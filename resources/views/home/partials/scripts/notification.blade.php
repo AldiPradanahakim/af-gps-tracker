@@ -54,7 +54,7 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         return this.notifications.find(
 
-            notification => Number(notification.id) === Number(id)
+            notification => String(notification.id) === String(id)
 
         ) ?? null;
 
@@ -64,7 +64,7 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         return this.notifications.some(
 
-            notification => Number(notification.id) === Number(id)
+            notification => String(notification.id) === String(id)
 
         );
 
@@ -106,7 +106,7 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         const index = this.notifications.findIndex(
 
-            item => Number(item.id) === Number(notification.id)
+            item => String(item.id) === String(notification.id)
 
         );
 
@@ -134,7 +134,7 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         this.notifications = this.notifications.filter(
 
-            notification => Number(notification.id) !== Number(id)
+            notification => String(notification.id) !== String(id)
 
         );
 

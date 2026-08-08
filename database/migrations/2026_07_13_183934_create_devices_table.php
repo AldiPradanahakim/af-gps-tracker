@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('devices', function (Blueprint $table) {
 
-            $table->id();
+            $table->uuid('id')->primary();
 
-            $table->foreignId('user_id')
+            $table->foreignUuid('user_id')
                 ->nullable()
                 ->constrained()
                 ->nullOnDelete();

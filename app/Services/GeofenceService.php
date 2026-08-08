@@ -158,7 +158,7 @@ class GeofenceService
      * BR-01: 1 device maksimal 1 geofence per tipe.
      */
     protected function assertTypeAvailable(
-        int $deviceId,
+        string $deviceId,
         string $type
     ): void {
 
@@ -442,7 +442,7 @@ class GeofenceService
      * dan geometry (titik/radius untuk radius, wilayah/polygon untuk
      * administrative & custom) yang bisa diperbarui.
      */
-    public function update(int $id, array $data): Geofence
+    public function update(string $id, array $data): Geofence
     {
         return DB::transaction(function () use ($id, $data) {
 
@@ -612,7 +612,7 @@ class GeofenceService
      * Update status geofence.
      */
     public function updateStatus(
-        int $id,
+        string $id,
         bool $status
     ): Geofence {
 
@@ -644,7 +644,7 @@ class GeofenceService
      * Hapus satu geofence.
      */
     public function destroy(
-        int $id
+        string $id
     ): void {
 
         $geofence = $this->repository->findOwnedByUser(
@@ -709,7 +709,7 @@ class GeofenceService
     }
 
     public function getByDevice(
-        int $deviceId
+        string $deviceId
     ) {
         $device = $this->repository->findDeviceByUser(
             $deviceId,

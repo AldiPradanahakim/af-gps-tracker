@@ -273,7 +273,7 @@ window.VehicleSearch = {
             const isCurrentVehicle =
                 result.type === 'vehicle' &&
                 this.state.device &&
-                Number(result.id) === Number(this.state.device.id);
+                String(result.id) === String(this.state.device.id);
 
             item.className =
                 'flex w-full items-start gap-3 border-b border-slate-100 px-4 py-3 text-left transition hover:bg-slate-50';
@@ -512,7 +512,7 @@ window.VehicleSearch = {
 
             this.state.device &&
 
-            Number(result.id) === Number(this.state.device.id)
+            String(result.id) === String(this.state.device.id)
 
         ) {
 

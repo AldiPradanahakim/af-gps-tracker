@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\Device;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class StoreGeofenceRequest extends FormRequest
@@ -49,7 +50,8 @@ class StoreGeofenceRequest extends FormRequest
                     }
 
                     if (
-                        ! is_numeric($value) ||
+                        ! is_string($value) ||
+                        ! Str::isUuid($value) ||
                         ! Device::whereKey($value)->exists()
                     ) {
                         $fail('Kendaraan tidak ditemukan.');

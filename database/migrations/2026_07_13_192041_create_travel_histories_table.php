@@ -12,13 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('travel_histories', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
 
-            $table->foreignId('device_log_id')
+            $table->foreignUuid('device_log_id')
                 ->constrained()
                 ->cascadeOnDelete();
 
-            $table->foreignId('device_id')
+            $table->foreignUuid('device_id')
                 ->constrained()
                 ->cascadeOnDelete();
 

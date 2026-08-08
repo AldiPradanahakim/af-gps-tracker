@@ -599,7 +599,7 @@ window.VehicleHistory = {
 
                 const history = this.histories.find(
 
-                    item => item.id == button.dataset.id
+                    item => String(item.id) === String(button.dataset.id)
 
                 );
 
@@ -652,7 +652,7 @@ window.VehicleHistory = {
 
             button.classList.remove('bg-blue-50', 'border-l-4', 'border-blue-500');
 
-            if (Number(button.dataset.id) === this.activeHistory) {
+            if (String(button.dataset.id) === String(this.activeHistory)) {
 
                 button.classList.add('bg-blue-50', 'border-l-4', 'border-blue-500');
 
