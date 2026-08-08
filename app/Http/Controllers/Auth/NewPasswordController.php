@@ -35,6 +35,10 @@ class NewPasswordController extends Controller
             'token' => ['required'],
             'email' => ['required', 'email'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ], [
+            'password.min' => 'Kata sandi minimal 8 karakter.',
+            'password.mixed' => 'Kata sandi harus mengandung huruf besar dan huruf kecil.',
+            'password.regex' => 'Kata sandi harus mengandung angka atau karakter khusus.',
         ]);
 
         // Here we will attempt to reset the user's password. If it is successful we

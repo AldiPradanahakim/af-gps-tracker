@@ -15,7 +15,7 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\Vehicle\VehicleController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
 /*

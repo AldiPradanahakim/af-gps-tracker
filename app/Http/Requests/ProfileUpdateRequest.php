@@ -44,7 +44,7 @@ class ProfileUpdateRequest extends FormRequest
                 'password' => [
                     'required',
                     'confirmed',
-                    Password::min(8),
+                    Password::defaults(),
                 ],
 
             ];
@@ -86,8 +86,24 @@ class ProfileUpdateRequest extends FormRequest
             'password' => [
                 'nullable',
                 'confirmed',
-                Password::min(8),
+                Password::defaults(),
             ],
+
+        ];
+    }
+
+    /**
+     * Validation Messages
+     */
+    public function messages(): array
+    {
+        return [
+
+            'password.min' => 'Kata sandi minimal 8 karakter.',
+
+            'password.mixed' => 'Kata sandi harus mengandung huruf besar dan huruf kecil.',
+
+            'password.regex' => 'Kata sandi harus mengandung angka atau karakter khusus.',
 
         ];
     }
