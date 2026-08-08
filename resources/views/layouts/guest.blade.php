@@ -18,8 +18,8 @@
             'resources/js/app.js'
         ])
     </head>
-    <body class="h-screen bg-[#F8FAFC] antialiased text-slate-900 overflow-hidden">
-        <div class="h-screen flex items-center justify-center px-6 py-6">
+    <body class="min-h-screen bg-[#F8FAFC] antialiased text-slate-900">
+        <div class="min-h-screen flex items-center justify-center px-4 py-6 sm:px-6">
             {{ $slot }}
         </div>
     </body>

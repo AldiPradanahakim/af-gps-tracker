@@ -1,13 +1,15 @@
 <div class="mx-auto flex w-full max-w-[430px] h-fit self-center justify-self-center flex-col gap-[12px] rounded-[24px] bg-white p-[clamp(24px,2vw,32px)] shadow-xl border border-[#E5E7EB]">
     <div class="space-y-3 text-center">
         <div class="mx-auto flex h-[72px] w-[72px] items-center justify-center rounded-full bg-[#EFF6FF] text-[#2563EB] shadow-sm">
-            <img src="{{ asset('images/LOGO GPS.png') }}" alt="Logo kecil GPS TRACKER" class="h-[42px] w-[42px] object-contain" />
+            <img src="{{ asset('images/LOGO GPS.png') }}" alt="Logo kecil Trackio" class="h-[42px] w-[42px] object-contain" />
         </div>
         <div>
             <h2 class="whitespace-nowrap text-[40px] font-semibold tracking-[-0.03em]"><span class="text-[#2563EB]">Selamat</span> Datang</h2>
             <p class="mt-2 text-[14px] text-slate-500">Masuk untuk memulai monitoring kendaraan.</p>
         </div>
     </div>
+
+    <x-auth-session-status class="text-center text-sm text-green-600" :status="session('status')" />
 
     <div class="space-y-[12px]">
         <div class="space-y-2">

@@ -5,7 +5,7 @@
         <div class="mx-auto mb-4 flex h-[72px] w-[72px] items-center justify-center rounded-full bg-[#EFF6FF] shadow-sm">
             <img
                 src="{{ asset('images/LOGO GPS.png') }}"
-                alt="GPS TRACKER"
+                alt="Trackio"
                 class="h-[42px] w-[42px] object-contain">
         </div>
 
@@ -53,12 +53,15 @@
 
             </label>
 
-            <input
-                type="text"
-                name="vehicle_name"
-                value="{{ old('vehicle_name') }}"
-                placeholder="Contoh : Motor Harian"
-                class="h-[52px] w-full rounded-xl border border-slate-300 px-4 text-sm outline-none transition focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20">
+            <div class="relative flex h-[52px] items-center rounded-xl border border-slate-300 bg-white transition duration-200 focus-within:border-[#2563EB] focus-within:ring-2 focus-within:ring-[#2563EB]/20">
+                <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 h-4 w-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 17h2m10 0h2a1 1 0 001-1v-4l-2-4H6L4 12v4a1 1 0 001 1h2m10 0a2 2 0 11-4 0m4 0a2 2 0 10-4 0m-6 0a2 2 0 11-4 0m4 0a2 2 0 10-4 0" /></svg>
+                <input
+                    type="text"
+                    name="vehicle_name"
+                    value="{{ old('vehicle_name') }}"
+                    placeholder="Contoh : Motor Harian"
+                    class="h-full w-full border-0 bg-transparent pl-[44px] pr-4 text-sm text-slate-700 placeholder:text-slate-400 outline-none focus:outline-none focus:ring-0">
+            </div>
 
         </div>
 
@@ -70,12 +73,15 @@
 
             </label>
 
-            <input
-                type="text"
-                name="plate_number"
-                value="{{ old('plate_number') }}"
-                placeholder="Contoh : D 1234 ABC"
-                class="h-[52px] w-full rounded-xl border border-slate-300 px-4 uppercase text-sm outline-none transition focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20">
+            <div class="relative flex h-[52px] items-center rounded-xl border border-slate-300 bg-white transition duration-200 focus-within:border-[#2563EB] focus-within:ring-2 focus-within:ring-[#2563EB]/20">
+                <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 h-4 w-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3 10h18" /><path d="M7 15h4" /></svg>
+                <input
+                    type="text"
+                    name="plate_number"
+                    value="{{ old('plate_number') }}"
+                    placeholder="Contoh : D 1234 ABC"
+                    class="h-full w-full border-0 bg-transparent pl-[44px] pr-4 uppercase text-sm text-slate-700 placeholder:text-slate-400 outline-none focus:outline-none focus:ring-0">
+            </div>
 
         </div>
 
