@@ -342,6 +342,8 @@ class GeofenceService
             ]);
         }
 
+        $this->assertPolygonWithinLimits($geojson);
+
         return [
 
             'display_name' => $data['display_name'],
@@ -427,6 +429,8 @@ class GeofenceService
 
             ]);
         }
+
+        $this->assertPolygonWithinLimits($geojson);
 
         return [
 
@@ -605,7 +609,38 @@ class GeofenceService
             ]);
         }
 
+        $this->assertPolygonWithinLimits($decoded);
+
         return $decoded;
+    }
+
+    /**
+     * Cegah polygon yang terlalu kompleks (bisa dipakai untuk DoS lewat
+     * perhitungan point-in-polygon yang berjalan sinkron untuk setiap
+     * payload GPS yang masuk).
+     */
+    private function assertPolygonWithinLimits(array $geometry): void
+    {
+        $numbers = 0;
+
+        $coordinates = $geometry['coordinates'] ?? [];
+
+        array_walk_recursive(
+            $coordinates,
+            function ($value) use (&$numbers) {
+
+                if (is_numeric($value)) {
+                    $numbers++;
+                }
+            }
+        );
+
+        if (intdiv($numbers, 2) > 5000) {
+
+            throw ValidationException::withMessages([
+                'geojson' => 'Polygon terlalu kompleks (maksimal 5000 titik koordinat).',
+            ]);
+        }
     }
 
     /**

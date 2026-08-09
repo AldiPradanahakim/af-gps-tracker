@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Device;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class ActivateDeviceService
@@ -17,7 +18,7 @@ class ActivateDeviceService
             ]);
         }
 
-        if ($device->device_password !== $data['device_password']) {
+        if (! Hash::check($data['device_password'], $device->device_password)) {
             throw ValidationException::withMessages([
                 'device_password' => 'Password device salah.',
             ]);

@@ -90,6 +90,7 @@ class UpdateGeofenceRequest extends FormRequest
             'geojson' => [
                 'nullable',
                 'json',
+                'max:500000',
             ],
 
         ];

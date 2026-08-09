@@ -243,7 +243,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         [LocationController::class, 'search']
 
-    );
+    )->middleware('throttle:30,1');
 
     Route::get(
 
@@ -251,7 +251,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         [LocationController::class, 'reverse']
 
-    );
+    )->middleware('throttle:30,1');
 
     Route::get(
         '/api/search',

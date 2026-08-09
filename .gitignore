@@ -5,6 +5,7 @@
 .env.production
 .phpactor.json
 .phpunit.result.cache
+/.claude
 /.codex
 /.cursor/
 /.idea
@@ -13,6 +14,7 @@
 /.vscode
 /.zed
 /auth.json
+CLAUDE.md
 /node_modules
 /public/build
 /public/fonts-manifest.dev.json

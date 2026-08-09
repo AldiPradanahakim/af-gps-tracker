@@ -52,11 +52,10 @@ class AdministrativeAreaController extends Controller
             ]);
         } catch (\Throwable $e) {
 
-            dd(
-                $e->getMessage(),
-                $e->getFile(),
-                $e->getLine()
-            );
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
         }
     }
 

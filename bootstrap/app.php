@@ -22,6 +22,10 @@ return Application::configure(basePath: dirname(__DIR__))
             ]
         );
 
+        // Laravel 11+ no longer applies throttle:api to the api group by
+        // default -- restore it so every /api/* route has a rate limit.
+        $middleware->throttleApi();
+
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

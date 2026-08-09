@@ -33,7 +33,19 @@ class Device extends Model
 
     ];
 
+    /**
+     * device_password disimpan ter-hash dan tidak boleh ikut ter-serialize
+     * ke JSON/array (mis. saat Device di-load lewat relasi Vehicle/Geofence).
+     */
+    protected $hidden = [
+
+        'device_password',
+
+    ];
+
     protected $casts = [
+
+        'device_password' => 'hashed',
 
         'home_location' => 'array',
 

@@ -15,14 +15,31 @@ class ProfileService
     {
         return DB::transaction(function () use ($data, $deviceId) {
 
+            /*
+            |--------------------------------------------------------------------------
+            | Lock baris device supaya dua sesi anonim yang aktivasi device
+            | yang sama secara bersamaan tidak bisa berdua-duanya lolos
+            | pengecekan "belum diklaim" (race condition).
+            |--------------------------------------------------------------------------
+            */
+
+            $device = Device::whereKey($deviceId)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if ($device->user_id !== null) {
+
+                throw ValidationException::withMessages([
+                    'device_id' => 'Perangkat sudah diaktivasi oleh pengguna lain.',
+                ]);
+            }
+
             $user = User::create([
                 'name'     => $data['name'],
                 'email'    => $data['email'],
                 'phone'    => $data['phone'],
                 'password' => Hash::make($data['password']),
             ]);
-
-            $device = Device::findOrFail($deviceId);
 
             $device->update([
                 'user_id'      => $user->id,

@@ -149,6 +149,7 @@ class StoreGeofenceRequest extends FormRequest
                 'required_if:type,administrative,custom',
                 'nullable',
                 'json',
+                'max:500000',
             ],
 
         ];

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Device;
 use Illuminate\Support\Facades\Broadcast;
 
 /*
@@ -10,7 +11,9 @@ use Illuminate\Support\Facades\Broadcast;
 
 Broadcast::channel('vehicle.{deviceId}', function ($user, $deviceId) {
 
-    return true;
+    return Device::where('id', $deviceId)
+        ->where('user_id', $user->id)
+        ->exists();
 });
 
 /*

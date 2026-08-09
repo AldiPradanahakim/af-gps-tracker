@@ -58,12 +58,12 @@ Route::prefix('administrative')
         Route::get('/geojson/{level}/{code}', [
             AdministrativeAreaController::class,
             'geoJson',
-        ])->name('geojson');
+        ])->name('geojson')->middleware('throttle:20,1');
 
         Route::get('/geojson/{level}', [
             AdministrativeAreaController::class,
             'allGeoJson',
-        ])->name('geojson.all');
+        ])->name('geojson.all')->middleware('throttle:20,1');
     });
 
 /*

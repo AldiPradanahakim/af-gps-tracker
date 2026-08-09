@@ -11,6 +11,27 @@ use InvalidArgumentException;
 class DeviceLogService
 {
     /**
+     * Cek apakah message_id ini sudah pernah tersimpan untuk device
+     * tersebut (retry/replay dari broker MQTT), sebelum sisa pipeline
+     * (reverse geocoding, travel history, dst) diproses.
+     */
+    public function isDuplicate(
+        Device $device,
+        array $payload
+    ): bool {
+
+        $messageId = $this->extractMessageId($payload);
+
+        return DeviceLog::query()
+
+            ->where('device_id', $device->id)
+
+            ->where('message_id', $messageId)
+
+            ->exists();
+    }
+
+    /**
      * Store incoming device payload.
      */
     public function store(

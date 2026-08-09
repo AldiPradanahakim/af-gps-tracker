@@ -19,10 +19,22 @@ class VehicleController extends Controller
     ) {}
 
     /**
+     * Pastikan device yang diakses memang milik user yang login.
+     * Mencegah IDOR: user lain tidak boleh bisa lihat/ubah kendaraan
+     * milik user lain hanya dengan menebak/mengetahui UUID device-nya.
+     */
+    private function authorizeDevice(Device $device): void
+    {
+        abort_if($device->user_id !== Auth::id(), 403, 'Kendaraan tidak ditemukan.');
+    }
+
+    /**
      * Halaman Detail Kendaraan.
      */
     public function show(Device $device): View
     {
+        $this->authorizeDevice($device);
+
         return view(
             'vehicles.show',
             $this->vehicleService->show($device)
@@ -38,6 +50,8 @@ class VehicleController extends Controller
         Request $request,
         Device $device
     ): JsonResponse {
+
+        $this->authorizeDevice($device);
 
         $validated = $request->validate([
 
@@ -86,16 +100,7 @@ class VehicleController extends Controller
      */
     public function destroy(Device $device): JsonResponse
     {
-        if ($device->user_id !== Auth::id()) {
-
-            return response()->json([
-
-                'success' => false,
-
-                'message' => 'Kendaraan tidak ditemukan.',
-
-            ], 403);
-        }
+        $this->authorizeDevice($device);
 
         $this->vehicleService->destroy($device);
 
@@ -117,6 +122,8 @@ class VehicleController extends Controller
         UpdateStopSettingRequest $request,
         Device $device
     ): JsonResponse {
+
+        $this->authorizeDevice($device);
 
         $setting = $this->vehicleService->updateStopSetting(
 
@@ -147,6 +154,8 @@ class VehicleController extends Controller
         Device $device
     ): JsonResponse {
 
+        $this->authorizeDevice($device);
+
         $setting = $this->vehicleService->updateNotificationSetting(
 
             $device,
@@ -175,6 +184,8 @@ class VehicleController extends Controller
         Device $device
     ): JsonResponse {
 
+        $this->authorizeDevice($device);
+
         $location = $this->vehicleService->latest(
             $device
         );
@@ -199,6 +210,8 @@ class VehicleController extends Controller
         Request $request,
         Device $device
     ): JsonResponse {
+
+        $this->authorizeDevice($device);
 
         $histories = $this->vehicleService->history(
 
@@ -231,6 +244,8 @@ class VehicleController extends Controller
         Device $device
     ): JsonResponse {
 
+        $this->authorizeDevice($device);
+
         $playback = $this->vehicleService->playback(
 
             $device,
@@ -259,6 +274,8 @@ class VehicleController extends Controller
         Device $device
     ): JsonResponse {
 
+        $this->authorizeDevice($device);
+
         $summary = $this->vehicleService->summary(
             $device
         );
@@ -283,6 +300,8 @@ class VehicleController extends Controller
         Device $device
     ): JsonResponse {
 
+        $this->authorizeDevice($device);
+
         $activities = $this->vehicleService->activity(
             $device
         );
@@ -306,6 +325,8 @@ class VehicleController extends Controller
     public function stop(
         Device $device
     ): JsonResponse {
+
+        $this->authorizeDevice($device);
 
         $stops = $this->vehicleService->stop(
             $device

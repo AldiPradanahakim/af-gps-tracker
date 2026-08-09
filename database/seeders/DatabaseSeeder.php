@@ -15,7 +15,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Akun demo/test punya kredensial yang diketahui dan tertulis
+        // di source code -- jangan pernah dibuat di luar environment
+        // local, supaya tidak ada akun dengan password publik kalau
+        // seeder ini tidak sengaja dijalankan di staging/production.
+        if (! app()->environment('local')) {
+            return;
+        }
 
         User::factory()->create([
             'name' => 'Test User',

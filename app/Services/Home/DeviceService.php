@@ -6,6 +6,7 @@ use App\Models\Device;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class DeviceService
@@ -47,7 +48,7 @@ class DeviceService
             |--------------------------------------------------------------------------
             */
 
-            if ($device->device_password !== $data['device_password']) {
+            if (! Hash::check($data['device_password'], $device->device_password)) {
 
                 throw ValidationException::withMessages([
 

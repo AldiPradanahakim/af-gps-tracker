@@ -119,6 +119,17 @@ class GPSProcessingService
         |
         */
 
+        $isDuplicateMessage =
+
+            $this->deviceLogService
+            ->isDuplicate(
+
+                $device,
+
+                $payload
+
+            );
+
         $deviceLog =
 
             $this->deviceLogService
@@ -129,6 +140,22 @@ class GPSProcessingService
                 $payload
 
             );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Skip Duplicate Message
+        |--------------------------------------------------------------------------
+        |
+        | Pesan MQTT dengan message_id yang sama (retry/replay dari
+        | broker) tidak boleh diproses ulang: reverse geocoding, travel
+        | history, stop detection, geofence check, notifikasi, dan
+        | broadcast realtime semuanya hanya untuk pesan baru.
+        |
+        */
+
+        if ($isDuplicateMessage) {
+            return;
+        }
 
         /*
         |--------------------------------------------------------------------------
@@ -339,6 +366,77 @@ class GPSProcessingService
 
                 );
             }
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Bounds Check
+        |--------------------------------------------------------------------------
+        |
+        | Payload GPS berasal dari perangkat fisik (atau siapa pun yang
+        | bisa publish ke broker MQTT dengan kredensial yang valid), jadi
+        | nilainya tidak bisa dipercaya begitu saja sebelum disimpan dan
+        | di-broadcast ke live map.
+        |
+        */
+
+        $numericFields = [
+            'lat', 'lng', 'speed', 'heading', 'battery', 'satellite',
+        ];
+
+        foreach ($numericFields as $field) {
+
+            if (! is_numeric($payload[$field])) {
+
+                throw new InvalidArgumentException(
+
+                    sprintf('%s must be numeric.', $field)
+
+                );
+            }
+        }
+
+        $lat = (float) $payload['lat'];
+        $lng = (float) $payload['lng'];
+        $speed = (float) $payload['speed'];
+        $heading = (float) $payload['heading'];
+        $battery = (float) $payload['battery'];
+        $satellite = (float) $payload['satellite'];
+
+        if ($lat < -90 || $lat > 90) {
+            throw new InvalidArgumentException('lat is out of range.');
+        }
+
+        if ($lng < -180 || $lng > 180) {
+            throw new InvalidArgumentException('lng is out of range.');
+        }
+
+        if ($speed < 0 || $speed > 300) {
+            throw new InvalidArgumentException('speed is out of range.');
+        }
+
+        if ($heading < 0 || $heading > 360) {
+            throw new InvalidArgumentException('heading is out of range.');
+        }
+
+        if ($battery < 0 || $battery > 100) {
+            throw new InvalidArgumentException('battery is out of range.');
+        }
+
+        if ($satellite < 0 || $satellite > 50) {
+            throw new InvalidArgumentException('satellite is out of range.');
+        }
+
+        try {
+            $receivedAt = $this->extractReceivedAt($payload);
+        } catch (\Throwable) {
+            throw new InvalidArgumentException('received_at is invalid.');
+        }
+
+        if ($receivedAt->lessThan(now()->subDay()) || $receivedAt->greaterThan(now()->addMinutes(5))) {
+
+            throw new InvalidArgumentException('received_at is outside the acceptable time window.');
+
         }
     }
 
