@@ -12,6 +12,42 @@ class VehicleRepository
 {
     /**
      * --------------------------------------------------------------------------
+     * Batas Pengaman Query Riwayat
+     * --------------------------------------------------------------------------
+     * Device GPS bisa mengirim log setiap beberapa detik sehingga
+     * travel_histories & stop_histories tidak punya batas atas ukuran.
+     * Endpoint history()/playback()/stop() tidak mewajibkan rentang tanggal,
+     * jadi tanpa batas ini request dengan rentang lebar (atau tanpa filter
+     * sama sekali) bisa menarik jutaan baris ke memori sekaligus.
+     * --------------------------------------------------------------------------
+     */
+    private const MAX_HISTORY_ROWS = 20000;
+
+    /**
+     * Kolom travel_histories yang benar-benar dipakai oleh response
+     * (device_log_id, device_id, created_at, updated_at tidak dipakai).
+     */
+    private const TRAVEL_HISTORY_COLUMNS = [
+        'id',
+        'location',
+        'search_address',
+        'received_at',
+    ];
+
+    /**
+     * Kolom stop_histories yang benar-benar dipakai oleh response.
+     */
+    private const STOP_HISTORY_COLUMNS = [
+        'id',
+        'location',
+        'search_address',
+        'start_time',
+        'end_time',
+        'duration_seconds',
+    ];
+
+    /**
+     * --------------------------------------------------------------------------
      * Transform Latest Device Log
      * --------------------------------------------------------------------------
      */
@@ -701,6 +737,8 @@ class VehicleRepository
 
         $latestLog = $device->deviceLogs()
 
+            ->select(['payload', 'received_at'])
+
             ->latest('received_at')
 
             ->first();
@@ -734,6 +772,8 @@ class VehicleRepository
 
         $query = $device->travelHistories()
 
+            ->select(self::TRAVEL_HISTORY_COLUMNS)
+
             ->orderBy('received_at');
 
         if ($startDate) {
@@ -754,7 +794,11 @@ class VehicleRepository
             );
         }
 
-        $histories = $query->get();
+        $histories = $query
+
+            ->limit(self::MAX_HISTORY_ROWS)
+
+            ->get();
 
         return $this->transformTravelCollection(
 
@@ -775,6 +819,8 @@ class VehicleRepository
 
         $query = $device->travelHistories()
 
+            ->select(self::TRAVEL_HISTORY_COLUMNS)
+
             ->orderBy('received_at');
 
         if ($date) {
@@ -790,7 +836,11 @@ class VehicleRepository
 
         return $this->transformTravelCollection(
 
-            $query->get()
+            $query
+
+                ->limit(self::MAX_HISTORY_ROWS)
+
+                ->get()
 
         );
     }
@@ -805,6 +855,8 @@ class VehicleRepository
     ): array {
 
         $today = $device->travelHistories()
+
+            ->select(['location', 'received_at'])
 
             ->whereDate(
                 'received_at',
@@ -964,6 +1016,8 @@ class VehicleRepository
 
         $activities = $device->travelHistories()
 
+            ->select(self::TRAVEL_HISTORY_COLUMNS)
+
             ->orderByDesc('received_at')
 
             ->limit(100)
@@ -1027,7 +1081,11 @@ class VehicleRepository
 
         return $device->stopHistories()
 
+            ->select(self::STOP_HISTORY_COLUMNS)
+
             ->orderByDesc('start_time')
+
+            ->limit(self::MAX_HISTORY_ROWS)
 
             ->get()
 

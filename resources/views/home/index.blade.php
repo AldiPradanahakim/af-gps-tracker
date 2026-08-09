@@ -2,6 +2,8 @@
 
 @section('title', 'Dashboard')
 
+@section('meta_description', 'Dashboard pemantauan lokasi kendaraan secara real-time, status perangkat GPS, dan geofence dalam satu peta interaktif.')
+
 @section('content')
 
 <div class="h-screen overflow-hidden bg-[#F8FAFC]">
@@ -48,14 +50,6 @@
 
 
 @push('styles')
-
-<link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-
-<link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css"/>
 
 <style>
 
@@ -169,10 +163,6 @@ body{
     window.GPSHomeLocations = @json($devices);
 
 </script>
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-<script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
 
 @include('home.partials.scripts')
 

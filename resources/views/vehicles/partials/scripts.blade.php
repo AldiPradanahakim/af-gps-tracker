@@ -79,6 +79,14 @@
 
         }
 
+        const lazyActivators = {
+
+            history: () => window.Vehicle?.history?.activate?.(),
+
+            stop: () => window.Vehicle?.stop?.activate?.(),
+
+        };
+
         menuButtons.forEach(button => {
 
             button.addEventListener('click', function () {
@@ -92,6 +100,8 @@
                     sections[section].classList.remove('hidden');
 
                 }
+
+                lazyActivators[section]?.();
 
                 resetMenu();
 

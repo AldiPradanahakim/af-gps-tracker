@@ -14,10 +14,24 @@ class VehicleCardFormatter
     {
         $vehicle = $device->vehicle;
 
-        $latestLog = $device->deviceLogs()
-            ->latest('received_at')
-            ->latest('id')
-            ->first();
+        /*
+        |--------------------------------------------------------------------------
+        | Latest Device Log
+        |--------------------------------------------------------------------------
+        |
+        | Pakai relasi yang sudah di-eager-load (mis. dari HomeService)
+        | supaya tidak query ulang per device (N+1). Kalau relasi belum
+        | di-load (caller lain yang memanggil formatter ini langsung),
+        | fallback ke query biasa.
+        |--------------------------------------------------------------------------
+        */
+
+        $latestLog = $device->relationLoaded('deviceLogs')
+            ? $device->deviceLogs->first()
+            : $device->deviceLogs()
+                ->latest('received_at')
+                ->latest('id')
+                ->first();
 
         $payload = $latestLog?->payload ?? [];
 

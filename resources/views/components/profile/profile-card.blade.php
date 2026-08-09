@@ -3,14 +3,14 @@
     <div class="text-center">
 
         <div class="mx-auto mb-4 flex h-[72px] w-[72px] items-center justify-center rounded-full bg-[#EFF6FF] shadow-sm">
-            <img src="{{ asset('images/LOGO GPS.png') }}"
+            <img src="{{ asset('images/logo-gps.png') }}"
                 alt="Trackio"
                 class="h-[42px] w-[42px] object-contain">
         </div>
 
-        <h1 class="text-[30px] font-semibold tracking-[-0.03em] text-slate-950">
+        <h2 class="text-[30px] font-semibold tracking-[-0.03em] text-slate-950">
             Lengkapi Profil
-        </h1>
+        </h2>
 
         <p class="mt-3 text-sm leading-6 text-slate-500">
             Lengkapi informasi pribadi Anda untuk melanjutkan proses aktivasi perangkat GPS.

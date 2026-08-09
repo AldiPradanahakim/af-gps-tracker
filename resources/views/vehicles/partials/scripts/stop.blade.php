@@ -12,6 +12,8 @@ window.VehicleStop = {
 
     stops: [],
 
+    loaded: false,
+
     /*
     |--------------------------------------------------------------------------
     | Initialize
@@ -25,6 +27,25 @@ window.VehicleStop = {
         this.bindSettingEvents();
 
         this.bindHistoryEvents();
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Activate (lazy load)
+    |--------------------------------------------------------------------------
+    | Dipanggil saat tab "Kendaraan Berhenti" pertama kali dibuka, supaya
+    | data tidak diambil dari server sebelum tab-nya benar-benar dilihat.
+    |--------------------------------------------------------------------------
+    */
+
+    activate() {
+
+        if (this.loaded) {
+
+            return;
+
+        }
 
         this.loadHistory();
 
@@ -191,6 +212,8 @@ window.VehicleStop = {
         if (!table) {
             return;
         }
+
+        this.loaded = true;
 
         try {
 

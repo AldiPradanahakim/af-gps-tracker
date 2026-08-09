@@ -22,7 +22,7 @@ class HomeService
 
             'devices.deviceLogs' => function ($query) {
 
-                $query->latest()->take(1);
+                $query->latest('received_at')->latest('id')->take(1);
             },
 
             'devices.travelHistories' => function ($query) {

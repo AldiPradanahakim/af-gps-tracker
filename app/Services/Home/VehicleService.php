@@ -49,7 +49,7 @@ class VehicleService
 
                     'deviceLogs' => function ($query) {
 
-                        $query->latest()->limit(1);
+                        $query->latest('received_at')->latest('id')->limit(1);
                     },
 
                 ])
@@ -132,7 +132,7 @@ class VehicleService
 
                 'deviceLogs' => function ($query) {
 
-                    $query->latest()->limit(1);
+                    $query->latest('received_at')->latest('id')->limit(1);
                 },
 
             ]);

@@ -18,6 +18,8 @@ window.VehicleHistory = {
 
     endDate: null,
 
+    loaded: false,
+
     /*
     |--------------------------------------------------------------------------
     | Initialize
@@ -35,6 +37,25 @@ window.VehicleHistory = {
         this.setDateInputs();
 
         this.bindEvents();
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Activate (lazy load)
+    |--------------------------------------------------------------------------
+    | Dipanggil saat tab "Riwayat Perjalanan" pertama kali dibuka, supaya
+    | data tidak diambil dari server sebelum tab-nya benar-benar dilihat.
+    |--------------------------------------------------------------------------
+    */
+
+    activate() {
+
+        if (this.loaded) {
+
+            return;
+
+        }
 
         this.load();
 
@@ -100,6 +121,8 @@ window.VehicleHistory = {
     */
 
     async load() {
+
+        this.loaded = true;
 
         try {
 

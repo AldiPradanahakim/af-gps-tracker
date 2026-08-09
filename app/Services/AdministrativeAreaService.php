@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
 
@@ -26,25 +27,33 @@ class AdministrativeAreaService
      */
     private function readGeoJson(string $filename): array
     {
-        $path = self::BASE_PATH . '/' . $filename;
+        return Cache::remember(
+            'administrative-geojson:' . self::BASE_PATH . '/' . $filename,
+            now()->addWeek(),
+            function () use ($filename) {
 
-        if (!file_exists(storage_path('app/' . $path))) {
-            throw new InvalidArgumentException(
-                "GeoJSON {$filename} tidak ditemukan."
-            );
-        }
-        $json = json_decode(
-            file_get_contents(storage_path('app/' . $path)),
-            true
+                $path = self::BASE_PATH . '/' . $filename;
+
+                if (!file_exists(storage_path('app/' . $path))) {
+                    throw new InvalidArgumentException(
+                        "GeoJSON {$filename} tidak ditemukan."
+                    );
+                }
+
+                $json = json_decode(
+                    file_get_contents(storage_path('app/' . $path)),
+                    true
+                );
+
+                if (!is_array($json)) {
+                    throw new InvalidArgumentException(
+                        "GeoJSON {$filename} tidak valid."
+                    );
+                }
+
+                return $json;
+            }
         );
-
-        if (!is_array($json)) {
-            throw new InvalidArgumentException(
-                "GeoJSON {$filename} tidak valid."
-            );
-        }
-
-        return $json;
     }
 
     /**

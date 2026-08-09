@@ -4,7 +4,7 @@
     <div class="flex h-full w-full flex-col">
         <div class="flex-shrink-0 space-y-4 max-w-[560px]">
             <div class="flex items-center gap-4">
-                <img src="{{ asset('images/LOGO GPS.png') }}" alt="Trackio" class="h-14 w-14 object-contain" />
+                <img src="{{ asset('images/logo-gps.png') }}" alt="Trackio" class="h-14 w-14 object-contain" />
                 <div class="space-y-1">
                     <div class="text-xs font-semibold uppercase tracking-[0.35em] text-[#2563EB]">Trackio</div>
                     <div class="text-xs text-slate-500">Platform Pelacakan Kendaraan</div>
@@ -27,7 +27,17 @@
 
         <div class="mt-4 flex-1 min-h-0 mx-auto flex w-full max-w-[560px] flex-col items-center justify-center">
             <div class="h-full w-full min-h-0 overflow-hidden rounded-[28px] shadow-sm bg-white p-4 flex items-center justify-center">
-                <img src="{{ asset('images/illustrator login.png') }}" alt="Ilustrasi Trackio" class="h-full w-auto max-w-full object-contain" />
+                <picture>
+                    <source srcset="{{ asset('images/illustrator-login.webp') }}" type="image/webp" />
+                    <img
+                        src="{{ asset('images/illustrator-login.png') }}"
+                        alt="Ilustrasi Trackio"
+                        width="1200"
+                        height="800"
+                        loading="eager"
+                        class="h-full w-auto max-w-full object-contain"
+                    />
+                </picture>
             </div>
             <p class="mt-3 flex-shrink-0 text-sm text-slate-500">© {{ date('Y') }} Trackio. Seluruh hak cipta dilindungi.</p>
         </div>

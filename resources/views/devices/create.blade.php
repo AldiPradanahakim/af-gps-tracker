@@ -7,9 +7,9 @@
         <div class="w-full max-w-[520px] rounded-[24px] bg-white p-8 shadow-xl border border-[#E5E7EB]">
             <div class="text-center">
                 <div class="mx-auto mb-4 flex h-[72px] w-[72px] items-center justify-center rounded-full bg-[#EFF6FF] shadow-sm">
-                    <img src="{{ asset('images/LOGO GPS.png') }}" alt="Trackio" class="h-[42px] w-[42px] object-contain" />
+                    <img src="{{ asset('images/logo-gps.png') }}" alt="Trackio" class="h-[42px] w-[42px] object-contain" />
                 </div>
-                <h1 class="text-[28px] font-semibold tracking-[-0.03em] text-slate-950">Aktivasi Perangkat</h1>
+                <h2 class="text-[28px] font-semibold tracking-[-0.03em] text-slate-950">Aktivasi Perangkat</h2>
                 <p class="mt-3 text-sm leading-6 text-slate-500">
                     Masukkan Device ID dan Password Device yang terdapat pada perangkat GPS Anda.
                 </p>

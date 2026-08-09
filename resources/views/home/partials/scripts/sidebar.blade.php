@@ -652,13 +652,13 @@ document.addEventListener('gpstracker:map-ready', () => {
 
                 <div>
 
-                    <h4
+                    <h3
                         id="vehicle-name-${vehicle.device_id}"
                         class="text-lg font-bold text-slate-900">
 
                         ${vehicle.vehicle_name ?? '-'}
 
-                    </h4>
+                    </h3>
 
                     <p
                         id="vehicle-plate-${vehicle.device_id}"

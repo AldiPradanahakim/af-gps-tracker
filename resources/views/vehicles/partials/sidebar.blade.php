@@ -19,7 +19,7 @@
             >
 
                 <img
-                    src="{{ asset('images/LOGO GPS.png') }}"
+                    src="{{ asset('images/logo-gps.png') }}"
                     alt="Logo GPS"
                     class="h-6 w-6 object-contain"
                 >

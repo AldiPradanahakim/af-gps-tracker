@@ -4,6 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta name="description" content="Trackio membantu Anda masuk atau mengaktivasi perangkat GPS untuk memantau lokasi kendaraan secara real-time, riwayat perjalanan, dan notifikasi keamanan.">
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 
@@ -19,8 +20,8 @@
         ])
     </head>
     <body class="min-h-screen bg-[#F8FAFC] antialiased text-slate-900">
-        <div class="min-h-screen flex items-center justify-center px-4 py-6 sm:px-6">
+        <main class="min-h-screen flex items-center justify-center px-4 py-6 sm:px-6">
             {{ $slot }}
-        </div>
+        </main>
     </body>
 </html>

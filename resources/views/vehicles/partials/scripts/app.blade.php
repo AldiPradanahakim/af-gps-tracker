@@ -123,6 +123,38 @@ window.Vehicle = {
 
         }
 
+        this.activateInitialSection();
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Activate Initial Section
+    |--------------------------------------------------------------------------
+    | Beberapa tab (Riwayat Perjalanan, Kendaraan Berhenti) memuat datanya
+    | secara lazy (baru fetch saat tab dibuka). Jika halaman dimuat dengan
+    | hash URL yang mengarah ke tab tersebut (mis. setelah reload dari
+    | halaman Stop Detection), tab itu langsung terlihat sejak awal
+    | sehingga datanya perlu langsung diaktifkan juga.
+    |--------------------------------------------------------------------------
+    */
+
+    activateInitialSection() {
+
+        const hash = window.location.hash.replace('#', '');
+
+        if (hash === 'history' && this.history?.activate) {
+
+            this.history.activate();
+
+        }
+
+        if (hash === 'stop' && this.stop?.activate) {
+
+            this.stop.activate();
+
+        }
+
     },
 
     /*

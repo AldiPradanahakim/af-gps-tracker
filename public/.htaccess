@@ -23,3 +23,56 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+# =====================================================================
+# STATIC ASSET CACHING
+# =====================================================================
+# Vite-built assets in /build are content-hashed (filename changes on
+# every rebuild), so they are safe to cache "forever" (immutable).
+# Files in /images are NOT hashed, so they get a shorter, moderate
+# cache lifetime instead of "forever" to avoid serving stale images
+# after a real content change.
+#
+# Guarded with <IfModule> so this is a no-op on any Apache build that
+# doesn't have mod_expires / mod_headers loaded.
+
+<IfModule mod_expires.c>
+    ExpiresActive On
+
+    # NOTE: <FilesMatch> only ever sees the basename of the requested file,
+    # not its directory, so it cannot tell /build/ apart from /images/ here.
+    # The mod_headers block below (keyed off the full REQUEST_URI) is what
+    # actually applies the /build/ (1 year, immutable) vs /images/ (1 week)
+    # split. This block is just a conservative extension-based fallback for
+    # the (unlikely) case mod_expires is loaded without mod_headers.
+    <FilesMatch "\.(css|js|mjs|woff2?|ttf|eot|svg|png|jpe?g|webp|gif|ico)$">
+        ExpiresDefault "access plus 1 week"
+    </FilesMatch>
+</IfModule>
+
+<IfModule mod_headers.c>
+    # Vite-hashed build assets: long-lived + immutable
+    <If "%{REQUEST_URI} =~ m#^/build/#">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </If>
+
+    # Non-hashed images: moderate cache
+    <If "%{REQUEST_URI} =~ m#^/images/#">
+        Header set Cache-Control "public, max-age=604800"
+    </If>
+</IfModule>
+
+# =====================================================================
+# COMPRESSION
+# =====================================================================
+# Guarded so this is a no-op if mod_deflate isn't loaded. NOTE: as of
+# this change mod_deflate.so exists in this Laragon Apache install but
+# its LoadModule line is commented out in httpd.conf, so it is NOT
+# currently active — see report for the manual step to enable it.
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/css text/xml
+    AddOutputFilterByType DEFLATE application/javascript application/x-javascript
+    AddOutputFilterByType DEFLATE application/json application/xml application/rss+xml
+    AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>

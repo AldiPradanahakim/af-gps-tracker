@@ -21,6 +21,7 @@
 
     <img
         src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/15/13112/26928"
+        alt=""
         class="absolute inset-0 h-full w-full object-cover">
 
     <div

@@ -6,15 +6,15 @@
         <div class="flex items-center gap-4">
 
             <img
-                src="{{ asset('images/LOGO GPS.png') }}"
+                src="{{ asset('images/logo-gps.png') }}"
                 alt="GPS Tracker"
                 class="h-12 w-12 object-contain">
 
             <div>
 
-                <h2 class="text-sm font-bold uppercase tracking-[0.35em] text-[#2563EB]">
+                <h1 class="text-sm font-bold uppercase tracking-[0.35em] text-[#2563EB]">
                     GPS TRACKER
-                </h2>
+                </h1>
 
                 <p class="mt-1 text-sm text-slate-500">
                     Monitoring System
@@ -33,9 +33,9 @@
 
             <div>
 
-                <h3 class="text-xl font-bold text-slate-900">
+                <h2 class="text-xl font-bold text-slate-900">
                     Kendaraan
-                </h3>
+                </h2>
 
                 <p
                     id="vehicle-count"
@@ -97,13 +97,13 @@
 
                         <div>
 
-                            <h4
+                            <h3
                                 id="vehicle-name-{{ $vehicle['device_id'] }}"
                                 class="text-lg font-bold text-slate-900">
 
                                 {{ $vehicle['vehicle_name'] }}
 
-                            </h4>
+                            </h3>
 
                             <p
                                 id="vehicle-plate-{{ $vehicle['device_id'] }}"

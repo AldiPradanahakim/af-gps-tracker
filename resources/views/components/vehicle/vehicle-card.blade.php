@@ -4,7 +4,7 @@
 
         <div class="mx-auto mb-4 flex h-[72px] w-[72px] items-center justify-center rounded-full bg-[#EFF6FF] shadow-sm">
             <img
-                src="{{ asset('images/LOGO GPS.png') }}"
+                src="{{ asset('images/logo-gps.png') }}"
                 alt="Trackio"
                 class="h-[42px] w-[42px] object-contain">
         </div>

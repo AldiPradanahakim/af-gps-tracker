@@ -9,6 +9,8 @@
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    <meta name="description" content="@yield('meta_description', 'Trackio: pantau lokasi kendaraan Anda secara real-time, lihat riwayat perjalanan, dan kelola geofence dalam satu platform.')">
+
     <title>
         @yield('title', config('app.name'))
     </title>
@@ -23,17 +25,9 @@
 
     @vite([
         'resources/css/app.css',
-        'resources/js/app.js'
+        'resources/js/app.js',
+        'resources/js/leaflet-setup.js'
     ])
-
-    <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    />
-
-    <script
-        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
-    </script>
 
     @stack('styles')
 
