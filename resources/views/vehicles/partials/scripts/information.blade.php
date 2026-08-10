@@ -782,7 +782,7 @@ window.VehicleInformation = {
 
         this.setText(
 
-            'todayMovingTime',
+            'todayDuration',
 
             this.formatDuration(
 
@@ -800,6 +800,14 @@ window.VehicleInformation = {
 
         );
 
+        this.setText(
+
+            'todayStop',
+
+            summary.stop_count ?? 0
+
+        );
+
     },
 
     /*
@@ -812,7 +820,13 @@ window.VehicleInformation = {
 
         const container = document.getElementById(
 
-            'vehicleActivityTimeline'
+            'vehicleLatestHistory'
+
+        );
+
+        const empty = document.getElementById(
+
+            'vehicleLatestHistoryEmpty'
 
         );
 
@@ -824,62 +838,26 @@ window.VehicleInformation = {
 
         if (!activities.length) {
 
-            container.innerHTML = `
+            container.innerHTML = '';
 
-                <div class="py-10 text-center text-sm text-slate-500">
-
-                    Belum ada aktivitas.
-
-                </div>
-
-            `;
+            empty?.classList.remove('hidden');
 
             return;
 
         }
 
-        container.innerHTML = activities.map(
+        empty?.classList.add('hidden');
+
+        container.innerHTML = activities.slice(0, 10).map(
 
             activity => `
 
-                <div class="min-w-[280px] rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
-                    <div class="flex items-start justify-between gap-4">
-                        <div class="flex items-start gap-3">
-                            <span class="inline-flex h-11 w-11 items-center justify-center rounded-2xl ${
-                                activity.type === 'moving'
-                                    ? 'bg-emerald-100 text-emerald-700'
-                                    : 'bg-red-100 text-red-700'
-                            }">
-                                <i class="fa-solid ${
-                                    activity.type === 'moving'
-                                        ? 'fa-route'
-                                        : 'fa-stop'
-                                }"></i>
-                            </span>
-                            <div>
-                                <h4 class="text-sm font-semibold text-slate-900">${activity.title}</h4>
-                                <p class="mt-1 text-xs text-slate-400">${activity.address ?? '-'}</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-[10px] uppercase tracking-[0.24em] text-slate-400">Waktu</p>
-                            <p class="mt-1 text-sm font-semibold text-slate-900">${activity.received_at}</p>
-                        </div>
-                    </div>
-                    <div class="mt-4 grid gap-2 text-sm text-slate-500">
-                        <div class="flex items-center justify-between">
-                            <span>Kecepatan</span>
-                            <span class="font-semibold text-slate-900">${activity.speed ?? '-'} km/jam</span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span>Lat</span>
-                            <span class="font-semibold text-slate-900">${activity.lat ?? '-'}</span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span>Lng</span>
-                            <span class="font-semibold text-slate-900">${activity.lng ?? '-'}</span>
-                        </div>
-                    </div>
+                <div class="grid grid-cols-12 items-center px-6 py-3 text-[12px] text-slate-700">
+                    <div class="col-span-2 text-slate-500">${activity.received_at ?? '-'}</div>
+                    <div class="col-span-2">${activity.lat ?? '-'}</div>
+                    <div class="col-span-2">${activity.lng ?? '-'}</div>
+                    <div class="col-span-2">${activity.speed ?? 0} km/jam</div>
+                    <div class="col-span-4 truncate text-slate-500">${activity.address ?? '-'}</div>
                 </div>
 
             `

@@ -384,9 +384,64 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         });
 
+        /*
+        |--------------------------------------------------------------------------
+        | Subscribe User Notification Channel
+        |--------------------------------------------------------------------------
+        */
+
+        if (this.userId) {
+
+            const userChannelName = `user.${this.userId}`;
+
+            if (!this.realtime.channels[userChannelName]) {
+
+                this.realtime.channels[userChannelName] = echo
+
+                    .private(userChannelName)
+
+                    .listen('.notification.created', (payload) => {
+
+                        this.receiveRealtimeNotification(payload);
+
+                    });
+
+                this.realtimeLog(
+
+                    'Subscribed:',
+
+                    userChannelName
+
+                );
+
+            }
+
+        }
+
         this.setRealtimeSubscribed(true);
 
     };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Receive Notification (user.{id} channel)
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.receiveRealtimeNotification = function (payload) {
+
+        if (!payload) {
+
+            return;
+
+        }
+
+        this.addNotification(payload);
+
+        this.renderNotifications();
+
+    };
+
     GPSTracker.receiveRealtimePayload = function (payload) {
 
         if (!payload) {

@@ -2261,15 +2261,35 @@
 
                 try {
 
-                    const districtResponse = await fetch(
-                        '/api/administrative/districts',
-                        {
-                            headers: {
-                                Accept: 'application/json',
-                                'X-Requested-With': 'XMLHttpRequest',
-                            },
-                        }
-                    );
+                    const [districtResponse, provinceResponse, regencyResponse] = await Promise.all([
+                        fetch(
+                            '/api/administrative/districts',
+                            {
+                                headers: {
+                                    Accept: 'application/json',
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                },
+                            }
+                        ),
+                        fetch(
+                            '/api/administrative/provinces',
+                            {
+                                headers: {
+                                    Accept: 'application/json',
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                },
+                            }
+                        ),
+                        fetch(
+                            '/api/administrative/regencies',
+                            {
+                                headers: {
+                                    Accept: 'application/json',
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                },
+                            }
+                        ),
+                    ]);
 
                     if (!districtResponse.ok) {
                         throw new Error('Failed loading districts.');
@@ -2288,9 +2308,85 @@
 
                     const districts = response.data ?? [];
 
+                    let provinces = [];
+
+                    if (provinceResponse.ok) {
+
+                        const provinceResult = await provinceResponse.json();
+
+                        if (provinceResult.success) {
+
+                            provinces = provinceResult.data ?? [];
+
+                        }
+
+                    }
+
+                    let regencies = [];
+
+                    if (regencyResponse.ok) {
+
+                        const regencyResult = await regencyResponse.json();
+
+                        if (regencyResult.success) {
+
+                            regencies = regencyResult.data ?? [];
+
+                        }
+
+                    }
+
                     const lowerKeyword = keyword.toLowerCase();
 
                     const results = [];
+
+                    provinces.forEach(province => {
+
+                        if (
+                            province.name
+                                .toLowerCase()
+                                .includes(lowerKeyword)
+                        ) {
+
+                            results.push({
+
+                                level: 'province',
+
+                                code: province.code,
+
+                                name: province.name,
+
+                                type: 'Provinsi'
+
+                            });
+
+                        }
+
+                    });
+
+                    regencies.forEach(regency => {
+
+                        if (
+                            regency.name
+                                .toLowerCase()
+                                .includes(lowerKeyword)
+                        ) {
+
+                            results.push({
+
+                                level: 'regency',
+
+                                code: regency.code,
+
+                                name: regency.name,
+
+                                type: 'Kabupaten/Kota'
+
+                            });
+
+                        }
+
+                    });
 
                     districts.forEach(district => {
 

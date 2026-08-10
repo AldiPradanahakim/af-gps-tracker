@@ -82,12 +82,23 @@ class StopDetectionService
 
         if (! $stopHistory) {
 
-            return $this->createStopHistory(
+            /*
+            |--------------------------------------------------------------------------
+            | Stop baru dimulai (durasi 0 detik) belum memenuhi durasi
+            | minimum - jangan langsung dianggap "siap notifikasi".
+            | Notification baru dikirim setelah durasi minimum
+            | terpenuhi lewat updateStopHistory() pada payload berikutnya.
+            |--------------------------------------------------------------------------
+            */
+
+            $this->createStopHistory(
                 device: $device,
                 payload: $payload,
                 searchAddress: $searchAddress,
                 receivedAt: $receivedAt
             );
+
+            return null;
         }
 
         /*
@@ -189,10 +200,11 @@ class StopDetectionService
             $minimumMinutes
         ) {
 
-            $duration = $stopHistory
+            $duration = (int) $stopHistory
                 ->start_time
                 ->diffInSeconds(
-                    $receivedAt
+                    $receivedAt,
+                    absolute: true
                 );
 
             $stopHistory->update([
@@ -257,10 +269,11 @@ class StopDetectionService
             $receivedAt
         ) {
 
-            $duration = $stopHistory
+            $duration = (int) $stopHistory
                 ->start_time
                 ->diffInSeconds(
-                    $receivedAt
+                    $receivedAt,
+                    absolute: true
                 );
 
             $stopHistory->update([

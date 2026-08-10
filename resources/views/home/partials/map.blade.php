@@ -203,6 +203,8 @@
 
     window.Home = {
 
+        userId: @json($user->id ?? null),
+
         vehicles: @json($vehicles ?? []),
 
         geofences: @json($geofences ?? []),

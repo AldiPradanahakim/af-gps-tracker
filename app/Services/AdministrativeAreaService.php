@@ -16,23 +16,31 @@ class AdministrativeAreaService
 
     private const BASE_PATH = 'administrative/geojson/3273';
 
+    private const NATIONAL_BASE_PATH = 'administrative/geojson';
+
     private ?array $city = null;
 
     private ?Collection $districts = null;
 
     private ?Collection $villages = null;
 
+    private ?Collection $provinces = null;
+
+    private ?Collection $regencies = null;
+
     /**
      * Membaca file GeoJSON.
      */
-    private function readGeoJson(string $filename): array
-    {
+    private function readGeoJson(
+        string $filename,
+        string $basePath = self::BASE_PATH
+    ): array {
         return Cache::remember(
-            'administrative-geojson:' . self::BASE_PATH . '/' . $filename,
+            'administrative-geojson:' . $basePath . '/' . $filename,
             now()->addWeek(),
-            function () use ($filename) {
+            function () use ($filename, $basePath) {
 
-                $path = self::BASE_PATH . '/' . $filename;
+                $path = $basePath . '/' . $filename;
 
                 if (!file_exists(storage_path('app/' . $path))) {
                     throw new InvalidArgumentException(
@@ -98,6 +106,187 @@ class AdministrativeAreaService
         }
 
         return $this->villages;
+    }
+
+    /**
+     * Seluruh polygon provinsi (nasional, tidak terikat kota tertentu).
+     */
+    private function provinces(): Collection
+    {
+        if ($this->provinces === null) {
+            $json = $this->readGeoJson(
+                'province.json',
+                self::NATIONAL_BASE_PATH
+            );
+
+            $this->provinces = collect(
+                $json['features'] ?? []
+            );
+        }
+
+        return $this->provinces;
+    }
+
+    /**
+     * Daftar seluruh provinsi.
+     */
+    public function searchProvinces(
+        ?string $keyword = null
+    ): Collection {
+
+        $keyword = mb_strtolower(trim($keyword ?? ''));
+
+        $provinces = $this->provinces()
+            ->map(function (array $feature) {
+
+                $properties = $feature['properties'] ?? [];
+
+                return [
+                    'code' => $properties['KODE_PROV'] ?? null,
+                    'name' => $properties['PROVINSI'] ?? null,
+                    'feature' => $feature,
+                ];
+            })
+            ->filter(fn(array $province) => $province['code'] !== null)
+            ->unique('code')
+            ->values();
+
+        if ($keyword !== '') {
+
+            $provinces = $provinces->filter(function (array $province) use ($keyword) {
+
+                return str_contains(
+                    mb_strtolower($province['name'] ?? ''),
+                    $keyword
+                );
+            })->values();
+        }
+
+        return $provinces
+            ->sortBy('name', SORT_NATURAL | SORT_FLAG_CASE)
+            ->values();
+    }
+
+    /**
+     * Detail provinsi.
+     */
+    public function getProvince(
+        string $provinceCode
+    ): array {
+
+        $province = $this->provinces()
+            ->first(function (array $feature) use ($provinceCode) {
+
+                return ($feature['properties']['KODE_PROV'] ?? null)
+                    === $provinceCode;
+            });
+
+        if (!$province) {
+            throw new ModelNotFoundException(
+                'Provinsi tidak ditemukan.'
+            );
+        }
+
+        $properties = $province['properties'];
+
+        return [
+            'code' => $properties['KODE_PROV'],
+            'name' => $properties['PROVINSI'],
+            'feature' => $province,
+        ];
+    }
+
+    /**
+     * Seluruh polygon kabupaten/kota (nasional, tidak terikat provinsi
+     * tertentu).
+     */
+    private function regencies(): Collection
+    {
+        if ($this->regencies === null) {
+            $json = $this->readGeoJson(
+                'regency.json',
+                self::NATIONAL_BASE_PATH
+            );
+
+            $this->regencies = collect(
+                $json['features'] ?? []
+            );
+        }
+
+        return $this->regencies;
+    }
+
+    /**
+     * Daftar seluruh kabupaten/kota.
+     */
+    public function searchRegencies(
+        ?string $keyword = null
+    ): Collection {
+
+        $keyword = mb_strtolower(trim($keyword ?? ''));
+
+        $regencies = $this->regencies()
+            ->map(function (array $feature) {
+
+                $properties = $feature['properties'] ?? [];
+
+                return [
+                    'code' => $properties['KDPKAB'] ?? null,
+                    'name' => $properties['WADMKK'] ?? null,
+                    'province_code' => $properties['KDPPUM'] ?? null,
+                    'province_name' => $properties['WADMPR'] ?? null,
+                    'feature' => $feature,
+                ];
+            })
+            ->filter(fn(array $regency) => $regency['code'] !== null && $regency['name'] !== null)
+            ->unique('code')
+            ->values();
+
+        if ($keyword !== '') {
+
+            $regencies = $regencies->filter(function (array $regency) use ($keyword) {
+
+                return str_contains(
+                    mb_strtolower($regency['name'] ?? ''),
+                    $keyword
+                );
+            })->values();
+        }
+
+        return $regencies
+            ->sortBy('name', SORT_NATURAL | SORT_FLAG_CASE)
+            ->values();
+    }
+
+    /**
+     * Detail kabupaten/kota.
+     */
+    public function getRegency(
+        string $regencyCode
+    ): array {
+
+        $regency = $this->regencies()
+            ->first(function (array $feature) use ($regencyCode) {
+
+                return ($feature['properties']['KDPKAB'] ?? null)
+                    === $regencyCode;
+            });
+
+        if (!$regency) {
+            throw new ModelNotFoundException(
+                'Kabupaten/Kota tidak ditemukan.'
+            );
+        }
+
+        $properties = $regency['properties'];
+
+        return [
+            'code' => $properties['KDPKAB'],
+            'name' => $properties['WADMKK'],
+            'province_code' => $properties['KDPPUM'] ?? null,
+            'province_name' => $properties['WADMPR'] ?? null,
+            'feature' => $regency,
+        ];
     }
 
     /**
@@ -298,6 +487,10 @@ class AdministrativeAreaService
 
         return match ($level) {
 
+            'province' => $this->getProvince($code)['feature'],
+
+            'regency' => $this->getRegency($code)['feature'],
+
             'city' => $this->getCity()['feature'],
 
             'district' => $this->getDistrict($code)['feature'],
@@ -338,6 +531,16 @@ class AdministrativeAreaService
         $level = strtolower(trim($level));
 
         return match ($level) {
+
+            'province' => [
+                'type' => 'FeatureCollection',
+                'features' => $this->provinces()->values()->all(),
+            ],
+
+            'regency' => [
+                'type' => 'FeatureCollection',
+                'features' => $this->regencies()->values()->all(),
+            ],
 
             'city' => $this->city(),
 

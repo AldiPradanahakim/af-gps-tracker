@@ -334,9 +334,17 @@ window.VehicleStop = {
                     return;
                 }
 
-                if (window.VehicleMap) {
-                    VehicleMap.flyTo(stop.lat, stop.lng, 17);
-                }
+                window.VehicleEventFocus?.focusOn({
+
+                    type: 'stop',
+                    title: 'Kendaraan Berhenti',
+                    message: `Berhenti selama ${this.formatDuration(stop.duration_seconds ?? 0)}`,
+                    address: stop.address,
+                    latitude: stop.lat,
+                    longitude: stop.lng,
+                    time: stop.started_at,
+
+                });
 
             });
 

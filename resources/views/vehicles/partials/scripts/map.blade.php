@@ -103,7 +103,6 @@ window.VehicleMap = {
 
         const zoomInButton = document.getElementById('vehicleZoomInButton');
         const zoomOutButton = document.getElementById('vehicleZoomOutButton');
-        const layerButton = document.getElementById('vehicleLayerButton');
 
         if (zoomInButton) {
             zoomInButton.addEventListener('click', () => this.zoomIn());
@@ -113,9 +112,7 @@ window.VehicleMap = {
             zoomOutButton.addEventListener('click', () => this.zoomOut());
         }
 
-        if (layerButton) {
-            layerButton.addEventListener('click', () => this.toggleBaseLayer());
-        }
+        this.bindLayerSwitcher();
 
     },
 
@@ -139,34 +136,70 @@ window.VehicleMap = {
 
     },
 
-    toggleBaseLayer() {
+    /*
+    |--------------------------------------------------------------------------
+    | Layer Switcher (Default / Satellite / Dark)
+    |--------------------------------------------------------------------------
+    */
+
+    bindLayerSwitcher() {
+
+        const layerButton = document.getElementById('vehicleLayerButton');
+        const layerDropdown = document.getElementById('vehicleLayerDropdown');
+
+        if (!layerButton || !layerDropdown) {
+            return;
+        }
+
+        layerButton.addEventListener('click', event => {
+
+            event.stopPropagation();
+
+            layerDropdown.classList.toggle('hidden');
+
+        });
+
+        document.addEventListener('click', () => {
+
+            layerDropdown.classList.add('hidden');
+
+        });
+
+        document.querySelectorAll('.vehicle-layer-option').forEach(button => {
+
+            button.addEventListener('click', () => {
+
+                this.setBaseLayer(button.dataset.layer);
+
+                layerDropdown.classList.add('hidden');
+
+            });
+
+        });
+
+    },
+
+    setBaseLayer(layer) {
 
         if (!this.map) {
             return;
         }
 
-        const nextLayer =
-            this.currentBaseLayer === 'OpenStreetMap'
-                ? 'Satellite'
-                : 'OpenStreetMap';
+        Object.values(this.baseLayers).forEach(tileLayer => {
 
-        if (nextLayer === 'Satellite') {
-            if (this.map.hasLayer(this.baseLayers.OpenStreetMap)) {
-                this.map.removeLayer(this.baseLayers.OpenStreetMap);
+            if (this.map.hasLayer(tileLayer)) {
+                this.map.removeLayer(tileLayer);
             }
-            if (!this.map.hasLayer(this.baseLayers.Satellite)) {
-                this.baseLayers.Satellite.addTo(this.map);
-            }
-        } else {
-            if (this.map.hasLayer(this.baseLayers.Satellite)) {
-                this.map.removeLayer(this.baseLayers.Satellite);
-            }
-            if (!this.map.hasLayer(this.baseLayers.OpenStreetMap)) {
-                this.baseLayers.OpenStreetMap.addTo(this.map);
-            }
-        }
 
-        this.currentBaseLayer = nextLayer;
+        });
+
+        const key = layer === 'satellite'
+            ? 'Satellite'
+            : (layer === 'dark' ? 'Dark' : 'Default');
+
+        this.baseLayers[key].addTo(this.map);
+
+        this.currentBaseLayer = key;
 
     },
 
@@ -204,15 +237,35 @@ window.VehicleMap = {
 
         );
 
+        const dark = L.tileLayer(
+
+            'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+
+            {
+
+                subdomains: 'abcd',
+
+                maxZoom: 22,
+
+                attribution: '&copy; CARTO'
+
+            }
+
+        );
+
         osm.addTo(this.map);
 
         this.baseLayers = {
 
-            "OpenStreetMap": osm,
+            "Default": osm,
 
             "Satellite": satellite,
 
+            "Dark": dark,
+
         };
+
+        this.currentBaseLayer = 'Default';
 
     },
 

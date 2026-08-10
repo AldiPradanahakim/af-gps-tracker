@@ -35,4 +35,13 @@ return [
         ],
     ],
 
+    'fonnte' => [
+        'token' => env('FONNTE_TOKEN'),
+        'url' => env('FONNTE_URL', 'https://api.fonnte.com/send'),
+    ],
+
+    'locationiq' => [
+        'key' => env('LOCATIONIQ_API_KEY'),
+    ],
+
 ];

@@ -10,6 +10,8 @@
 
 @include('home.partials.scripts.notification')
 
+@include('home.partials.scripts.messages')
+
 @include('home.partials.scripts.profile')
 
 @include('home.partials.scripts.address')

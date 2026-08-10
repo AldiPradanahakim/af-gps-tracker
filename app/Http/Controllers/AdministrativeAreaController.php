@@ -15,6 +15,56 @@ class AdministrativeAreaController extends Controller
     ) {}
 
     /**
+     * Daftar provinsi (nasional).
+     */
+    public function provinces(Request $request): JsonResponse
+    {
+        try {
+
+            $data = $this->administrativeAreaService
+                ->searchProvinces(
+                    $request->string('keyword')->toString()
+                );
+
+            return response()->json([
+                'success' => true,
+                'data' => $data,
+            ]);
+        } catch (Throwable $e) {
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Daftar kabupaten/kota (nasional).
+     */
+    public function regencies(Request $request): JsonResponse
+    {
+        try {
+
+            $data = $this->administrativeAreaService
+                ->searchRegencies(
+                    $request->string('keyword')->toString()
+                );
+
+            return response()->json([
+                'success' => true,
+                'data' => $data,
+            ]);
+        } catch (Throwable $e) {
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
      * Kota Bandung.
      */
     public function city(): JsonResponse

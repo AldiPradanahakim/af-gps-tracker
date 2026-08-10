@@ -1,6 +1,6 @@
 <script>
 
-window.GPSTracker = {
+window.GPSTracker = Object.assign(window.GPSTracker || {}, {
 
     /*
     |--------------------------------------------------------------------------
@@ -47,6 +47,14 @@ window.GPSTracker = {
     temporaryLayer: null,
     
     baseLayers: {},
+
+    /*
+    |--------------------------------------------------------------------------
+    | Auth User
+    |--------------------------------------------------------------------------
+    */
+
+    userId: window.Home?.userId ?? null,
 
     /*
     |--------------------------------------------------------------------------
@@ -2151,7 +2159,7 @@ window.GPSTracker = {
 
     }
 
-};
+});
 
     GPSTracker.showTemporaryMarker = function (
         latitude,

@@ -55,17 +55,33 @@ class GeofenceCheckerService
 
         $longitude = (float) $payload['lng'];
 
-        $inside = $this->isInside(
-
-            $geofence,
-
-            $latitude,
-
-            $longitude
-
-        );
-
         $previousInside = (bool) $device->is_inside_geofence;
+
+        /*
+        |--------------------------------------------------------------------------
+        | Geofence config yang rusak (mis. hasil migrasi data lama) tidak
+        | boleh menghentikan seluruh proses ingest GPS. Jika pengecekan
+        | gagal, anggap status tidak berubah untuk siklus ini.
+        |--------------------------------------------------------------------------
+        */
+
+        try {
+
+            $inside = $this->isInside(
+
+                $geofence,
+
+                $latitude,
+
+                $longitude
+
+            );
+        } catch (\Throwable $exception) {
+
+            report($exception);
+
+            $inside = $previousInside;
+        }
 
         $entered =
 

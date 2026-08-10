@@ -14,14 +14,18 @@ class SearchController extends Controller
 
     public function __invoke(Request $request): JsonResponse
     {
-        $request->validate([
+        $validated = $request->validate([
             'keyword' => ['required', 'string', 'min:2'],
+            'lat' => ['nullable', 'numeric', 'between:-90,90'],
+            'lng' => ['nullable', 'numeric', 'between:-180,180'],
         ]);
 
         return response()->json(
             $this->searchService->search(
                 $request->string('keyword')->toString(),
-                $request->user()
+                $request->user(),
+                isset($validated['lat']) ? (float) $validated['lat'] : null,
+                isset($validated['lng']) ? (float) $validated['lng'] : null,
             )
         );
     }

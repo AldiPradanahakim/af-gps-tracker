@@ -162,9 +162,19 @@ window.VehicleSearch = {
 
         try {
 
+            let url = `/api/search?keyword=${encodeURIComponent(keyword)}`;
+
+            const anchor = this.state?.latestLocation;
+
+            if (anchor && anchor.lat != null && anchor.lng != null) {
+
+                url += `&lat=${encodeURIComponent(anchor.lat)}&lng=${encodeURIComponent(anchor.lng)}`;
+
+            }
+
             const response = await fetch(
 
-                `/api/search?keyword=${encodeURIComponent(keyword)}`,
+                url,
 
                 {
 
@@ -474,7 +484,7 @@ window.VehicleSearch = {
 
         }
 
-        this.input.value = result.title ?? '';
+        this.input.value = '';
 
         this.close();
 

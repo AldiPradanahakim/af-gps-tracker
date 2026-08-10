@@ -7,6 +7,8 @@ use App\Http\Controllers\ActivateDeviceController;
 use App\Http\Controllers\ActivateVehicleController;
 use App\Http\Controllers\GeofenceController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PublicTrackingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\Home\DeviceController as HomeDeviceController;
@@ -29,6 +31,23 @@ Route::get('/devices/activate', [ActivateDeviceController::class, 'create'])
 
 Route::post('/devices/activate', [ActivateDeviceController::class, 'store'])
     ->name('devices.store');
+
+/*
+|--------------------------------------------------------------------------
+| Public Tracking (Tanpa Login)
+|--------------------------------------------------------------------------
+|
+| Diakses lewat link ber-signature yang dikirim ke Email/WhatsApp saat
+| notification dibuat. Middleware "signed" menolak request yang
+| signature-nya tidak valid atau sudah kedaluwarsa. Link mengarah ke
+| notification tertentu (bukan device) supaya peta yang ditampilkan
+| selalu konsisten dengan lokasi yang tertulis di pesan Email/WhatsApp.
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/track/{notification}', [PublicTrackingController::class, 'show'])
+    ->name('track.show')
+    ->middleware('signed');
 
 /*
 |--------------------------------------------------------------------------
@@ -165,6 +184,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'playback'
     ])->name('vehicles.playback');
 
+    Route::post('/vehicles/{device}/route', [
+        VehicleController::class,
+        'route'
+    ])->name('vehicles.route');
+
     Route::get('/vehicles/{device}/summary', [
         VehicleController::class,
         'summary'
@@ -267,6 +291,27 @@ Route::middleware(['auth', 'verified'])->group(function () {
         '/api/home-location',
         [LocationController::class, 'destroy']
     )->name('api.home-location.destroy');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Notification
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/notifications', [
+        NotificationController::class,
+        'index'
+    ])->name('notifications.index');
+
+    Route::patch('/notifications/mark-all-read', [
+        NotificationController::class,
+        'markAllAsRead'
+    ])->name('notifications.mark-all-read');
+
+    Route::patch('/notifications/{notification}/read', [
+        NotificationController::class,
+        'markAsRead'
+    ])->name('notifications.read');
 });
 
 require __DIR__ . '/auth.php';

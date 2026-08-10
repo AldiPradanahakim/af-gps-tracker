@@ -46,6 +46,8 @@
 
 @include('home.modals.profile')
 
+@include('home.modals.messages')
+
 @endsection
 
 

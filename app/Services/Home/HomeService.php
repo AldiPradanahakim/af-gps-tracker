@@ -4,9 +4,14 @@ namespace App\Services\Home;
 
 use App\Models\User;
 use App\Services\Home\Support\VehicleCardFormatter;
+use App\Services\Notification\NotificationService;
 
 class HomeService
 {
+    public function __construct(
+        protected NotificationService $notificationService
+    ) {}
+
     public function index(User $user): array
     {
         $user->load([
@@ -14,11 +19,6 @@ class HomeService
             'devices.vehicle',
 
             'devices.geofences',
-
-            'devices.notifications' => function ($query) {
-
-                $query->latest()->take(10);
-            },
 
             'devices.deviceLogs' => function ($query) {
 
@@ -95,17 +95,16 @@ class HomeService
         |--------------------------------------------------------------------------
         | Notifications
         |--------------------------------------------------------------------------
+        |
+        | Hanya notification yang belum dibaca. Setelah dibaca (atau di
+        | halaman lain), notification tidak ditampilkan lagi saat
+        | refresh/login/masuk halaman.
+        |
         */
 
-        $notifications = $user->devices
-
-            ->flatMap(fn($device) => $device->notifications)
-
-            ->sortByDesc('created_at')
-
-            ->take(10)
-
-            ->values();
+        $notifications = $this->notificationService->unreadForUser(
+            $user
+        );
 
         /*
         |--------------------------------------------------------------------------

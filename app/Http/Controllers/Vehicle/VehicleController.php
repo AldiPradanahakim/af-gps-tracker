@@ -30,14 +30,22 @@ class VehicleController extends Controller
 
     /**
      * Halaman Detail Kendaraan.
+     *
+     * Query string opsional `?event={notification}` (dikirim dari link
+     * "Detail Lengkap" pada halaman pelacakan publik/Email/WhatsApp)
+     * membuat peta fokus ke lokasi persis milik notification tersebut,
+     * bukan lokasi kendaraan terkini.
      */
-    public function show(Device $device): View
+    public function show(Request $request, Device $device): View
     {
         $this->authorizeDevice($device);
 
         return view(
             'vehicles.show',
-            $this->vehicleService->show($device)
+            $this->vehicleService->show(
+                $device,
+                $request->query('event')
+            )
         );
     }
 
@@ -261,6 +269,45 @@ class VehicleController extends Controller
             'message' => 'Data playback berhasil diambil.',
 
             'data' => $playback,
+
+        ]);
+    }
+
+    /**
+     * --------------------------------------------------------------------------
+     * Rute Mengikuti Jalan (Map-Matching)
+     * --------------------------------------------------------------------------
+     */
+    public function route(
+        Request $request,
+        Device $device
+    ): JsonResponse {
+
+        $this->authorizeDevice($device);
+
+        $validated = $request->validate([
+
+            'points' => ['required', 'array', 'min:2', 'max:20000'],
+
+            'points.*.lat' => ['required', 'numeric', 'between:-90,90'],
+
+            'points.*.lng' => ['required', 'numeric', 'between:-180,180'],
+
+        ]);
+
+        $route = $this->vehicleService->route(
+
+            $validated['points']
+
+        );
+
+        return response()->json([
+
+            'success' => true,
+
+            'message' => 'Rute berhasil diambil.',
+
+            'data' => $route,
 
         ]);
     }

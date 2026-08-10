@@ -59,6 +59,12 @@ window.Vehicle = {
 
     stop: null,
 
+    notification: null,
+
+    eventFocus: null,
+
+    messages: null,
+
     /*
     |--------------------------------------------------------------------------
     | Initialize
@@ -116,6 +122,18 @@ window.Vehicle = {
             this.stop = window.VehicleStop;
 
             this.stop.init(
+
+                this.state
+
+            );
+
+        }
+
+        if (window.VehicleMessages) {
+
+            this.messages = window.VehicleMessages;
+
+            this.messages.init(
 
                 this.state
 
@@ -197,6 +215,14 @@ window.Vehicle = {
 
         }
 
+        if (window.VehicleEventFocus) {
+
+            this.eventFocus = window.VehicleEventFocus;
+
+            this.eventFocus.init(this.state);
+
+        }
+
         if (window.VehicleInformation) {
 
             this.information = window.VehicleInformation;
@@ -258,6 +284,14 @@ window.Vehicle = {
             this.search = window.VehicleSearch;
 
             this.search.init(this.state);
+
+        }
+
+        if (window.VehicleNotification) {
+
+            this.notification = window.VehicleNotification;
+
+            this.notification.init(this.state);
 
         }
 

@@ -25,6 +25,16 @@ Route::prefix('administrative')
     ->name('api.administrative.')
     ->group(function () {
 
+        Route::get('/provinces', [
+            AdministrativeAreaController::class,
+            'provinces',
+        ])->name('provinces');
+
+        Route::get('/regencies', [
+            AdministrativeAreaController::class,
+            'regencies',
+        ])->name('regencies');
+
         Route::get('/city', [
             AdministrativeAreaController::class,
             'city',

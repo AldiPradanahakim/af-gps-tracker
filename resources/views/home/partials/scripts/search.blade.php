@@ -1008,9 +1008,23 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         try {
 
+            let url = `/api/search?keyword=${encodeURIComponent(keyword)}`;
+
+            if (this.map && typeof this.map.getCenter === 'function') {
+
+                const center = this.map.getCenter();
+
+                if (center && center.lat != null && center.lng != null) {
+
+                    url += `&lat=${encodeURIComponent(center.lat)}&lng=${encodeURIComponent(center.lng)}`;
+
+                }
+
+            }
+
             const response = await fetch(
 
-                `/api/search?keyword=${encodeURIComponent(keyword)}`,
+                url,
 
                 {
 
@@ -1478,9 +1492,7 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         if (input) {
 
-            input.value =
-
-                result.title ?? '';
+            input.value = '';
 
         }
 

@@ -544,14 +544,25 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         return `
 
-            <div class="border-t border-slate-200 p-3">
+            <div class="space-y-2 border-t border-slate-200 p-3">
 
+                ${this.notifications.length ? `
                 <button
                     id="markAllNotificationRead"
                     type="button"
                     class="w-full rounded-xl bg-slate-100 px-4 py-3 text-sm font-medium text-slate-700 transition duration-200 hover:bg-slate-200">
 
                     Tandai semua telah dibaca
+
+                </button>
+                ` : ''}
+
+                <button
+                    id="goToMessagesModal"
+                    type="button"
+                    class="block w-full rounded-xl px-4 py-3 text-center text-sm font-medium text-blue-600 transition duration-200 hover:bg-blue-50">
+
+                    Lihat Semua Riwayat
 
                 </button>
 
@@ -761,6 +772,69 @@ document.addEventListener('gpstracker:map-ready', () => {
     |--------------------------------------------------------------------------
     */
 
+    GPSTracker.notificationRequest = function (
+
+        url
+
+    ) {
+
+        return fetch(url, {
+
+            method: 'PATCH',
+
+            headers: {
+
+                'Accept': 'application/json',
+
+                'X-Requested-With': 'XMLHttpRequest',
+
+                'X-CSRF-TOKEN': document.querySelector(
+
+                    'meta[name="csrf-token"]'
+
+                )?.content,
+
+            },
+
+        }).then(response => {
+
+            if (!response.ok) {
+
+                throw new Error('Notification request failed.');
+
+            }
+
+            return response.json();
+
+        });
+
+    };
+
+    GPSTracker.notificationErrorToast = function () {
+
+        if (typeof this.showToast === 'function') {
+
+            this.showToast(
+
+                'error',
+
+                'Gagal',
+
+                'Notifikasi gagal ditandai telah dibaca.'
+
+            );
+
+        }
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Notification sudah dibaca tidak ditampilkan lagi (dihapus dari
+    | daftar), bukan hanya ditandai secara visual.
+    |--------------------------------------------------------------------------
+    */
+
     GPSTracker.markNotificationAsRead = function (
 
         id
@@ -779,23 +853,45 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         }
 
-        notification.read_at ??=
-
-            new Date().toISOString();
+        this.removeNotification(id);
 
         this.renderNotifications();
+
+        this.notificationRequest(`/notifications/${id}/read`).catch(() => {
+
+            this.addNotification(notification);
+
+            this.renderNotifications();
+
+            this.notificationErrorToast();
+
+        });
 
     };
 
     GPSTracker.markAllNotificationAsRead = function () {
 
-        this.notifications.forEach(notification => {
+        if (!this.notifications.length) {
 
-            notification.read_at = notification.read_at ?? new Date().toISOString();
+            return;
 
-        });
+        }
+
+        const previous = [...this.notifications];
+
+        this.clearNotifications();
 
         this.renderNotifications();
+
+        this.notificationRequest('/notifications/mark-all-read').catch(() => {
+
+            this.notifications = previous;
+
+            this.renderNotifications();
+
+            this.notificationErrorToast();
+
+        });
 
     };
 
@@ -970,6 +1066,34 @@ document.addEventListener('gpstracker:map-ready', () => {
                 event.preventDefault();
 
                 this.markAllNotificationAsRead();
+
+            }
+
+        );
+
+        dropdown.addEventListener(
+
+            'click',
+
+            event => {
+
+                const goToMessages = event.target.closest(
+
+                    '#goToMessagesModal'
+
+                );
+
+                if (!goToMessages) {
+
+                    return;
+
+                }
+
+                event.preventDefault();
+
+                this.closeNotificationDropdown();
+
+                this.openMessagesModal?.();
 
             }
 

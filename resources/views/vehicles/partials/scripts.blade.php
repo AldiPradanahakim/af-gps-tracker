@@ -3,9 +3,11 @@
 @include('vehicles.partials.scripts.map')
 @include('vehicles.partials.scripts.path')
 @include('vehicles.partials.scripts.marker')
+@include('vehicles.partials.scripts.event-focus')
 @include('vehicles.partials.scripts.information')
 @include('vehicles.partials.scripts.history')
 @include('vehicles.partials.scripts.stop')
+@include('vehicles.partials.scripts.messages')
 @include('vehicles.partials.scripts.home-location')
 @include('vehicles.partials.scripts.geofence')
 @include('vehicles.partials.scripts.playback')
@@ -14,6 +16,7 @@
 @include('vehicles.partials.scripts.vehicle-actions')
 @include('vehicles.partials.scripts.profile')
 @include('vehicles.partials.scripts.search')
+@include('vehicles.partials.scripts.notification')
 @include('vehicles.partials.scripts.app')
 
 <script>
@@ -32,6 +35,8 @@
             history: document.getElementById('vehicleHistorySection'),
 
             stop: document.getElementById('vehicleStopSection'),
+
+            messages: document.getElementById('vehicleMessagesSection'),
 
         };
 
@@ -84,6 +89,8 @@
             history: () => window.Vehicle?.history?.activate?.(),
 
             stop: () => window.Vehicle?.stop?.activate?.(),
+
+            messages: () => window.Vehicle?.messages?.activate?.(),
 
         };
 

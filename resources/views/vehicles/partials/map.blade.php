@@ -6,8 +6,47 @@
     {{-- MAP --}}
     <div
         id="vehicleMap"
-        class="h-[400px] w-full"
+        class="h-[620px] w-full"
     ></div>
+
+    {{-- ===================================================== --}}
+    {{-- Event Focus Banner (?event= dari link notification) --}}
+    {{-- ===================================================== --}}
+
+    <div
+        id="vehicleEventFocusBanner"
+        class="absolute left-5 right-5 top-5 z-[650] hidden"
+    >
+
+        <div
+            class="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-lg"
+        >
+
+            <div class="min-w-0">
+
+                <p
+                    id="vehicleEventFocusTitle"
+                    class="truncate text-sm font-semibold text-slate-900"
+                ></p>
+
+                <p
+                    id="vehicleEventFocusTime"
+                    class="text-xs text-slate-500"
+                ></p>
+
+            </div>
+
+            <button
+                id="vehicleEventFocusReset"
+                type="button"
+                class="shrink-0 rounded-xl bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-200"
+            >
+                Lokasi Terkini
+            </button>
+
+        </div>
+
+    </div>
 
     {{-- ===================================================== --}}
     {{-- Floating Update --}}
@@ -93,14 +132,6 @@
     >
 
         <button
-            id="vehicleLocateButton"
-            type="button"
-            class="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white shadow-lg transition hover:bg-slate-100"
-        >
-            <i class="fa-solid fa-location-crosshairs text-slate-600"></i>
-        </button>
-
-        <button
             id="vehicleZoomInButton"
             type="button"
             class="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white shadow-lg transition hover:bg-slate-100"
@@ -116,39 +147,65 @@
             <i class="fa-solid fa-minus text-slate-700"></i>
         </button>
 
+    </div>
+
+    {{-- ===================================================== --}}
+    {{-- Map Layer --}}
+    {{-- ===================================================== --}}
+
+    <div class="absolute bottom-5 right-5 z-[700]">
+
         <button
             id="vehicleLayerButton"
             type="button"
-            class="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white shadow-lg transition hover:bg-slate-100"
+            class="relative h-16 w-16 overflow-hidden rounded-2xl border border-slate-200 shadow-lg"
         >
-            <i class="fa-solid fa-layer-group text-slate-700"></i>
+
+            <img
+                src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/15/13112/26928"
+                alt=""
+                class="absolute inset-0 h-full w-full object-cover"
+            >
+
+            <div class="absolute inset-0 bg-black/20"></div>
+
+            <div class="absolute bottom-1 left-0 right-0 flex items-center justify-center gap-1 px-1 text-[10px] font-semibold text-white">
+                <i class="fa-solid fa-layer-group"></i>
+                <span class="truncate">Lapisan</span>
+            </div>
+
         </button>
 
-    </div>
-    
-        {{-- ===================================================== --}}
-    {{-- Hidden Realtime Data --}}
-    {{-- ===================================================== --}}
+        <div
+            id="vehicleLayerDropdown"
+            class="absolute bottom-0 right-[76px] hidden w-44 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
+        >
 
-    <div class="hidden">
+            <button
+                type="button"
+                class="vehicle-layer-option flex w-full items-center gap-3 px-4 py-3 text-left text-sm hover:bg-slate-50"
+                data-layer="default"
+            >
+                🗺️ Default
+            </button>
 
-        <span id="vehicleLatitude"></span>
+            <button
+                type="button"
+                class="vehicle-layer-option flex w-full items-center gap-3 border-t px-4 py-3 text-left text-sm hover:bg-slate-50"
+                data-layer="satellite"
+            >
+                🛰️ Satellite
+            </button>
 
-        <span id="vehicleLongitude"></span>
+            <button
+                type="button"
+                class="vehicle-layer-option flex w-full items-center gap-3 border-t px-4 py-3 text-left text-sm hover:bg-slate-50"
+                data-layer="dark"
+            >
+                🌙 Dark
+            </button>
 
-        <span id="vehicleSpeed"></span>
-
-        <span id="vehicleDirection"></span>
-
-        <span id="vehicleBattery"></span>
-
-        <span id="vehicleSatellite"></span>
-
-        <span id="vehicleStatus"></span>
-
-        <span id="vehicleAddress"></span>
-
-        <span id="vehicleGoogleMapsLink"></span>
+        </div>
 
     </div>
 
@@ -173,7 +230,7 @@
 
     width:100%;
 
-    height:400px;
+    height:620px;
 
     z-index:1;
 

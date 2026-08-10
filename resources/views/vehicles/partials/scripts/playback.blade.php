@@ -95,13 +95,18 @@ window.VehiclePlayback = {
     |--------------------------------------------------------------------------
     | Load
     |--------------------------------------------------------------------------
+    | `range` opsional: { from, to } index 0-based, inklusif, merujuk ke
+    | posisi di dalam array `histories` yang dikirim. Kalau tidak diisi
+    | (atau tidak valid), seluruh rentang dimainkan seperti biasa -
+    | perilaku default tetap tidak berubah.
+    |--------------------------------------------------------------------------
     */
 
-    load(histories = []) {
+    load(histories = [], range = {}) {
 
         this.stop();
 
-        this.histories = histories;
+        this.histories = this.sliceRange(histories, range);
 
         this.currentIndex = 0;
 
@@ -125,6 +130,38 @@ window.VehiclePlayback = {
 
     /*
     |--------------------------------------------------------------------------
+    | Slice Range
+    |--------------------------------------------------------------------------
+    */
+
+    sliceRange(histories = [], range = {}) {
+
+        if (!histories.length) {
+
+            return [];
+
+        }
+
+        const hasValidRange =
+            Number.isInteger(range.from) &&
+            Number.isInteger(range.to);
+
+        if (!hasValidRange) {
+
+            return histories;
+
+        }
+
+        const from = Math.max(0, Math.min(range.from, histories.length - 1));
+
+        const to = Math.max(0, Math.min(range.to, histories.length - 1));
+
+        return histories.slice(from, to + 1);
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
     | Render Path
     |--------------------------------------------------------------------------
     */
@@ -133,21 +170,75 @@ window.VehiclePlayback = {
 
         const points =
 
-            this.histories.map(
+            this.histories
 
-                history => ({
+                .filter(history => history.lat != null && history.lng != null)
+
+                .map(history => ({
 
                     lat: history.lat,
 
                     lng: history.lng,
 
-                })
+                }));
 
-            );
+        if (!window.VehiclePath) {
 
-        if (window.VehiclePath) {
+            return;
+        }
 
-            VehiclePath.setPath(points);
+        // Garis lurus antar titik dulu, langsung tampil tanpa menunggu.
+        VehiclePath.setPath(points);
+
+        this.loadMatchedRoute(points);
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Load Matched Route (Map-Matching - jalan asli)
+    |--------------------------------------------------------------------------
+    |
+    | Progressive enhancement: kalau map-matching berhasil, garis lurus
+    | di atas diganti dengan rute yang mengikuti jalan asli. Kalau
+    | gagal (offline, server matching down, dsb), garis lurus yang
+    | sudah tampil dibiarkan apa adanya - fitur playback tidak pernah
+    | rusak/kosong hanya karena map-matching gagal.
+    |--------------------------------------------------------------------------
+    */
+
+    async loadMatchedRoute(points) {
+
+        if (points.length < 2) {
+
+            return;
+        }
+
+        try {
+
+            const response = await VehicleApi.route(points);
+
+            if (
+
+                response?.success &&
+
+                response.data?.matched &&
+
+                response.data.path?.length >= 2
+
+            ) {
+
+                VehiclePath.setPath(
+
+                    response.data.path.map(([lat, lng]) => ({ lat, lng }))
+
+                );
+
+            }
+
+        } catch (error) {
+
+            console.warn('[VehiclePlayback] Map-matching gagal, pakai garis lurus.', error);
 
         }
 

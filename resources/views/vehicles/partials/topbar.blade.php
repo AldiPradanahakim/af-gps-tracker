@@ -88,33 +88,39 @@
             {{-- Notification --}}
             {{-- ========================================================= --}}
 
-            <button
+            <div class="relative">
 
-                id="vehicleNotificationButton"
+                <button
 
-                type="button"
+                    id="vehicleNotificationButton"
 
-                class="relative flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition-all duration-200 hover:border-blue-300 hover:text-blue-600"
+                    type="button"
 
-            >
-
-                <i
-                    class="fa-regular fa-bell text-[15px]"
-                ></i>
-
-                <span
-
-                    id="vehicleNotificationBadge"
-
-                    class="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-bold leading-none text-white"
+                    class="relative flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition-all duration-200 hover:border-blue-300 hover:text-blue-600"
 
                 >
 
-                    0
+                    <i
+                        class="fa-regular fa-bell text-[15px]"
+                    ></i>
 
-                </span>
+                    <span
 
-            </button>
+                        id="vehicleNotificationBadge"
+
+                        class="absolute -right-1 -top-1 hidden h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-bold leading-none text-white"
+
+                    ></span>
+
+                </button>
+
+                <div
+                    id="vehicleNotificationDropdown"
+                    class="absolute right-0 mt-3 z-[99999] hidden w-72 rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl">
+
+                </div>
+
+            </div>
 
             {{-- ========================================================= --}}
             {{-- Profile --}}

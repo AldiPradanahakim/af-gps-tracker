@@ -14,6 +14,9 @@ window.VehicleHistory = {
 
     activeHistory: null,
 
+    // 'desc' = terbaru di atas, 'asc' = terlama di atas.
+    sortDirection: 'desc',
+
     startDate: null,
 
     endDate: null,
@@ -37,6 +40,8 @@ window.VehicleHistory = {
         this.setDateInputs();
 
         this.bindEvents();
+
+        this.bindSortButtons();
 
     },
 
@@ -108,9 +113,137 @@ window.VehicleHistory = {
 
                 }
 
-                VehiclePlayback.load(this.histories);
+                VehiclePlayback.load(this.histories, this.getPlaybackRange());
 
             });
+
+        document.getElementById('historyPlaybackRangeReset')
+            ?.addEventListener('click', () => this.resetPlaybackRange());
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Playback Range (pilih titik awal/akhir yang dimainkan)
+    |--------------------------------------------------------------------------
+    | Dropdown "Dari Titik" / "Sampai Titik" diisi ulang setiap kali
+    | this.histories berganti (pencarian rentang tanggal baru), supaya
+    | tidak ada jumlah titik basi dari pencarian sebelumnya.
+    |--------------------------------------------------------------------------
+    */
+
+    renderPlaybackRange() {
+
+        const wrapper = document.getElementById('historyPlaybackRange');
+
+        const fromSelect = document.getElementById('historyPlaybackFrom');
+
+        const toSelect = document.getElementById('historyPlaybackTo');
+
+        if (!wrapper || !fromSelect || !toSelect) {
+
+            return;
+
+        }
+
+        const hasHistory = this.histories.length > 0;
+
+        wrapper.classList.toggle('hidden', !hasHistory);
+
+        wrapper.classList.toggle('flex', hasHistory);
+
+        fromSelect.innerHTML = '';
+
+        toSelect.innerHTML = '';
+
+        if (!hasHistory) {
+
+            return;
+
+        }
+
+        // this.histories selalu urut kronologis (ascending), jadi nomor
+        // titik di dropdown sesuai urutan waktu sebenarnya.
+        this.histories.forEach((history, index) => {
+
+            const label = this.playbackPointLabel(history, index);
+
+            fromSelect.add(new Option(label, index + 1));
+
+            toSelect.add(new Option(label, index + 1));
+
+        });
+
+        this.resetPlaybackRange();
+
+    },
+
+    playbackPointLabel(history, index) {
+
+        const time = history.received_at ?? '-';
+
+        const address = history.address ?? 'Lokasi tidak diketahui';
+
+        return `${index + 1}. ${time} - ${address}`;
+
+    },
+
+    resetPlaybackRange() {
+
+        const fromSelect = document.getElementById('historyPlaybackFrom');
+
+        const toSelect = document.getElementById('historyPlaybackTo');
+
+        if (!fromSelect || !toSelect || !this.histories.length) {
+
+            return;
+
+        }
+
+        fromSelect.value = '1';
+
+        toSelect.value = String(this.histories.length);
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Get Playback Range (dibaca oleh tombol Playback)
+    |--------------------------------------------------------------------------
+    | Mengembalikan {} (rentang penuh) kalau dropdown belum siap/tidak
+    | valid, supaya perilaku default playback tetap memutar seluruh data.
+    |--------------------------------------------------------------------------
+    */
+
+    getPlaybackRange() {
+
+        const fromSelect = document.getElementById('historyPlaybackFrom');
+
+        const toSelect = document.getElementById('historyPlaybackTo');
+
+        if (!fromSelect?.value || !toSelect?.value) {
+
+            return {};
+
+        }
+
+        let from = parseInt(fromSelect.value, 10) - 1;
+
+        let to = parseInt(toSelect.value, 10) - 1;
+
+        if (isNaN(from) || isNaN(to)) {
+
+            return {};
+
+        }
+
+        if (from > to) {
+
+            [from, to] = [to, from];
+
+        }
+
+        return { from, to };
 
     },
 
@@ -181,6 +314,8 @@ window.VehicleHistory = {
         this.renderMapPoints();
 
         this.renderMapLine();
+
+        this.renderPlaybackRange();
 
     },
 
@@ -528,13 +663,78 @@ window.VehicleHistory = {
 
         }
 
-        container.innerHTML = this.histories.map(
+        // this.histories tetap ascending (dipakai bersama oleh ringkasan
+        // first/last time dan playback yang butuh urutan kronologis).
+        // Urutan tampilan timeline diatur terpisah lewat sortDirection.
+        const ordered = this.sortDirection === 'asc'
+            ? [...this.histories]
+            : [...this.histories].reverse();
+
+        container.innerHTML = ordered.map(
 
             history => this.timelineItem(history)
 
         ).join('');
 
         this.bindTimeline();
+
+        this.updateSortButtons();
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Sort Direction
+    |--------------------------------------------------------------------------
+    */
+
+    setSortDirection(direction) {
+
+        if (direction !== 'asc' && direction !== 'desc') {
+
+            return;
+        }
+
+        this.sortDirection = direction;
+
+        this.renderTimeline();
+
+    },
+
+    updateSortButtons() {
+
+        const desc = document.getElementById('historySortDesc');
+
+        const asc = document.getElementById('historySortAsc');
+
+        if (!desc || !asc) {
+
+            return;
+        }
+
+        const active = 'rounded-[12px] bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white';
+
+        const inactive = 'rounded-[12px] border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100';
+
+        desc.className = this.sortDirection === 'desc' ? active : inactive;
+
+        asc.className = this.sortDirection === 'asc' ? active : inactive;
+
+    },
+
+    bindSortButtons() {
+
+        document.getElementById('historySortDesc')?.addEventListener('click', () => {
+
+            this.setSortDirection('desc');
+
+        });
+
+        document.getElementById('historySortAsc')?.addEventListener('click', () => {
+
+            this.setSortDirection('asc');
+
+        });
 
     },
 
@@ -636,24 +836,17 @@ window.VehicleHistory = {
 
                 this.highlight();
 
-                if (history.lat != null && history.lng != null && window.VehicleMap) {
+                const isMoving = Number(history.speed ?? 0) > 0;
 
-                    VehicleMap.flyTo(history.lat, history.lng, 17);
+                window.VehicleEventFocus?.focusOn({
 
-                }
-
-                this.state.latestLocation = { ...history };
-
-                Vehicle.updateLatestLocation({
-
-                    lat: history.lat,
-                    lng: history.lng,
-                    speed: history.speed,
-                    heading: history.heading,
-                    battery: history.battery,
-                    satellite: history.satellite,
+                    type: isMoving ? 'travel_moving' : 'travel_stopped',
+                    title: isMoving ? 'Kendaraan Bergerak' : 'Kendaraan Berhenti',
+                    message: `Kecepatan ${Number(history.speed ?? 0).toFixed(0)} km/jam`,
                     address: history.address,
-                    received_at: history.received_at,
+                    latitude: history.lat,
+                    longitude: history.lng,
+                    time: history.received_at,
 
                 });
 

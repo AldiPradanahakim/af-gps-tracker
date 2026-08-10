@@ -30,6 +30,28 @@
         </div>
 
         {{-- ========================================================= --}}
+        {{-- Rentang Playback (pilih titik awal & akhir yang dimainkan) --}}
+        {{-- ========================================================= --}}
+
+        <div id="historyPlaybackRange" class="hidden flex-wrap items-end gap-3 border-t border-slate-100 px-6 py-4">
+
+            <div class="min-w-[220px] flex-1">
+                <label class="mb-2 block text-xs font-medium text-slate-700">Dari Titik</label>
+                <select id="historyPlaybackFrom" class="w-full rounded-[14px] border border-slate-300 px-3 py-2 text-sm text-slate-700"></select>
+            </div>
+
+            <div class="min-w-[220px] flex-1">
+                <label class="mb-2 block text-xs font-medium text-slate-700">Sampai Titik</label>
+                <select id="historyPlaybackTo" class="w-full rounded-[14px] border border-slate-300 px-3 py-2 text-sm text-slate-700"></select>
+            </div>
+
+            <button id="historyPlaybackRangeReset" type="button" class="rounded-[14px] border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-100">
+                Reset Rentang
+            </button>
+
+        </div>
+
+        {{-- ========================================================= --}}
         {{-- Kecepatan Playback --}}
         {{-- ========================================================= --}}
 
@@ -116,9 +138,16 @@
         </div>
 
         <div class="mt-6 rounded-[28px] border border-slate-200 bg-white vehicle-panel-shadow">
-            <div class="border-b border-slate-100 px-6 py-5">
-                <p class="text-xs uppercase tracking-[0.3em] text-slate-400">Timeline Perjalanan</p>
-                <h2 class="mt-2 text-lg font-semibold text-slate-900">Detail Titik Perjalanan</h2>
+            <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 px-6 py-5">
+                <div>
+                    <p class="text-xs uppercase tracking-[0.3em] text-slate-400">Timeline Perjalanan</p>
+                    <h2 class="mt-2 text-lg font-semibold text-slate-900">Detail Titik Perjalanan</h2>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-medium text-slate-500">Urutkan:</span>
+                    <button id="historySortDesc" type="button" class="rounded-[12px] bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white">Terbaru</button>
+                    <button id="historySortAsc" type="button" class="rounded-[12px] border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100">Terlama</button>
+                </div>
             </div>
             <div id="historyTimeline" class="divide-y divide-slate-100 p-6">
                 <div class="py-12 text-center text-slate-500">Belum ada data histori.</div>

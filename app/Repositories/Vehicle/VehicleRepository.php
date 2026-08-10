@@ -344,13 +344,31 @@ class VehicleRepository
 
             ->first();
 
+        /*
+        |--------------------------------------------------------------------------
+        | Latest Address
+        |--------------------------------------------------------------------------
+        |
+        | device_logs.payload adalah payload MQTT mentah yang disimpan
+        | SEBELUM reverse geocoding dijalankan, jadi tidak pernah punya
+        | alamat. Alamat hasil reverse geocoding hanya tersimpan di
+        | travel_histories.search_address, jadi harus diambil dari sana.
+        |--------------------------------------------------------------------------
+        */
+
+        $latestAddress = $device->travelHistories()
+
+            ->latest('received_at')
+
+            ->value('search_address');
+
         $latestLocation = $this->transformLatestLocation(
 
             $latestLog?->payload,
 
             $latestLog?->received_at,
 
-            null
+            $latestAddress
 
         );
 
@@ -748,13 +766,30 @@ class VehicleRepository
             return [];
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | Latest Address
+        |--------------------------------------------------------------------------
+        |
+        | Sama seperti detail(): device_logs.payload tidak pernah punya
+        | alamat (disimpan sebelum reverse geocoding), jadi alamat harus
+        | diambil dari travel_histories.search_address.
+        |--------------------------------------------------------------------------
+        */
+
+        $latestAddress = $device->travelHistories()
+
+            ->latest('received_at')
+
+            ->value('search_address');
+
         return $this->transformLatestLocation(
 
             $latestLog->payload,
 
             $latestLog->received_at,
 
-            null
+            $latestAddress
 
         );
     }
@@ -854,18 +889,46 @@ class VehicleRepository
         Device $device
     ): array {
 
+        /*
+        |--------------------------------------------------------------------------
+        | "Hari ini" mengikuti batas hari WIB (Asia/Jakarta), bukan UTC.
+        |--------------------------------------------------------------------------
+        | Timestamp disimpan dalam UTC (app timezone = UTC), sehingga
+        | whereDate() polos akan salah menghitung batas hari untuk
+        | pengguna di Indonesia (selisih 7 jam bisa membuat data "hari
+        | ini" dianggap milik hari sebelumnya).
+        |--------------------------------------------------------------------------
+        */
+
+        $startOfDay = now('Asia/Jakarta')
+            ->startOfDay()
+            ->utc();
+
+        $endOfDay = now('Asia/Jakarta')
+            ->endOfDay()
+            ->utc();
+
         $today = $device->travelHistories()
 
             ->select(['location', 'received_at'])
 
-            ->whereDate(
+            ->whereBetween(
                 'received_at',
-                today()
+                [$startOfDay, $endOfDay]
             )
 
             ->orderBy('received_at')
 
             ->get();
+
+        $stopCount = $device->stopHistories()
+
+            ->whereBetween(
+                'start_time',
+                [$startOfDay, $endOfDay]
+            )
+
+            ->count();
 
         if ($today->isEmpty()) {
 
@@ -880,6 +943,8 @@ class VehicleRepository
                 'moving_time' => 0,
 
                 'stop_time' => 0,
+
+                'stop_count' => $stopCount,
 
                 'total_points' => 0,
 
@@ -946,9 +1011,10 @@ class VehicleRepository
             /** @var TravelHistory $current */
             $current = $today[$i];
 
-            $seconds = $previous->received_at
+            $seconds = (int) $previous->received_at
                 ->diffInSeconds(
-                    $current->received_at
+                    $current->received_at,
+                    absolute: true
                 );
 
             $speed = (float) (
@@ -1000,6 +1066,8 @@ class VehicleRepository
 
             'stop_time' => $stopTime,
 
+            'stop_count' => $stopCount,
+
             'total_points' => $today->count(),
 
         ];
@@ -1014,9 +1082,30 @@ class VehicleRepository
         Device $device
     ): array {
 
+        /*
+        |--------------------------------------------------------------------------
+        | "Perjalanan Terakhir" pada kartu Informasi Kendaraan hanya untuk
+        | HARI INI (WIB) - riwayat lintas hari sudah punya tempatnya
+        | sendiri di tab "Riwayat Perjalanan".
+        |--------------------------------------------------------------------------
+        */
+
+        $startOfDay = now('Asia/Jakarta')
+            ->startOfDay()
+            ->utc();
+
+        $endOfDay = now('Asia/Jakarta')
+            ->endOfDay()
+            ->utc();
+
         $activities = $device->travelHistories()
 
             ->select(self::TRAVEL_HISTORY_COLUMNS)
+
+            ->whereBetween(
+                'received_at',
+                [$startOfDay, $endOfDay]
+            )
 
             ->orderByDesc('received_at')
 

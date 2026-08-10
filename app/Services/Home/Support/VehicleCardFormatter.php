@@ -35,7 +35,23 @@ class VehicleCardFormatter
 
         $payload = $latestLog?->payload ?? [];
 
-        $payload = $latestLog?->payload ?? [];
+        /*
+        |--------------------------------------------------------------------------
+        | Latest Address
+        |--------------------------------------------------------------------------
+        |
+        | device_logs.payload adalah payload MQTT mentah yang disimpan
+        | SEBELUM reverse geocoding dijalankan, jadi tidak pernah punya
+        | alamat. Alamat hasil reverse geocoding hanya tersimpan di
+        | travel_histories.search_address, jadi harus diambil dari sana.
+        |--------------------------------------------------------------------------
+        */
+
+        $latestTravel = $device->relationLoaded('travelHistories')
+            ? $device->travelHistories->first()
+            : $device->travelHistories()
+                ->latest('received_at')
+                ->first();
 
         return [
 
@@ -145,7 +161,9 @@ class VehicleCardFormatter
 
             'search_address' =>
 
-            $payload['search_address']
+            $latestTravel?->search_address
+
+                ?? $payload['search_address']
 
                 ?? null,
 

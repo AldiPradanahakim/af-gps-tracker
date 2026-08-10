@@ -354,6 +354,34 @@ window.VehicleApi = {
 
     /*
     |--------------------------------------------------------------------------
+    | Search Administrative Province
+    |--------------------------------------------------------------------------
+    */
+
+    administrativeProvinces() {
+
+        return this.request(
+            '/api/administrative/provinces'
+        );
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Search Administrative Regency
+    |--------------------------------------------------------------------------
+    */
+
+    administrativeRegencies() {
+
+        return this.request(
+            '/api/administrative/regencies'
+        );
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
     | Administrative GeoJSON
     |--------------------------------------------------------------------------
     */
@@ -390,7 +418,69 @@ window.VehicleApi = {
 
         );
 
-    }
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Route (Map-Matching - garis mengikuti jalan)
+    |--------------------------------------------------------------------------
+    */
+
+    route(points = []) {
+
+        return this.request(
+
+            `/vehicles/${this.deviceId}/route`,
+
+            {
+
+                method: 'POST',
+
+                body: { points },
+
+            }
+
+        );
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Notifications
+    |--------------------------------------------------------------------------
+    */
+
+    markNotificationRead(id) {
+
+        return this.request(
+
+            `/notifications/${id}/read`,
+
+            {
+
+                method: 'PATCH',
+
+            }
+
+        );
+
+    },
+
+    markAllNotificationsRead() {
+
+        return this.request(
+
+            '/notifications/mark-all-read',
+
+            {
+
+                method: 'PATCH',
+
+            }
+
+        );
+
+    },
 
 };
 

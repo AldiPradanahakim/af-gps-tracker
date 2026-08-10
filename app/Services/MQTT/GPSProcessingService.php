@@ -271,14 +271,40 @@ class GPSProcessingService
 
         /*
         |--------------------------------------------------------------------------
-        | Geofence Exit Notification
+        | Geofence Enter / Exit Notification
         |--------------------------------------------------------------------------
+        |
+        | Notification hanya dibuat ketika status berubah
+        | (INSIDE <-> OUTSIDE), bukan setiap posisi GPS baru.
+        |
         */
 
         if ($geofenceResult['exited']) {
 
             $this->notificationService
                 ->createGeofenceExitNotification(
+
+                    device: $device,
+
+                    geofence: $geofenceResult['geofence'],
+
+                    payload: [
+
+                        'lat' => $payload['lat'],
+
+                        'lng' => $payload['lng'],
+
+                        'search_address' => $searchAddress,
+
+                    ]
+
+                );
+        }
+
+        if ($geofenceResult['entered']) {
+
+            $this->notificationService
+                ->createGeofenceEnterNotification(
 
                     device: $device,
 

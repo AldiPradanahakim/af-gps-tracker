@@ -120,26 +120,31 @@ class PolygonGeofenceService
         array $config
     ): array {
 
-        if (! isset($config['geojson'])) {
+        /*
+        |--------------------------------------------------------------------------
+        | GeofenceService::buildAdministrativeConfig() / buildCustomConfig()
+        | menyimpan geometry langsung di config['geometry'] (bukan
+        | config['geojson']['geometry']) - bentuk ini juga yang dibaca
+        | frontend (geofence.config?.geometry) untuk menggambar polygon
+        | di peta. Konsumen di sini harus mengikuti bentuk yang sama,
+        | jika tidak geofence administrative/custom tidak akan pernah
+        | terdeteksi INSIDE/OUTSIDE.
+        |--------------------------------------------------------------------------
+        */
 
-            throw new InvalidArgumentException(
-                'GeoJSON is required.'
-            );
-        }
-
-        $geojson = $config['geojson'];
+        $geometry = $config['geometry'] ?? null;
 
         if (
-            ! isset($geojson['geometry'])
+            ! is_array($geometry)
         ) {
 
             throw new InvalidArgumentException(
-                'Invalid GeoJSON.'
+                'GeoJSON geometry is required.'
             );
         }
 
         if (
-            ! isset($geojson['geometry']['type'])
+            ! isset($geometry['type'])
         ) {
 
             throw new InvalidArgumentException(
@@ -148,16 +153,36 @@ class PolygonGeofenceService
         }
 
         if (
-            $geojson['geometry']['type'] !== 'Polygon'
+            ! in_array(
+                $geometry['type'],
+                ['Polygon', 'MultiPolygon'],
+                true
+            )
         ) {
 
             throw new InvalidArgumentException(
-                'Only Polygon is supported.'
+                'Only Polygon/MultiPolygon is supported.'
             );
         }
 
         if (
-            ! isset($geojson['geometry']['coordinates'][0])
+            $geometry['type'] === 'MultiPolygon'
+        ) {
+
+            if (
+                ! isset($geometry['coordinates'][0][0])
+            ) {
+
+                throw new InvalidArgumentException(
+                    'Polygon coordinates are required.'
+                );
+            }
+
+            return $geometry['coordinates'][0][0];
+        }
+
+        if (
+            ! isset($geometry['coordinates'][0])
         ) {
 
             throw new InvalidArgumentException(
@@ -165,7 +190,7 @@ class PolygonGeofenceService
             );
         }
 
-        return $geojson['geometry']['coordinates'][0];
+        return $geometry['coordinates'][0];
     }
 
     /**

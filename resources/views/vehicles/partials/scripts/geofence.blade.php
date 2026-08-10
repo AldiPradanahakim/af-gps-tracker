@@ -674,6 +674,10 @@ window.VehicleGeofence = {
 
         let cachedDistricts = null;
 
+        let cachedProvinces = null;
+
+        let cachedRegencies = null;
+
         input.addEventListener('input', () => {
 
             clearTimeout(debounce);
@@ -698,9 +702,55 @@ window.VehicleGeofence = {
 
                     }
 
+                    if (!cachedProvinces) {
+
+                        const provinceResponse = await VehicleApi.administrativeProvinces();
+
+                        cachedProvinces = provinceResponse.data ?? [];
+
+                    }
+
+                    if (!cachedRegencies) {
+
+                        const regencyResponse = await VehicleApi.administrativeRegencies();
+
+                        cachedRegencies = regencyResponse.data ?? [];
+
+                    }
+
                     const lower = keyword.toLowerCase();
 
                     const matches = [];
+
+                    cachedProvinces.forEach(province => {
+
+                        if (province.name.toLowerCase().includes(lower)) {
+
+                            matches.push({
+                                level: 'province',
+                                code: province.code,
+                                name: province.name,
+                                type: 'Provinsi',
+                            });
+
+                        }
+
+                    });
+
+                    cachedRegencies.forEach(regency => {
+
+                        if (regency.name.toLowerCase().includes(lower)) {
+
+                            matches.push({
+                                level: 'regency',
+                                code: regency.code,
+                                name: regency.name,
+                                type: 'Kabupaten/Kota',
+                            });
+
+                        }
+
+                    });
 
                     cachedDistricts.forEach(district => {
 
