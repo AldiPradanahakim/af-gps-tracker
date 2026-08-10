@@ -3,14 +3,18 @@
 namespace App\Http\Controllers\Vehicle;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ExportHistoryRequest;
 use App\Http\Requests\UpdateNotificationSettingRequest;
+use App\Http\Requests\UpdateSpeedSettingRequest;
 use App\Http\Requests\UpdateStopSettingRequest;
 use App\Models\Device;
 use App\Services\Vehicle\VehicleService;
 use Illuminate\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class VehicleController extends Controller
 {
@@ -146,6 +150,37 @@ class VehicleController extends Controller
             'success' => true,
 
             'message' => 'Pengaturan Stop Detection berhasil diperbarui.',
+
+            'data' => $setting,
+
+        ]);
+    }
+
+    /**
+     * --------------------------------------------------------------------------
+     * Update Batas Kecepatan Setting
+     * --------------------------------------------------------------------------
+     */
+    public function updateSpeedSetting(
+        UpdateSpeedSettingRequest $request,
+        Device $device
+    ): JsonResponse {
+
+        $this->authorizeDevice($device);
+
+        $setting = $this->vehicleService->updateSpeedSetting(
+
+            $device,
+
+            $request->validated()
+
+        );
+
+        return response()->json([
+
+            'success' => true,
+
+            'message' => 'Pengaturan Batas Kecepatan berhasil diperbarui.',
 
             'data' => $setting,
 
@@ -388,5 +423,82 @@ class VehicleController extends Controller
             'data' => $stops,
 
         ]);
+    }
+
+    /**
+     * --------------------------------------------------------------------------
+     * Export Riwayat Perjalanan (PDF)
+     * --------------------------------------------------------------------------
+     */
+    public function exportTravel(
+        ExportHistoryRequest $request,
+        Device $device
+    ): Response {
+
+        $this->authorizeDevice($device);
+
+        $pdf = $this->vehicleService->exportTravelHistory(
+
+            $device,
+
+            $request->validated('from'),
+
+            $request->validated('to')
+
+        );
+
+        return $pdf->download(
+            $this->exportFilename($device, 'riwayat-perjalanan')
+        );
+    }
+
+    /**
+     * --------------------------------------------------------------------------
+     * Export Riwayat Kendaraan Berhenti (PDF)
+     * --------------------------------------------------------------------------
+     */
+    public function exportStop(
+        ExportHistoryRequest $request,
+        Device $device
+    ): Response {
+
+        $this->authorizeDevice($device);
+
+        $pdf = $this->vehicleService->exportStopHistory(
+
+            $device,
+
+            $request->validated('from'),
+
+            $request->validated('to')
+
+        );
+
+        return $pdf->download(
+            $this->exportFilename($device, 'riwayat-berhenti')
+        );
+    }
+
+    /**
+     * Nama file PDF hasil export, disamarkan dari plate_number (fallback
+     * ke device_id) supaya tetap terbaca meski karakternya tidak standar.
+     */
+    private function exportFilename(
+        Device $device,
+        string $prefix
+    ): string {
+
+        $device->loadMissing('vehicle');
+
+        $plate = Str::slug(
+            $device->vehicle?->plate_number ?? $device->device_id ?? 'kendaraan'
+        );
+
+        return sprintf(
+            '%s-%s-%s.pdf',
+            $prefix,
+            $plate ?: 'kendaraan',
+            now()->format('Ymd-His')
+        );
     }
 }

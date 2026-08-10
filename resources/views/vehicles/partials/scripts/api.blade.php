@@ -174,6 +174,34 @@ window.VehicleApi = {
 
     /*
     |--------------------------------------------------------------------------
+    | Trips (Perjalanan yang Dikelompokkan)
+    |--------------------------------------------------------------------------
+    */
+
+    trips(startDate = null, endDate = null) {
+
+        const params = new URLSearchParams();
+
+        if (startDate) {
+            params.set('start_date', startDate);
+        }
+
+        if (endDate) {
+            params.set('end_date', endDate);
+        }
+
+        const query = params.toString();
+
+        return this.request(
+
+            `/vehicles/${this.deviceId}/trips${query ? `?${query}` : ''}`
+
+        );
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
     | Save Home Location
     |--------------------------------------------------------------------------
     */

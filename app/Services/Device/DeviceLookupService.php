@@ -132,6 +132,34 @@ class DeviceLookupService
 
             'last_heartbeat' => $receivedAt,
 
+            /*
+            |--------------------------------------------------------------------------
+            | Reset Offline Notification State
+            |--------------------------------------------------------------------------
+            |
+            | Heartbeat baru masuk = device sudah online lagi. Reset
+            | penanda supaya episode offline berikutnya bisa dinotifikasi
+            | lagi (lihat DeviceHealthCheckCommand).
+            |--------------------------------------------------------------------------
+            */
+
+            'offline_notified_at' => null,
+
+        ]);
+    }
+
+    /**
+     * Update battery level terakhir (didenormalisasi dari payload GPS).
+     */
+    public function updateBattery(
+        Device $device,
+        int $battery
+    ): void {
+
+        $device->update([
+
+            'last_battery' => $battery,
+
         ]);
     }
 

@@ -97,6 +97,8 @@ class VehicleCardFormatter
 
             'is_active' => (bool) $device->is_active,
 
+            'is_online' => $device->is_online,
+
             'last_heartbeat' => $device->last_heartbeat,
 
             'activated_at' => $device->activated_at,

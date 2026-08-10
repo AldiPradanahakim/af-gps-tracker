@@ -17,6 +17,28 @@ window.VehicleInformation = {
     updateEndpoint: null,
 
     isEditing: false,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Escape Helper
+    |--------------------------------------------------------------------------
+    */
+
+    escapeHtml(value) {
+
+        if (value === null || value === undefined) {
+
+            return '';
+        }
+
+        return String(value).replace(/[&<>"']/g, function (char) {
+
+            return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char];
+
+        });
+
+    },
+
     /*
     |--------------------------------------------------------------------------
     | Initialize
@@ -853,11 +875,11 @@ window.VehicleInformation = {
             activity => `
 
                 <div class="grid grid-cols-12 items-center px-6 py-3 text-[12px] text-slate-700">
-                    <div class="col-span-2 text-slate-500">${activity.received_at ?? '-'}</div>
+                    <div class="col-span-2 text-slate-500">${this.escapeHtml(activity.received_at ?? '-')}</div>
                     <div class="col-span-2">${activity.lat ?? '-'}</div>
                     <div class="col-span-2">${activity.lng ?? '-'}</div>
                     <div class="col-span-2">${activity.speed ?? 0} km/jam</div>
-                    <div class="col-span-4 truncate text-slate-500">${activity.address ?? '-'}</div>
+                    <div class="col-span-4 truncate text-slate-500">${this.escapeHtml(activity.address ?? '-')}</div>
                 </div>
 
             `

@@ -266,6 +266,31 @@ document.addEventListener('gpstracker:map-ready', () => {
     |--------------------------------------------------------------------------
     */
 
+    /*
+    |--------------------------------------------------------------------------
+    | Escape (mencegah XSS dari vehicle_name/plate_number/address yang
+    | dikontrol user/perangkat sebelum di-interpolasi ke innerHTML popup)
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.escapePopupHtml = function (value) {
+
+        if (value === null || value === undefined) {
+            return '';
+        }
+
+        return String(value).replace(/[&<>"']/g, function (char) {
+            return ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;',
+            })[char];
+        });
+
+    };
+
     GPSTracker.popupLog = function (...message) {
 
         console.log(
@@ -607,7 +632,7 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         const online = Boolean(
 
-            vehicle.is_active
+            vehicle.is_online
 
         );
 
@@ -623,13 +648,13 @@ document.addEventListener('gpstracker:map-ready', () => {
 
                         <h3 class="text-base font-bold text-slate-900">
 
-                            ${vehicle.vehicle_name ?? '-'}
+                            ${this.escapePopupHtml(vehicle.vehicle_name ?? '-')}
 
                         </h3>
 
                         <p class="text-sm text-slate-500">
 
-                            ${(vehicle.plate_number ?? '-').toUpperCase()}
+                            ${this.escapePopupHtml((vehicle.plate_number ?? '-').toUpperCase())}
 
                         </p>
 
@@ -729,7 +754,7 @@ document.addEventListener('gpstracker:map-ready', () => {
 
                     <p class="mt-1 text-sm leading-6 text-slate-700">
 
-                        ${vehicle.address ?? '-'}
+                        ${this.escapePopupHtml(vehicle.address ?? '-')}
 
                     </p>
 

@@ -66,6 +66,13 @@
                 </section>
 
                 <section
+                    id="vehicleSpeedSection"
+                    class="hidden mt-5 px-5 mb-5"
+                >
+                    @include('vehicles.partials.sections.speed')
+                </section>
+
+                <section
                     id="vehicleMessagesSection"
                     class="hidden mt-5 px-5 mb-5"
                 >

@@ -1040,21 +1040,45 @@
 
             </div>
 
-            <button
+            <div class="flex items-center gap-2">
 
-                id="refreshStopHistory"
+                <a
 
-                type="button"
+                    id="stopHistoryExportPdfLink"
 
-                class="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-[12px] font-semibold text-slate-700 transition hover:bg-slate-100"
+                    href="{{ route('vehicles.export.stop', $device) }}"
 
-            >
+                    target="_blank"
 
-                <i class="fa-solid fa-rotate"></i>
+                    rel="noopener"
 
-                Refresh
+                    class="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-[12px] font-semibold text-slate-700 transition hover:bg-slate-100"
 
-            </button>
+                >
+
+                    <i class="fa-solid fa-file-pdf"></i>
+
+                    Export PDF
+
+                </a>
+
+                <button
+
+                    id="refreshStopHistory"
+
+                    type="button"
+
+                    class="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-[12px] font-semibold text-slate-700 transition hover:bg-slate-100"
+
+                >
+
+                    <i class="fa-solid fa-rotate"></i>
+
+                    Refresh
+
+                </button>
+
+            </div>
 
         </div>
 

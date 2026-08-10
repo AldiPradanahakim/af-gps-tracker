@@ -12,7 +12,8 @@ class VehicleService
     public function __construct(
         protected VehicleRepository $vehicleRepository,
         protected NotificationService $notificationService,
-        protected RouteMatchingService $routeMatchingService
+        protected RouteMatchingService $routeMatchingService,
+        protected PdfExportService $pdfExportService
     ) {}
 
     /**
@@ -124,6 +125,25 @@ class VehicleService
     ): object {
 
         return $this->vehicleRepository->updateStopSetting(
+
+            $device,
+
+            $data
+
+        );
+    }
+
+    /**
+     * --------------------------------------------------------------------------
+     * Update Batas Kecepatan Setting
+     * --------------------------------------------------------------------------
+     */
+    public function updateSpeedSetting(
+        Device $device,
+        array $data
+    ): object {
+
+        return $this->vehicleRepository->updateSpeedSetting(
 
             $device,
 
@@ -258,6 +278,46 @@ class VehicleService
 
         return $this->vehicleRepository->stop(
             $device
+        );
+    }
+
+    /**
+     * Export Riwayat Perjalanan (PDF).
+     */
+    public function exportTravelHistory(
+        Device $device,
+        ?string $from,
+        ?string $to
+    ) {
+
+        return $this->pdfExportService->travelHistory(
+
+            $device,
+
+            $from,
+
+            $to
+
+        );
+    }
+
+    /**
+     * Export Riwayat Kendaraan Berhenti (PDF).
+     */
+    public function exportStopHistory(
+        Device $device,
+        ?string $from,
+        ?string $to
+    ) {
+
+        return $this->pdfExportService->stopHistory(
+
+            $device,
+
+            $from,
+
+            $to
+
         );
     }
 }

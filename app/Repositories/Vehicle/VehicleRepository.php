@@ -447,22 +447,6 @@ class VehicleRepository
 
         /*
         |--------------------------------------------------------------------------
-        | Playback History
-        |--------------------------------------------------------------------------
-        */
-
-        $travelHistories = $this->transformTravelCollection(
-
-            $device->travelHistories()
-
-                ->orderBy('received_at')
-
-                ->get()
-
-        );
-
-        /*
-        |--------------------------------------------------------------------------
         | Stop Detection
         |--------------------------------------------------------------------------
         */
@@ -470,6 +454,14 @@ class VehicleRepository
         $stopDetection = $this->buildStopDetection($device);
 
         $stopSummary = $this->buildStopSummary($device);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Batas Kecepatan
+        |--------------------------------------------------------------------------
+        */
+
+        $speedSetting = $this->buildSpeedSetting($device);
 
         /*
         |--------------------------------------------------------------------------
@@ -503,11 +495,11 @@ class VehicleRepository
 
             'todayTravel' => $todayTravel,
 
-            'travelHistories' => $travelHistories,
-
             'stopDetection' => $stopDetection,
 
             'stopSummary' => $stopSummary,
+
+            'speedSetting' => $speedSetting,
 
             'notificationSetting' => $this->buildNotificationSetting($device),
 
@@ -559,28 +551,54 @@ class VehicleRepository
 
     /**
      * --------------------------------------------------------------------------
+     * Bangun objek pengaturan Batas Kecepatan dari device.speed_setting (JSON).
+     * --------------------------------------------------------------------------
+     */
+    protected function buildSpeedSetting(Device $device): object
+    {
+        $setting = $device->speed_setting ?? [];
+
+        return (object) [
+
+            'enabled' => (bool) ($setting['enabled'] ?? false),
+
+            'limit_kmh' => (int) ($setting['limit_kmh'] ?? 80),
+
+            'email_notification' => (bool) ($setting['email_notification'] ?? false),
+
+            'whatsapp_notification' => (bool) ($setting['whatsapp_notification'] ?? false),
+
+        ];
+    }
+
+    /**
+     * --------------------------------------------------------------------------
      * Ringkasan Stop Detection (total, hari ini, durasi terlama, total durasi).
      * --------------------------------------------------------------------------
      */
     protected function buildStopSummary(Device $device): array
     {
-        $stops = $device->stopHistories()->get();
+        $totalStop = $device->stopHistories()->count();
 
-        $today = $stops->filter(
+        $todayStop = $device->stopHistories()
 
-            fn(StopHistory $stop) => $stop->start_time?->isToday()
+            ->whereDate('start_time', today())
 
-        );
+            ->count();
 
-        $longestSeconds = (int) $stops->max('duration_seconds');
+        $longestSeconds = (int) $device->stopHistories()
 
-        $totalSeconds = (int) $stops->sum('duration_seconds');
+            ->max('duration_seconds');
+
+        $totalSeconds = (int) $device->stopHistories()
+
+            ->sum('duration_seconds');
 
         return [
 
-            'total_stop' => $stops->count(),
+            'total_stop' => $totalStop,
 
-            'today_stop' => $today->count(),
+            'today_stop' => $todayStop,
 
             'longest_stop' => $this->formatDuration($longestSeconds),
 
@@ -638,6 +656,37 @@ class VehicleRepository
         ]);
 
         return $this->buildStopDetection(
+            $device->fresh()
+        );
+    }
+
+    /**
+     * --------------------------------------------------------------------------
+     * Update Batas Kecepatan Setting
+     * --------------------------------------------------------------------------
+     */
+    public function updateSpeedSetting(
+        Device $device,
+        array $data
+    ): object {
+
+        $device->update([
+
+            'speed_setting' => [
+
+                'enabled' => (bool) $data['enabled'],
+
+                'limit_kmh' => (int) $data['limit_kmh'],
+
+                'email_notification' => (bool) $data['email_notification'],
+
+                'whatsapp_notification' => (bool) $data['whatsapp_notification'],
+
+            ],
+
+        ]);
+
+        return $this->buildSpeedSetting(
             $device->fresh()
         );
     }
@@ -1161,6 +1210,126 @@ class VehicleRepository
 
     /**
      * --------------------------------------------------------------------------
+     * Transform Stop History
+     * --------------------------------------------------------------------------
+     */
+    private function transformStopHistory(
+        StopHistory $stop
+    ): array {
+
+        $location = $stop->location ?? [];
+
+        return [
+
+            'id' => $stop->id,
+
+            'lat' => isset($location['lat'])
+                ? (float) $location['lat']
+                : null,
+
+            'lng' => isset($location['lng'])
+                ? (float) $location['lng']
+                : null,
+
+            'address' => $stop->search_address,
+
+            'started_at' => optional(
+                $stop->start_time
+            )?->toDateTimeString(),
+
+            'ended_at' => optional(
+                $stop->end_time
+            )?->toDateTimeString(),
+
+            'duration_seconds' => $stop->duration_seconds,
+
+        ];
+    }
+
+    /**
+     * --------------------------------------------------------------------------
+     * Trip Raw Data (dipakai oleh TripService untuk grouping trip)
+     * --------------------------------------------------------------------------
+     * Mengambil travel_histories & stop_histories mentah (belum di-transform)
+     * untuk satu device/rentang tanggal, memakai pola bounded query yang
+     * SAMA PERSIS dengan history()/playback()/stop() di atas (MAX_HISTORY_ROWS
+     * + kolom terbatas), supaya endpoint trip tidak bisa menarik seluruh
+     * riwayat device ke memori tanpa batas.
+     *
+     * Hanya stop_histories yang sudah selesai (end_time != null) yang
+     * dipakai sebagai pembatas trip - stop yang masih berlangsung belum
+     * menutup perjalanan.
+     * --------------------------------------------------------------------------
+     */
+    public function tripRawData(
+        Device $device,
+        ?string $startDate = null,
+        ?string $endDate = null
+    ): array {
+
+        $travelQuery = $device->travelHistories()
+
+            ->select(self::TRAVEL_HISTORY_COLUMNS)
+
+            ->orderBy('received_at');
+
+        $stopQuery = $device->stopHistories()
+
+            ->select(self::STOP_HISTORY_COLUMNS)
+
+            ->whereNotNull('end_time')
+
+            ->orderBy('start_time');
+
+        if ($startDate) {
+
+            $travelQuery->whereDate(
+                'received_at',
+                '>=',
+                $startDate
+            );
+
+            $stopQuery->whereDate(
+                'start_time',
+                '>=',
+                $startDate
+            );
+        }
+
+        if ($endDate) {
+
+            $travelQuery->whereDate(
+                'received_at',
+                '<=',
+                $endDate
+            );
+
+            $stopQuery->whereDate(
+                'start_time',
+                '<=',
+                $endDate
+            );
+        }
+
+        return [
+
+            'travel' => $travelQuery
+
+                ->limit(self::MAX_HISTORY_ROWS)
+
+                ->get(),
+
+            'stops' => $stopQuery
+
+                ->limit(self::MAX_HISTORY_ROWS)
+
+                ->get(),
+
+        ];
+    }
+
+    /**
+     * --------------------------------------------------------------------------
      * Stop History
      * --------------------------------------------------------------------------
      */
@@ -1178,36 +1347,59 @@ class VehicleRepository
 
             ->get()
 
-            ->map(function (StopHistory $stop) {
+            ->map(fn(StopHistory $stop) => $this->transformStopHistory($stop))
 
-                $location = $stop->location ?? [];
+            ->values()
 
-                return [
+            ->toArray();
+    }
 
-                    'id' => $stop->id,
+    /**
+     * --------------------------------------------------------------------------
+     * Stop History (Rentang Tanggal)
+     * --------------------------------------------------------------------------
+     * Dipakai oleh export PDF - sama seperti history() untuk travel_histories,
+     * query dibatasi rentang tanggal DAN MAX_HISTORY_ROWS supaya tidak pernah
+     * menarik data stop_histories tanpa batas ke memori.
+     * --------------------------------------------------------------------------
+     */
+    public function stopHistoryRange(
+        Device $device,
+        ?string $startDate = null,
+        ?string $endDate = null
+    ): array {
 
-                    'lat' => isset($location['lat'])
-                        ? (float) $location['lat']
-                        : null,
+        $query = $device->stopHistories()
 
-                    'lng' => isset($location['lng'])
-                        ? (float) $location['lng']
-                        : null,
+            ->select(self::STOP_HISTORY_COLUMNS)
 
-                    'address' => $stop->search_address,
+            ->orderBy('start_time');
 
-                    'started_at' => optional(
-                        $stop->start_time
-                    )?->toDateTimeString(),
+        if ($startDate) {
 
-                    'ended_at' => optional(
-                        $stop->end_time
-                    )?->toDateTimeString(),
+            $query->whereDate(
+                'start_time',
+                '>=',
+                $startDate
+            );
+        }
 
-                    'duration_seconds' => $stop->duration_seconds,
+        if ($endDate) {
 
-                ];
-            })
+            $query->whereDate(
+                'start_time',
+                '<=',
+                $endDate
+            );
+        }
+
+        return $query
+
+            ->limit(self::MAX_HISTORY_ROWS)
+
+            ->get()
+
+            ->map(fn(StopHistory $stop) => $this->transformStopHistory($stop))
 
             ->values()
 

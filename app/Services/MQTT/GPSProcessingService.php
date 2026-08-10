@@ -2,11 +2,14 @@
 
 namespace App\Services\MQTT;
 
+use App\Helpers\GpsTimestampParser;
+use App\Jobs\ResolveGpsAddressJob;
 use App\Models\Device;
 use App\Services\Device\DeviceLookupService;
 use App\Services\Device\DeviceLogService;
 use App\Services\Device\TravelHistoryService;
 use App\Services\Device\StopDetectionService;
+use App\Services\Device\OverspeedDetectionService;
 use App\Services\Geofence\GeofenceCheckerService;
 use App\Services\Geofence\ReverseGeocodingService;
 use App\Services\Notification\NotificationService;
@@ -16,6 +19,12 @@ use App\Services\MQTT\RealtimeService;
 
 class GPSProcessingService
 {
+    /**
+     * Placeholder search_address saat cache reverse-geocoding miss di
+     * jalur sinkron - diganti alamat asli oleh ResolveGpsAddressJob.
+     */
+    private const ADDRESS_PENDING_PLACEHOLDER = 'Memuat alamat...';
+
     public function __construct(
 
         protected DeviceLookupService $deviceLookupService,
@@ -26,6 +35,8 @@ class GPSProcessingService
 
         protected StopDetectionService $stopDetectionService,
 
+        protected OverspeedDetectionService $overspeedDetectionService,
+
         protected ReverseGeocodingService $reverseGeocodingService,
 
         protected GeofenceCheckerService $geofenceCheckerService,
@@ -33,6 +44,8 @@ class GPSProcessingService
         protected NotificationService $notificationService,
 
         protected RealtimeService $realtimeService,
+
+        protected MQTTSignatureService $signatureService,
 
     ) {}
 
@@ -81,6 +94,28 @@ class GPSProcessingService
 
         /*
         |--------------------------------------------------------------------------
+        | Verify Signature
+        |--------------------------------------------------------------------------
+        |
+        | Mencegah device_id spoofing: siapa pun yang tahu kredensial broker
+        | MQTT bisa mencantumkan device_id milik orang lain di payload.
+        | Signature HMAC per-device memastikan payload benar-benar berasal
+        | dari device yang mengetahui mqtt_secret-nya. Bisa dimatikan
+        | sementara lewat MQTT_REQUIRE_SIGNATURE=false saat firmware belum
+        | mendukung signing (mis. tahap awal bring-up perangkat).
+        |--------------------------------------------------------------------------
+        */
+
+        if (config('mqtt.require_signature')) {
+
+            $this->signatureService->verify(
+                $device,
+                $payload
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
         | Load Required Relations
         |--------------------------------------------------------------------------
         */
@@ -96,7 +131,16 @@ class GPSProcessingService
         |--------------------------------------------------------------------------
         | Update Heartbeat
         |--------------------------------------------------------------------------
+        |
+        | Jika device sebelumnya sempat ditandai offline (lihat
+        | DeviceHealthCheckCommand), heartbeat baru ini berarti dia
+        | baru saja kembali online - kirim notifikasi "online kembali"
+        | tepat di titik transisinya, bukan menunggu job berkala
+        | berikutnya berjalan.
+        |--------------------------------------------------------------------------
         */
+
+        $wasOfflineNotified = $device->offline_notified_at !== null;
 
         $this->deviceLookupService
             ->updateHeartbeat(
@@ -108,6 +152,65 @@ class GPSProcessingService
                 )
 
             );
+
+        if ($wasOfflineNotified) {
+
+            $this->notificationService
+                ->createDeviceOnlineNotification(
+                    $device
+                );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Update Battery + Low Battery Detection
+        |--------------------------------------------------------------------------
+        |
+        | Battery didenormalisasi ke devices.last_battery (dipakai juga
+        | oleh tampilan status device). Deteksi transisi normal ->
+        | baterai lemah dilakukan sinkron di sini (bukan job berkala)
+        | karena nilainya sudah tersedia di setiap payload yang masuk.
+        |--------------------------------------------------------------------------
+        */
+
+        $battery = (int) $payload['battery'];
+
+        $this->deviceLookupService
+            ->updateBattery(
+
+                $device,
+
+                $battery
+
+            );
+
+        $lowBatteryThreshold = (int) config('mqtt.alerts.low_battery_threshold');
+
+        $isLowBattery = $battery <= $lowBatteryThreshold;
+
+        $wasLowBattery = (bool) $device->low_battery_active;
+
+        if ($isLowBattery && ! $wasLowBattery) {
+
+            $device->update([
+                'low_battery_active' => true,
+            ]);
+
+            $this->notificationService
+                ->createLowBatteryNotification(
+
+                    $device,
+
+                    $battery
+
+                );
+
+        } elseif (! $isLowBattery && $wasLowBattery) {
+
+            $device->update([
+                'low_battery_active' => false,
+            ]);
+        }
 
         /*
         |--------------------------------------------------------------------------
@@ -159,23 +262,35 @@ class GPSProcessingService
 
         /*
         |--------------------------------------------------------------------------
-        | Reverse Geocoding
+        | Reverse Geocoding (Cache-Only, Non-Blocking)
         |--------------------------------------------------------------------------
         |
-        | Mengubah koordinat GPS menjadi alamat.
-        |
+        | HANYA cek cache di jalur sinkron ini - memanggil provider
+        | reverse-geocoding secara sinkron (search()) berarti pipeline
+        | ingest MQTT (satu proses, satu pesan diproses per waktu) ikut
+        | menunggu throttle rate limit global provider (600ms-1,1 detik
+        | per panggilan), yang secara langsung melanggar target NF-01
+        | (update posisi <=3 detik) begitu ada lebih dari beberapa
+        | device/menit dengan koordinat baru. Kalau belum ada di cache,
+        | pakai placeholder dan selesaikan alamat sesungguhnya secara
+        | asinkron lewat ResolveGpsAddressJob (lihat di bawah).
+        |--------------------------------------------------------------------------
         */
 
         $searchAddress =
 
             $this->reverseGeocodingService
-            ->search(
+            ->searchCached(
 
                 (float) $payload['lat'],
 
                 (float) $payload['lng']
 
             );
+
+        $addressPending = $searchAddress === null;
+
+        $searchAddress ??= self::ADDRESS_PENDING_PLACEHOLDER;
 
         /*
         |--------------------------------------------------------------------------
@@ -200,6 +315,30 @@ class GPSProcessingService
                 searchAddress: $searchAddress
 
             );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Resolve Address Asynchronously
+        |--------------------------------------------------------------------------
+        |
+        | Cache miss di atas - selesaikan alamat sesungguhnya di queue
+        | worker (boleh menunggu throttle provider) lalu update baris
+        | travel_history ini setelahnya. Tidak memblokir proses ingest.
+        |--------------------------------------------------------------------------
+        */
+
+        if ($addressPending) {
+
+            ResolveGpsAddressJob::dispatch(
+
+                latitude: (float) $payload['lat'],
+
+                longitude: (float) $payload['lng'],
+
+                travelHistoryId: $travelHistory->id,
+
+            );
+        }
 
         /*
         |--------------------------------------------------------------------------
@@ -248,6 +387,50 @@ class GPSProcessingService
                 ->markNotificationSent(
 
                     $stopHistory
+
+                );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Overspeed Detection
+        |--------------------------------------------------------------------------
+        |
+        | Notifikasi hanya dikirim saat transisi normal -> overspeed
+        | (lihat OverspeedDetectionService), bukan setiap titik selama
+        | kendaraan masih di atas batas.
+        |--------------------------------------------------------------------------
+        */
+
+        $isOverspeedTransition =
+
+            $this->overspeedDetectionService
+            ->process(
+
+                $device,
+
+                $payload
+
+            );
+
+        if ($isOverspeedTransition) {
+
+            $this->notificationService
+                ->createOverspeedNotification(
+
+                    $device,
+
+                    [
+
+                        'lat' => $payload['lat'],
+
+                        'lng' => $payload['lng'],
+
+                        'speed' => $payload['speed'],
+
+                        'search_address' => $searchAddress,
+
+                    ]
 
                 );
         }
@@ -473,7 +656,7 @@ class GPSProcessingService
         array $payload
     ): Carbon {
 
-        return Carbon::parse(
+        return GpsTimestampParser::parse(
             $payload['received_at']
         );
     }

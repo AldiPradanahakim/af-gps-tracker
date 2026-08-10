@@ -977,6 +977,27 @@
         |--------------------------------------------------------------------------
         */
 
+        /*
+        |--------------------------------------------------------------------------
+        | Escape Helper
+        |--------------------------------------------------------------------------
+        */
+
+        function escapeHtml(value) {
+
+            if (value === null || value === undefined) {
+
+                return '';
+            }
+
+            return String(value).replace(/[&<>"']/g, function (char) {
+
+                return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char];
+
+            });
+
+        }
+
         const modal = document.getElementById(
 
             'addGeofenceModal'
@@ -1397,8 +1418,6 @@
 
                 );
 
-                console.log(event.detail.geojson);
-
                 customDrawingAction.classList.add(
                     'hidden'
                 );
@@ -1772,8 +1791,6 @@
 
             () => {
 
-                console.log('DEVICE CHANGED');
-
                 latitudeInput.value = '';
 
                 longitudeInput.value = '';
@@ -1786,8 +1803,6 @@
                     'Belum ada titik dipilih.';
 
                 if (radiusType.checked) {
-
-                    console.log('CALL updateRadiusSource FROM CHANGE');
 
                     updateRadiusSource();
 
@@ -1821,14 +1836,10 @@
 
         function updateRadiusSource() {
 
-                console.log('updateRadiusSource');
-
                 const option =
                     deviceSelect.options[
                         deviceSelect.selectedIndex
                     ];
-
-                console.log(option);
 
                 if (
 
@@ -1950,12 +1961,6 @@
                 );
 
                 GPSTracker.removePreviewLayer?.();
-
-                console.log('before preview', {
-                    lat,
-                    lng,
-                    fn: GPSTracker.previewRadiusDrawing
-                });
 
                 GPSTracker.previewRadiusDrawing?.(
 
@@ -2506,11 +2511,11 @@
 
                     button.innerHTML = `
                         <div class="font-semibold text-slate-900">
-                            ${item.name}
+                            ${escapeHtml(item.name)}
                         </div>
 
                         <div class="mt-1 text-sm text-slate-500">
-                            ${item.type}
+                            ${escapeHtml(item.type)}
                         </div>
 
                         ${
@@ -2518,7 +2523,7 @@
                                 ? `
                                 <div class="mt-1 text-xs text-slate-400">
                                     Kecamatan :
-                                    ${item.district_name}
+                                    ${escapeHtml(item.district_name)}
                                 </div>
                                 `
                                 : ''
@@ -3394,15 +3399,9 @@
         |--------------------------------------------------------------------------
         */
 
-        console.log('INIT');
-
-                toggleType();
-
-                console.log('device value', deviceSelect.value);
+        toggleType();
 
                 if (deviceSelect.value) {
-
-                    console.log('CALL updateRadiusSource');
 
                     updateRadiusSource();
 

@@ -40,6 +40,28 @@ document.addEventListener('gpstracker:map-ready', () => {
 
     /*
     |--------------------------------------------------------------------------
+    | Escape Helper
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.escapeNotificationHtml = function (value) {
+
+        if (value === null || value === undefined) {
+
+            return '';
+
+        }
+
+        return String(value).replace(/[&<>"']/g, function (char) {
+
+            return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char];
+
+        });
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
     | Notification Collection Helper
     |--------------------------------------------------------------------------
     */
@@ -309,6 +331,11 @@ document.addEventListener('gpstracker:map-ready', () => {
 
                 return 'Kecepatan Berlebih';
 
+            case 'low_battery':
+
+                return 'Baterai Perangkat Lemah';
+
+            case 'stop':
             case 'stop_detection':
 
                 return 'Kendaraan Berhenti';
@@ -385,6 +412,11 @@ document.addEventListener('gpstracker:map-ready', () => {
 
                 return 'text-orange-600 bg-orange-100';
 
+            case 'low_battery':
+
+                return 'text-red-600 bg-red-100';
+
+            case 'stop':
             case 'stop_detection':
 
                 return 'text-amber-600 bg-amber-100';
@@ -619,7 +651,7 @@ document.addEventListener('gpstracker:map-ready', () => {
 
                         <div class="truncate text-sm font-semibold text-slate-900">
 
-                            ${this.getNotificationTitle(notification)}
+                            ${this.escapeNotificationHtml(this.getNotificationTitle(notification))}
 
                         </div>
 
@@ -629,13 +661,13 @@ document.addEventListener('gpstracker:map-ready', () => {
 
                     <div class="mt-1 text-xs font-medium text-blue-600">
 
-                        ${this.getNotificationVehicle(notification)}
+                        ${this.escapeNotificationHtml(this.getNotificationVehicle(notification))}
 
                     </div>
 
                     <div class="mt-2 text-sm leading-relaxed text-slate-600">
 
-                        ${this.getNotificationMessage(notification)}
+                        ${this.escapeNotificationHtml(this.getNotificationMessage(notification))}
 
                     </div>
 

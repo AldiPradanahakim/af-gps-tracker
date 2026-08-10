@@ -44,3 +44,17 @@ Jalankan queue worker dan MQTT subscriber di proses terpisah untuk pemrosesan da
 php artisan queue:listen
 php artisan mqtt:subscribe
 ```
+
+### Menyambungkan perangkat GPS fisik
+
+Setiap device menandatangani payload MQTT-nya dengan HMAC-SHA256 (`mqtt_secret`,
+digenerate otomatis saat device dibuat) supaya `device_id` tidak bisa dipalsukan
+oleh pengirim lain yang tahu kredensial broker. Lihat kunci dan contoh payload
+yang sudah ditandatangani untuk device tertentu:
+
+```bash
+php artisan device:mqtt-secret GPS-AF-0001
+```
+
+Set `MQTT_REQUIRE_SIGNATURE=false` di `.env` hanya untuk testing sementara
+sebelum firmware mendukung signing.

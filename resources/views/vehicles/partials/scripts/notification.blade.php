@@ -58,6 +58,27 @@ window.VehicleNotification = {
 
     /*
     |--------------------------------------------------------------------------
+    | Escape Helper
+    |--------------------------------------------------------------------------
+    */
+
+    escapeHtml(value) {
+
+        if (value === null || value === undefined) {
+
+            return '';
+        }
+
+        return String(value).replace(/[&<>"']/g, function (char) {
+
+            return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char];
+
+        });
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
     | Data Helper
     |--------------------------------------------------------------------------
     */
@@ -185,15 +206,15 @@ window.VehicleNotification = {
                 <div class="min-w-0 flex-1">
 
                     <div class="truncate text-sm font-semibold text-slate-900">
-                        ${this.getTitle(notification)}
+                        ${this.escapeHtml(this.getTitle(notification))}
                     </div>
 
                     <div class="mt-1 text-xs font-medium text-blue-600">
-                        ${this.getVehicleName(notification)}
+                        ${this.escapeHtml(this.getVehicleName(notification))}
                     </div>
 
                     <div class="mt-1 text-xs leading-relaxed text-slate-600">
-                        ${this.getMessage(notification)}
+                        ${this.escapeHtml(this.getMessage(notification))}
                     </div>
 
                     <div class="mt-2 text-[11px] text-slate-400">

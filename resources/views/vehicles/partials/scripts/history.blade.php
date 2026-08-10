@@ -23,6 +23,32 @@ window.VehicleHistory = {
 
     loaded: false,
 
+    // 'points' = daftar titik GPS mentah, 'trips' = perjalanan yang dikelompokkan.
+    viewMode: 'points',
+
+    trips: [],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Escape Helper
+    |--------------------------------------------------------------------------
+    */
+
+    escapeHtml(value) {
+
+        if (value === null || value === undefined) {
+
+            return '';
+        }
+
+        return String(value).replace(/[&<>"']/g, function (char) {
+
+            return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char];
+
+        });
+
+    },
+
     /*
     |--------------------------------------------------------------------------
     | Initialize
@@ -42,6 +68,8 @@ window.VehicleHistory = {
         this.bindEvents();
 
         this.bindSortButtons();
+
+        this.bindViewToggle();
 
     },
 
@@ -80,6 +108,8 @@ window.VehicleHistory = {
                 this.startDate = document.getElementById('historyStartDate').value;
 
                 this.endDate = document.getElementById('historyEndDate').value;
+
+                this.updateExportLink();
 
                 this.load();
 
@@ -294,6 +324,47 @@ window.VehicleHistory = {
             );
 
         }
+
+        // Trip dimuat terpisah supaya kegagalan endpoint trip tidak
+        // menggagalkan tampilan titik GPS mentah (yang juga dipakai
+        // untuk garis rute di peta).
+        this.loadTrips();
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Load Trips (Perjalanan yang Dikelompokkan)
+    |--------------------------------------------------------------------------
+    */
+
+    async loadTrips() {
+
+        try {
+
+            const response = await VehicleApi.trips(
+
+                this.startDate,
+
+                this.endDate
+
+            );
+
+            this.trips = (response && response.success)
+                ? (response.data ?? [])
+                : [];
+
+        }
+
+        catch (error) {
+
+            console.error('[VehicleHistory] loadTrips', error);
+
+            this.trips = [];
+
+        }
+
+        this.renderTripList();
 
     },
 
@@ -740,6 +811,169 @@ window.VehicleHistory = {
 
     /*
     |--------------------------------------------------------------------------
+    | View Mode ('points' = titik GPS mentah, 'trips' = perjalanan)
+    |--------------------------------------------------------------------------
+    | Titik GPS mentah tetap dipertahankan (dipakai juga oleh peta untuk
+    | menggambar marker/garis rute), jadi ini hanya menambah tampilan
+    | alternatif tanpa menghapus kemampuan yang sudah ada.
+    |--------------------------------------------------------------------------
+    */
+
+    bindViewToggle() {
+
+        document.getElementById('historyViewPointsButton')?.addEventListener('click', () => {
+
+            this.setViewMode('points');
+
+        });
+
+        document.getElementById('historyViewTripsButton')?.addEventListener('click', () => {
+
+            this.setViewMode('trips');
+
+        });
+
+    },
+
+    setViewMode(mode) {
+
+        if (mode !== 'points' && mode !== 'trips') {
+
+            return;
+        }
+
+        this.viewMode = mode;
+
+        const pointsView = document.getElementById('historyTimeline');
+
+        const tripsView = document.getElementById('historyTripList');
+
+        const sortButtons = document.getElementById('historySortButtons');
+
+        const isTrips = mode === 'trips';
+
+        pointsView?.classList.toggle('hidden', isTrips);
+
+        tripsView?.classList.toggle('hidden', !isTrips);
+
+        sortButtons?.classList.toggle('hidden', isTrips);
+
+        this.updateViewToggleButtons();
+
+    },
+
+    updateViewToggleButtons() {
+
+        const pointsButton = document.getElementById('historyViewPointsButton');
+
+        const tripsButton = document.getElementById('historyViewTripsButton');
+
+        if (!pointsButton || !tripsButton) {
+
+            return;
+        }
+
+        const active = 'rounded-[12px] bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white';
+
+        const inactive = 'rounded-[12px] border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100';
+
+        pointsButton.className = this.viewMode === 'points' ? active : inactive;
+
+        tripsButton.className = this.viewMode === 'trips' ? active : inactive;
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Render Trip List
+    |--------------------------------------------------------------------------
+    */
+
+    renderTripList() {
+
+        const container = document.getElementById('historyTripList');
+
+        if (!container) {
+
+            return;
+        }
+
+        if (!this.trips.length) {
+
+            container.innerHTML = `
+                <div class="col-span-full py-12 text-center text-slate-500">
+                    Tidak ada perjalanan pada rentang tanggal ini.
+                </div>
+            `;
+
+            return;
+        }
+
+        container.innerHTML = this.trips.map(
+
+            trip => this.tripCard(trip)
+
+        ).join('');
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Trip Card
+    |--------------------------------------------------------------------------
+    */
+
+    tripCard(trip) {
+
+        const startTime = this.escapeHtml(trip.start_time ?? '-');
+
+        const endTime = this.escapeHtml(trip.end_time ?? '-');
+
+        const duration = this.escapeHtml(trip.duration ?? '-');
+
+        const distance = Number(trip.distance_km ?? 0).toFixed(1);
+
+        const startAddress = this.escapeHtml(trip.start_address ?? 'Lokasi tidak diketahui');
+
+        const endAddress = this.escapeHtml(trip.end_address ?? 'Lokasi tidak diketahui');
+
+        return `
+
+            <div class="rounded-[20px] border border-slate-200 p-5">
+
+                <div class="flex items-center justify-between gap-3">
+
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-2.5 py-0.5 text-[10px] font-semibold text-blue-600">
+                        <i class="fa-solid fa-route"></i>
+                        Perjalanan
+                    </span>
+
+                    <span class="text-xs font-medium text-slate-400">${duration}</span>
+
+                </div>
+
+                <p class="mt-3 text-sm font-semibold text-slate-900">
+                    ${startTime} &rarr; ${endTime}
+                </p>
+
+                <div class="mt-3 space-y-1.5 text-xs text-slate-500">
+                    <p class="truncate"><i class="fa-solid fa-circle-dot mr-1.5 text-blue-500"></i>${startAddress}</p>
+                    <p class="truncate"><i class="fa-solid fa-location-dot mr-1.5 text-orange-500"></i>${endAddress}</p>
+                </div>
+
+                <div class="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
+                    <span class="text-xs text-slate-400">Jarak Tempuh</span>
+                    <span class="text-sm font-semibold text-slate-900">${distance} km</span>
+                </div>
+
+            </div>
+
+        `;
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
     | Timeline Item
     |--------------------------------------------------------------------------
     */
@@ -893,6 +1127,37 @@ window.VehicleHistory = {
         if (start) start.value = this.startDate;
 
         if (end) end.value = this.endDate;
+
+        this.updateExportLink();
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Export Link (Export PDF)
+    |--------------------------------------------------------------------------
+    | Anchor sungguhan (bukan fetch+blob) supaya download PDF tetap
+    | jalan lewat browser secara native - href-nya disinkronkan ulang
+    | setiap kali rentang tanggal berubah.
+    |--------------------------------------------------------------------------
+    */
+
+    updateExportLink() {
+
+        const link = document.getElementById('historyExportPdfLink');
+
+        if (!link || !this.state?.device?.id) {
+
+            return;
+        }
+
+        const params = new URLSearchParams();
+
+        if (this.startDate) params.set('from', this.startDate);
+
+        if (this.endDate) params.set('to', this.endDate);
+
+        link.href = `/vehicles/${this.state.device.id}/export/travel?${params.toString()}`;
 
     },
 

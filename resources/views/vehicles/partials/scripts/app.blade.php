@@ -22,9 +22,6 @@ window.Vehicle = {
 
         todayTravel: [],
 
-        travelHistories: [],
-        
-
     },
 
     /*
@@ -58,6 +55,8 @@ window.Vehicle = {
     realtime: null,
 
     stop: null,
+
+    speed: null,
 
     notification: null,
 
@@ -122,6 +121,18 @@ window.Vehicle = {
             this.stop = window.VehicleStop;
 
             this.stop.init(
+
+                this.state
+
+            );
+
+        }
+
+        if (window.VehicleSpeed) {
+
+            this.speed = window.VehicleSpeed;
+
+            this.speed.init(
 
                 this.state
 
@@ -346,18 +357,6 @@ window.Vehicle = {
     updateGeofences(geofences) {
 
         this.state.geofences = geofences;
-
-    },
-
-    /*
-    |--------------------------------------------------------------------------
-    | Update Playback
-    |--------------------------------------------------------------------------
-    */
-
-    updatePlayback(histories) {
-
-        this.state.travelHistories = histories;
 
     },
 

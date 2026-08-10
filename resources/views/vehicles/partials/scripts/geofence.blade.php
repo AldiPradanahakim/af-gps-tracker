@@ -20,6 +20,24 @@ window.VehicleGeofence = {
     |--------------------------------------------------------------------------
     */
 
+    escapeHtml(value) {
+
+        if (value === null || value === undefined) {
+            return '';
+        }
+
+        return String(value).replace(/[&<>"']/g, function (char) {
+            return ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;',
+            })[char];
+        });
+
+    },
+
     init(state) {
 
         this.state = state;
@@ -125,7 +143,7 @@ window.VehicleGeofence = {
         );
 
         circle.bindPopup(
-            `<strong>${geofence.name}</strong><br>Radius: ${Number(geofence.config.radius).toLocaleString()} m`
+            `<strong>${this.escapeHtml(geofence.name)}</strong><br>Radius: ${Number(geofence.config.radius).toLocaleString()} m`
         );
 
         return circle;
@@ -151,7 +169,7 @@ window.VehicleGeofence = {
             },
         });
 
-        layer.bindPopup(`<strong>${geofence.name}</strong>`);
+        layer.bindPopup(`<strong>${this.escapeHtml(geofence.name)}</strong>`);
 
         return layer;
 
@@ -694,28 +712,22 @@ window.VehicleGeofence = {
 
                 try {
 
+                    const [districtResponse, provinceResponse, regencyResponse] = await Promise.all([
+                        cachedDistricts ? null : VehicleApi.administrativeDistricts(),
+                        cachedProvinces ? null : VehicleApi.administrativeProvinces(),
+                        cachedRegencies ? null : VehicleApi.administrativeRegencies(),
+                    ]);
+
                     if (!cachedDistricts) {
-
-                        const response = await VehicleApi.administrativeDistricts();
-
-                        cachedDistricts = response.data ?? [];
-
+                        cachedDistricts = districtResponse.data ?? [];
                     }
 
                     if (!cachedProvinces) {
-
-                        const provinceResponse = await VehicleApi.administrativeProvinces();
-
                         cachedProvinces = provinceResponse.data ?? [];
-
                     }
 
                     if (!cachedRegencies) {
-
-                        const regencyResponse = await VehicleApi.administrativeRegencies();
-
                         cachedRegencies = regencyResponse.data ?? [];
-
                     }
 
                     const lower = keyword.toLowerCase();
@@ -826,8 +838,8 @@ window.VehicleGeofence = {
                 'block w-full border-b border-slate-100 px-4 py-3 text-left text-[13px] hover:bg-slate-50 last:border-0';
 
             button.innerHTML = `
-                <div class="font-semibold text-slate-800">${item.name}</div>
-                <div class="mt-1 text-[11px] text-slate-500">${item.type}${item.district_name ? ' &middot; ' + item.district_name : ''}</div>
+                <div class="font-semibold text-slate-800">${this.escapeHtml(item.name)}</div>
+                <div class="mt-1 text-[11px] text-slate-500">${this.escapeHtml(item.type)}${item.district_name ? ' &middot; ' + this.escapeHtml(item.district_name) : ''}</div>
             `;
 
             button.addEventListener('click', () => onClick(item));

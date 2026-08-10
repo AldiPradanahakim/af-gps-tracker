@@ -226,21 +226,44 @@ window.VehicleSearch = {
 
     /*
     |--------------------------------------------------------------------------
+    | Escape Helper
+    |--------------------------------------------------------------------------
+    */
+
+    escapeHtml(value) {
+
+        if (value === null || value === undefined) {
+
+            return '';
+        }
+
+        return String(value).replace(/[&<>"']/g, function (char) {
+
+            return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char];
+
+        });
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
     | Highlight Keyword
     |--------------------------------------------------------------------------
     */
 
     highlight(text = '') {
 
+        const safeText = this.escapeHtml(text ?? '');
+
         if (!this.keyword) {
 
-            return String(text ?? '');
+            return safeText;
 
         }
 
         const escaped = this.keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-        return String(text ?? '').replace(
+        return safeText.replace(
 
             new RegExp(`(${escaped})`, 'ig'),
 
@@ -309,7 +332,7 @@ window.VehicleSearch = {
                     </div>
 
                     <div class="mt-1 truncate text-xs text-slate-500">
-                        ${result.subtitle ?? ''}
+                        ${this.escapeHtml(result.subtitle ?? '')}
                     </div>
 
                 </div>

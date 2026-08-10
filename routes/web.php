@@ -15,6 +15,7 @@ use App\Http\Controllers\Home\DeviceController as HomeDeviceController;
 use App\Http\Controllers\Home\VehicleController as HomeVehicleController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\Vehicle\VehicleController;
+use App\Http\Controllers\Vehicle\TripController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -30,7 +31,8 @@ Route::get('/devices/activate', [ActivateDeviceController::class, 'create'])
     ->name('devices.create');
 
 Route::post('/devices/activate', [ActivateDeviceController::class, 'store'])
-    ->name('devices.store');
+    ->name('devices.store')
+    ->middleware('throttle:5,1');
 
 /*
 |--------------------------------------------------------------------------
@@ -47,7 +49,7 @@ Route::post('/devices/activate', [ActivateDeviceController::class, 'store'])
 
 Route::get('/track/{notification}', [PublicTrackingController::class, 'show'])
     ->name('track.show')
-    ->middleware('signed');
+    ->middleware(['signed', 'throttle:30,1']);
 
 /*
 |--------------------------------------------------------------------------
@@ -100,7 +102,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/home/devices/activate', [
         HomeDeviceController::class,
         'store'
-    ])->name('home.devices.activate');
+    ])->name('home.devices.activate')
+        ->middleware('throttle:5,1');
 
     /*
     |--------------------------------------------------------------------------
@@ -148,6 +151,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         VehicleController::class,
         'updateStopSetting'
     ])->name('vehicles.stop-setting.update');
+
+    Route::patch('/vehicles/{device}/speed-setting', [
+        VehicleController::class,
+        'updateSpeedSetting'
+    ])->name('vehicles.speed-setting.update');
 
     Route::patch('/vehicles/{device}/notification-setting', [
         VehicleController::class,
@@ -203,6 +211,32 @@ Route::middleware(['auth', 'verified'])->group(function () {
         VehicleController::class,
         'stop'
     ])->name('vehicles.stop');
+
+    Route::get('/vehicles/{device}/trips', [
+        TripController::class,
+        'index'
+    ])->name('vehicles.trips');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Export PDF (Riwayat Perjalanan / Riwayat Berhenti)
+    |--------------------------------------------------------------------------
+    | Rate-limit lebih ketat dari endpoint JSON biasa karena PDF generation
+    | jauh lebih berat (render Blade + rasterisasi dompdf).
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/vehicles/{device}/export/travel', [
+        VehicleController::class,
+        'exportTravel'
+    ])->name('vehicles.export.travel')
+        ->middleware('throttle:10,1');
+
+    Route::get('/vehicles/{device}/export/stop', [
+        VehicleController::class,
+        'exportStop'
+    ])->name('vehicles.export.stop')
+        ->middleware('throttle:10,1');
 
     /**
      * Store Geofence

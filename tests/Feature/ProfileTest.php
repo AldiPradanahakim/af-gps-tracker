@@ -4,13 +4,26 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class ProfileTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_profile_page_is_displayed(): void
+    public function test_profile_page_is_displayed_after_device_activation(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->withSession(['activated_device_id' => (string) Str::uuid()])
+            ->get('/profile');
+
+        $response->assertOk();
+    }
+
+    public function test_profile_page_is_forbidden_without_device_activation_session(): void
     {
         $user = User::factory()->create();
 
@@ -18,7 +31,7 @@ class ProfileTest extends TestCase
             ->actingAs($user)
             ->get('/profile');
 
-        $response->assertOk();
+        $response->assertForbidden();
     }
 
     public function test_profile_information_can_be_updated(): void
@@ -27,9 +40,11 @@ class ProfileTest extends TestCase
 
         $response = $this
             ->actingAs($user)
+            ->from('/profile')
             ->patch('/profile', [
                 'name' => 'Test User',
                 'email' => 'test@example.com',
+                'phone' => '081234567890',
             ]);
 
         $response
@@ -40,7 +55,11 @@ class ProfileTest extends TestCase
 
         $this->assertSame('Test User', $user->name);
         $this->assertSame('test@example.com', $user->email);
-        $this->assertNull($user->email_verified_at);
+
+        // Aplikasi ini tidak mengimplementasikan MustVerifyEmail (lihat
+        // App\Models\User), sehingga email_verified_at tidak direset saat
+        // email berubah — tidak seperti scaffold Breeze bawaan.
+        $this->assertNotNull($user->email_verified_at);
     }
 
     public function test_email_verification_status_is_unchanged_when_the_email_address_is_unchanged(): void
@@ -49,9 +68,11 @@ class ProfileTest extends TestCase
 
         $response = $this
             ->actingAs($user)
+            ->from('/profile')
             ->patch('/profile', [
                 'name' => 'Test User',
                 'email' => $user->email,
+                'phone' => '081234567890',
             ]);
 
         $response
@@ -73,7 +94,7 @@ class ProfileTest extends TestCase
 
         $response
             ->assertSessionHasNoErrors()
-            ->assertRedirect('/');
+            ->assertRedirect(route('login'));
 
         $this->assertGuest();
         $this->assertNull($user->fresh());

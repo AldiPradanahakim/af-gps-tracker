@@ -43,6 +43,18 @@ class MQTTSubscriberService
 
             ->setUseTls(
                 config('mqtt.tls.enabled')
+            )
+
+            ->setReconnectAutomatically(
+                config('mqtt.reconnect.automatic')
+            )
+
+            ->setMaxReconnectAttempts(
+                config('mqtt.reconnect.max_attempts')
+            )
+
+            ->setDelayBetweenReconnectAttempts(
+                config('mqtt.reconnect.delay_ms')
             );
 
         /*

@@ -6,7 +6,7 @@
             <h2 class="mt-2 text-xl font-semibold text-slate-900">Lihat Histori Perjalanan</h2>
             <p class="mt-1 text-sm text-slate-500">Filter perjalanan berdasarkan rentang tanggal atau langsung mainkan kembali perjalanan hari ini.</p>
         </div>
-        <div class="grid gap-4 p-6 lg:grid-cols-5">
+        <div class="grid gap-4 p-6 lg:grid-cols-6">
             <div>
                 <label class="mb-2 block text-sm font-medium text-slate-700">Tanggal Mulai</label>
                 <input id="historyStartDate" type="date" class="w-full rounded-[20px] border border-slate-300 px-4 py-3" />
@@ -26,6 +26,12 @@
                     <i class="fa-solid fa-play mr-1"></i>
                     Playback
                 </button>
+            </div>
+            <div class="flex items-end">
+                <a id="historyExportPdfLink" href="{{ route('vehicles.export.travel', $device) }}" target="_blank" rel="noopener" class="w-full rounded-[20px] border border-slate-300 bg-white px-5 py-3 text-center text-sm font-semibold text-slate-700 transition hover:bg-slate-100">
+                    <i class="fa-solid fa-file-pdf mr-1"></i>
+                    Export PDF
+                </a>
             </div>
         </div>
 
@@ -143,14 +149,24 @@
                     <p class="text-xs uppercase tracking-[0.3em] text-slate-400">Timeline Perjalanan</p>
                     <h2 class="mt-2 text-lg font-semibold text-slate-900">Detail Titik Perjalanan</h2>
                 </div>
-                <div class="flex items-center gap-2">
-                    <span class="text-xs font-medium text-slate-500">Urutkan:</span>
-                    <button id="historySortDesc" type="button" class="rounded-[12px] bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white">Terbaru</button>
-                    <button id="historySortAsc" type="button" class="rounded-[12px] border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100">Terlama</button>
+                <div class="flex flex-wrap items-center gap-4">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-medium text-slate-500">Tampilan:</span>
+                        <button id="historyViewPointsButton" type="button" class="rounded-[12px] bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white">Titik GPS</button>
+                        <button id="historyViewTripsButton" type="button" class="rounded-[12px] border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100">Perjalanan</button>
+                    </div>
+                    <div id="historySortButtons" class="flex items-center gap-2">
+                        <span class="text-xs font-medium text-slate-500">Urutkan:</span>
+                        <button id="historySortDesc" type="button" class="rounded-[12px] bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white">Terbaru</button>
+                        <button id="historySortAsc" type="button" class="rounded-[12px] border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100">Terlama</button>
+                    </div>
                 </div>
             </div>
             <div id="historyTimeline" class="divide-y divide-slate-100 p-6">
                 <div class="py-12 text-center text-slate-500">Belum ada data histori.</div>
+            </div>
+            <div id="historyTripList" class="hidden grid gap-4 p-6 sm:grid-cols-2">
+                <div class="col-span-full py-12 text-center text-slate-500">Belum ada data perjalanan.</div>
             </div>
         </div>
 

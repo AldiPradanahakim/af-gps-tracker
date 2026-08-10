@@ -170,6 +170,184 @@ class NotificationService
     }
 
     /**
+     * Create overspeed notification.
+     */
+    public function createOverspeedNotification(
+        Device $device,
+        array $payload
+    ): Notification {
+
+        $limit = (int) data_get(
+            $device,
+            'speed_setting.limit_kmh',
+            80
+        );
+
+        $notification = $this->notificationRepository->create([
+
+            'device_id' => $device->id,
+
+            'type' => 'overspeed',
+
+            'data' => [
+
+                'title' => 'Kecepatan Berlebih',
+
+                'message' => sprintf(
+                    'Kendaraan melaju %s km/j, melebihi batas %d km/j.',
+                    number_format((float) ($payload['speed'] ?? 0), 0),
+                    $limit
+                ),
+
+                'speed' => (float) ($payload['speed'] ?? 0),
+
+                'limit_kmh' => $limit,
+
+                'location' => [
+
+                    'lat' => $payload['lat'],
+
+                    'lng' => $payload['lng'],
+
+                ],
+
+                'search_address' => $payload['search_address'] ?? null,
+
+                ...$this->vehicleData($device),
+
+            ],
+
+            'status' => 'pending',
+
+        ]);
+
+        $this->dispatch(
+            $notification
+        );
+
+        return $notification;
+    }
+
+    /**
+     * Create low battery notification.
+     */
+    public function createLowBatteryNotification(
+        Device $device,
+        int $battery
+    ): Notification {
+
+        $notification = $this->notificationRepository->create([
+
+            'device_id' => $device->id,
+
+            'type' => 'low_battery',
+
+            'data' => [
+
+                'title' => 'Baterai Perangkat Lemah',
+
+                'message' => sprintf(
+                    'Baterai perangkat GPS tersisa %d%%. Segera isi ulang.',
+                    $battery
+                ),
+
+                'battery' => $battery,
+
+                ...$this->vehicleData($device),
+
+            ],
+
+            'status' => 'pending',
+
+        ]);
+
+        $this->dispatch(
+            $notification
+        );
+
+        return $notification;
+    }
+
+    /**
+     * Create device offline notification.
+     */
+    public function createDeviceOfflineNotification(
+        Device $device
+    ): Notification {
+
+        $notification = $this->notificationRepository->create([
+
+            'device_id' => $device->id,
+
+            'type' => 'device_offline',
+
+            'data' => [
+
+                'title' => 'Perangkat Offline',
+
+                'message' => sprintf(
+                    'Perangkat GPS %s berhenti mengirim data. Terakhir terlihat %s.',
+                    $device->device_id,
+                    optional($device->last_heartbeat)->diffForHumans() ?? 'tidak diketahui',
+                ),
+
+                'last_heartbeat' => optional(
+                    $device->last_heartbeat
+                )?->toISOString(),
+
+                ...$this->vehicleData($device),
+
+            ],
+
+            'status' => 'pending',
+
+        ]);
+
+        $this->dispatch(
+            $notification
+        );
+
+        return $notification;
+    }
+
+    /**
+     * Create device online (kembali online) notification.
+     */
+    public function createDeviceOnlineNotification(
+        Device $device
+    ): Notification {
+
+        $notification = $this->notificationRepository->create([
+
+            'device_id' => $device->id,
+
+            'type' => 'device_online',
+
+            'data' => [
+
+                'title' => 'Perangkat Online Kembali',
+
+                'message' => sprintf(
+                    'Perangkat GPS %s kembali mengirim data.',
+                    $device->device_id,
+                ),
+
+                ...$this->vehicleData($device),
+
+            ],
+
+            'status' => 'pending',
+
+        ]);
+
+        $this->dispatch(
+            $notification
+        );
+
+        return $notification;
+    }
+
+    /**
      * Data kendaraan yang disisipkan ke dalam payload notification.
      */
     protected function vehicleData(Device $device): array

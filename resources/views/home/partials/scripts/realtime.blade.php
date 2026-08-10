@@ -509,13 +509,25 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         });
 
+        /*
+        |--------------------------------------------------------------------------
+        | Vehicle Baru (mis. baru saja diaktivasi) - tambahkan ke state,
+        | bukan di-drop, supaya langsung muncul di peta/sidebar tanpa
+        | perlu refresh halaman manual.
+        |--------------------------------------------------------------------------
+        */
+
         if (index === -1) {
 
-            this.realtimeWarn(
+            this.vehicles.push(
 
-                'Vehicle tidak ditemukan.',
+                { ...vehicle }
 
-                vehicle.device_id
+            );
+
+            this.refreshRealtimeModules(
+
+                vehicle
 
             );
 
@@ -595,31 +607,7 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         );
 
-        this.refreshRealtimeNotification(
-
-            vehicle
-
-        );
-
-        this.refreshRealtimeVehicleDetail(
-
-            vehicle
-
-        );
-
-        this.refreshRealtimeHomeLocation(
-
-            vehicle
-
-        );
-
         this.refreshRealtimeGeofence(
-
-            vehicle
-
-        );
-
-        this.refreshRealtimeStopDetection(
 
             vehicle
 
@@ -865,100 +853,6 @@ document.addEventListener('gpstracker:map-ready', () => {
 
     /*
     |--------------------------------------------------------------------------
-    | Refresh Notification
-    |--------------------------------------------------------------------------
-    */
-
-    GPSTracker.refreshRealtimeNotification = function (vehicle) {
-
-        if (
-
-            typeof this.receiveNotification !== 'function'
-
-        ) {
-
-            return;
-
-        }
-
-        if (
-
-            !vehicle.notification
-
-        ) {
-
-            return;
-
-        }
-
-        this.receiveNotification(
-
-            vehicle.notification
-
-        );
-
-    };
-
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Refresh Vehicle Detail
-    |--------------------------------------------------------------------------
-    */
-
-    GPSTracker.refreshRealtimeVehicleDetail = function (vehicle) {
-
-        if (
-
-            typeof this.updateVehicleDetail !== 'function'
-
-        ) {
-
-            return;
-
-        }
-
-        this.updateVehicleDetail(
-
-            vehicle
-
-        );
-
-    };
-
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Refresh Home Location
-    |--------------------------------------------------------------------------
-    */
-
-    GPSTracker.refreshRealtimeHomeLocation = function (vehicle) {
-
-        if (
-
-            typeof this.updateHomeLocation !== 'function'
-
-        ) {
-
-            return;
-
-        }
-
-        this.updateHomeLocation(
-
-            vehicle
-
-        );
-
-    };
-
-
-
-    /*
-    |--------------------------------------------------------------------------
     | Refresh Geofence
     |--------------------------------------------------------------------------
     */
@@ -976,34 +870,6 @@ document.addEventListener('gpstracker:map-ready', () => {
         }
 
         this.checkGeofence(
-
-            vehicle
-
-        );
-
-    };
-
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Refresh Stop Detection
-    |--------------------------------------------------------------------------
-    */
-
-    GPSTracker.refreshRealtimeStopDetection = function (vehicle) {
-
-        if (
-
-            typeof this.detectVehicleStop !== 'function'
-
-        ) {
-
-            return;
-
-        }
-
-        this.detectVehicleStop(
 
             vehicle
 
@@ -1113,81 +979,9 @@ document.addEventListener('gpstracker:map-ready', () => {
 
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | Refresh All Components
-    |--------------------------------------------------------------------------
-    */
+    // refreshRealtimeModules() sudah didefinisikan di atas - definisi
+    // duplikat (identik) yang sebelumnya ada di sini dihapus.
 
-    GPSTracker.refreshRealtimeModules = function (vehicle) {
-
-        this.refreshRealtimeMarker(
-
-            vehicle
-
-        );
-
-        this.refreshRealtimePopup(
-
-            vehicle
-
-        );
-
-        this.refreshRealtimeSidebar(
-
-            vehicle
-
-        );
-
-        this.refreshRealtimeSearch(
-
-            vehicle
-
-        );
-
-        this.refreshRealtimeNotification(
-
-            vehicle
-
-        );
-
-        this.refreshRealtimeVehicleDetail(
-
-            vehicle
-
-        );
-
-        this.refreshRealtimeHomeLocation(
-
-            vehicle
-
-        );
-
-        this.refreshRealtimeGeofence(
-
-            vehicle
-
-        );
-
-        this.refreshRealtimeStopDetection(
-
-            vehicle
-
-        );
-
-        this.refreshRealtimeAddress(
-
-            vehicle
-
-        );
-
-        this.refreshRealtimeMap(
-
-            vehicle
-
-        );
-
-    };
     /*
     |--------------------------------------------------------------------------
     | Heartbeat

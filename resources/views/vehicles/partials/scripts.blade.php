@@ -7,6 +7,7 @@
 @include('vehicles.partials.scripts.information')
 @include('vehicles.partials.scripts.history')
 @include('vehicles.partials.scripts.stop')
+@include('vehicles.partials.scripts.speed')
 @include('vehicles.partials.scripts.messages')
 @include('vehicles.partials.scripts.home-location')
 @include('vehicles.partials.scripts.geofence')
@@ -35,6 +36,8 @@
             history: document.getElementById('vehicleHistorySection'),
 
             stop: document.getElementById('vehicleStopSection'),
+
+            speed: document.getElementById('vehicleSpeedSection'),
 
             messages: document.getElementById('vehicleMessagesSection'),
 

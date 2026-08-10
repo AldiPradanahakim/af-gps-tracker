@@ -2,6 +2,7 @@
 
 namespace App\Services\Device;
 
+use App\Helpers\GpsTimestampParser;
 use App\Models\Device;
 use App\Models\DeviceLog;
 use Carbon\Carbon;
@@ -120,7 +121,7 @@ class DeviceLogService
             );
         }
 
-        return Carbon::parse(
+        return GpsTimestampParser::parse(
             $payload['received_at']
         );
     }

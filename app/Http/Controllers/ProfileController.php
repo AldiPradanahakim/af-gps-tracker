@@ -6,6 +6,7 @@ use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\User;
 use App\Services\Profile\ProfileService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
@@ -88,8 +89,12 @@ class ProfileController extends Controller
     /**
      * Hapus akun
      */
-    public function destroy(): RedirectResponse
+    public function destroy(Request $request): RedirectResponse
     {
+        $request->validateWithBag('userDeletion', [
+            'password' => ['required', 'current_password'],
+        ]);
+
         $user = Auth::user();
 
         if ($user instanceof User) {
@@ -97,8 +102,8 @@ class ProfileController extends Controller
 
             $user->delete();
 
-            request()->session()->invalidate();
-            request()->session()->regenerateToken();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
         }
 
         return redirect()->route('login');

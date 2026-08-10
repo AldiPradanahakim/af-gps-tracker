@@ -36,10 +36,10 @@ class UpdateGeofenceStatusRequest extends FormRequest
     {
         return [
 
-            'is_active.required' =>
+            'status.required' =>
             'Status geofence wajib dikirim.',
 
-            'is_active.boolean' =>
+            'status.boolean' =>
             'Status geofence tidak valid.',
 
         ];
@@ -50,9 +50,9 @@ class UpdateGeofenceStatusRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
-        if ($this->has('is_active')) {
+        if ($this->has('status')) {
 
-            $value = $this->input('is_active');
+            $value = $this->input('status');
 
             if (is_string($value)) {
 
@@ -66,7 +66,7 @@ class UpdateGeofenceStatusRequest extends FormRequest
             }
 
             $this->merge([
-                'is_active' => filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE),
+                'status' => filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE),
             ]);
         }
     }

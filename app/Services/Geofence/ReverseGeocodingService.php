@@ -85,7 +85,36 @@ class ReverseGeocodingService
     protected int $maxWaitMicroseconds = 5_000_000;
 
     /**
+     * Cek alamat di cache saja, TANPA memanggil provider dan TANPA
+     * throttle/blocking - dipakai di jalur sinkron pipeline ingest GPS
+     * (GPSProcessingService) supaya satu titik GPS yang belum pernah
+     * di-geocode tidak memblokir seluruh proses mqtt:subscribe sampai
+     * 600ms-1.1 detik menunggu giliran rate limit provider eksternal.
+     * Null berarti cache miss - pemanggil harus fallback ke placeholder
+     * dan menjadwalkan resolusi alamat sesungguhnya secara asinkron
+     * (lihat ResolveGpsAddressJob).
+     */
+    public function searchCached(
+        float $latitude,
+        float $longitude
+    ): ?string {
+
+        $this->validateCoordinate(
+            $latitude,
+            $longitude
+        );
+
+        return Cache::get(
+            $this->buildCacheKey($latitude, $longitude)
+        );
+    }
+
+    /**
      * Convert latitude & longitude into address.
+     *
+     * Sinkron dan BISA memblokir (throttle global) - jangan dipanggil
+     * dari jalur sinkron pipeline ingest GPS, hanya dari konteks yang
+     * boleh menunggu (queued job, request HTTP biasa).
      *
      * @throws InvalidArgumentException
      */
@@ -99,8 +128,7 @@ class ReverseGeocodingService
             $longitude
         );
 
-        $cacheKey = $this->cacheKeyPrefix . $this->roundCoordinate($latitude)
-            . ':' . $this->roundCoordinate($longitude);
+        $cacheKey = $this->buildCacheKey($latitude, $longitude);
 
         $cached = Cache::get($cacheKey);
 
@@ -136,6 +164,19 @@ class ReverseGeocodingService
         }
 
         return $address;
+    }
+
+    /**
+     * Bangun cache key dari koordinat (dipakai searchCached() dan search()
+     * supaya keduanya selalu merujuk key yang sama persis).
+     */
+    public function buildCacheKey(
+        float $latitude,
+        float $longitude
+    ): string {
+
+        return $this->cacheKeyPrefix . $this->roundCoordinate($latitude)
+            . ':' . $this->roundCoordinate($longitude);
     }
 
     /**

@@ -126,6 +126,28 @@ document.addEventListener(
 
         /*
         |--------------------------------------------------------------------------
+        | Escape Helper
+        |--------------------------------------------------------------------------
+        */
+
+        GPSTracker.escapeGeofenceHtml = function (value) {
+
+            if (value === null || value === undefined) {
+
+                return '';
+
+            }
+
+            return String(value).replace(/[&<>"']/g, function (char) {
+
+                return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char];
+
+            });
+
+        };
+
+        /*
+        |--------------------------------------------------------------------------
         | Geofence Type
         |--------------------------------------------------------------------------
         */
@@ -263,7 +285,7 @@ document.addEventListener(
 
             polygon.bindPopup(
 
-                `<strong>${geofence.name}</strong>`
+                `<strong>${this.escapeGeofenceHtml(geofence.name)}</strong>`
 
             );
 
@@ -1465,7 +1487,7 @@ document.addEventListener(
 
             circle.bindPopup(
 
-                `<strong>${geofence.name}</strong><br>
+                `<strong>${this.escapeGeofenceHtml(geofence.name)}</strong><br>
                 Radius : ${Number(geofence.config.radius).toLocaleString()} m`
 
             );
@@ -1852,12 +1874,6 @@ document.addEventListener(
             radius = null
         ) {
 
-            console.log('previewRadiusDrawing', {
-                latitude,
-                longitude,
-                radius
-            });
-
             if (
                 !this.map ||
                 latitude == null ||
@@ -1903,8 +1919,6 @@ document.addEventListener(
             drawing.circle = circle;
 
             this.setPreviewLayer(circle);
-
-            console.log(this.getPreviewLayer());
 
             this.map.flyTo(
                 [

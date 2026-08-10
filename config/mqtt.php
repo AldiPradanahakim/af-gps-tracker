@@ -43,9 +43,12 @@ return [
         'laravel-gps-tracker'
     ),
 
+    // Wajib false - library php-mqtt/client menolak kombinasi clean
+    // session + auto-reconnect (lempar ConfigurationInvalidException),
+    // dan auto-reconnect di bawah aktif secara default.
     'clean_session' => env(
         'MQTT_CLEAN_SESSION',
-        true
+        false
     ),
 
     /*
@@ -71,6 +74,37 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Reconnect
+    |--------------------------------------------------------------------------
+    |
+    | Koneksi MQTT ke perangkat GPS lapangan rentan putus (jaringan
+    | seluler, restart broker, dst). Tanpa auto-reconnect, sekali
+    | koneksi putus, mqtt:subscribe akan crash dan proses ingestion
+    | GPS berhenti total sampai ada yang restart manual.
+    |--------------------------------------------------------------------------
+    */
+
+    'reconnect' => [
+
+        'automatic' => (bool) env(
+            'MQTT_RECONNECT_AUTOMATIC',
+            true
+        ),
+
+        'max_attempts' => (int) env(
+            'MQTT_RECONNECT_MAX_ATTEMPTS',
+            10
+        ),
+
+        'delay_ms' => (int) env(
+            'MQTT_RECONNECT_DELAY_MS',
+            3000
+        ),
+
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Topics
     |--------------------------------------------------------------------------
     */
@@ -80,6 +114,45 @@ return [
         'gps' => env(
             'MQTT_TOPIC',
             'gps/+/location'
+        ),
+
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Signature
+    |--------------------------------------------------------------------------
+    |
+    | Wajib true di production - mencegah device_id spoofing lewat payload
+    | HMAC per-device (lihat MQTTSignatureService). Set false hanya untuk
+    | testing/bring-up sebelum firmware mendukung signing.
+    |--------------------------------------------------------------------------
+    */
+
+    'require_signature' => (bool) env(
+        'MQTT_REQUIRE_SIGNATURE',
+        true
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Alerts
+    |--------------------------------------------------------------------------
+    */
+
+    'alerts' => [
+
+        // Persentase baterai - di bawah ini device dianggap "baterai lemah".
+        'low_battery_threshold' => (int) env(
+            'LOW_BATTERY_THRESHOLD',
+            20
+        ),
+
+        // Menit sejak last_heartbeat - dipakai DeviceHealthCheckCommand,
+        // selaras dengan Device::ONLINE_THRESHOLD_MINUTES (is_online).
+        'offline_threshold_minutes' => (int) env(
+            'OFFLINE_ALERT_THRESHOLD_MINUTES',
+            5
         ),
 
     ],

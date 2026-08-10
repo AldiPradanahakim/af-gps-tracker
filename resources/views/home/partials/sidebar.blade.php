@@ -115,7 +115,7 @@
 
                         </div>
 
-                        @if($vehicle['is_active'])
+                        @if($vehicle['is_online'])
 
                             <span
                                 id="vehicle-status-{{ $vehicle['device_id'] }}"

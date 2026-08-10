@@ -609,7 +609,7 @@ document.addEventListener('gpstracker:map-ready', () => {
 
     GPSTracker.renderVehicleCard = function (vehicle) {
 
-        const online = Boolean(vehicle.is_active);
+        const online = Boolean(vehicle.is_online);
 
         const statusClass = online
             ? 'bg-green-100 text-green-700'
@@ -998,7 +998,7 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         const online = Boolean(
 
-            vehicle.is_active
+            vehicle.is_online
 
         );
 

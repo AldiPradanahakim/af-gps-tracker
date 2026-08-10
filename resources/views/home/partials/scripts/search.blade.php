@@ -988,6 +988,63 @@ document.addEventListener('gpstracker:map-ready', () => {
 
     /*
     |--------------------------------------------------------------------------
+    | Update Search Result (Realtime)
+    |--------------------------------------------------------------------------
+    |
+    | Dipanggil dari refreshRealtimeSearch (realtime.blade.php) setiap ada
+    | update GPS realtime. vehicleResults menyimpan snapshot vehicle pada
+    | saat pencarian dilakukan (bukan referensi live ke this.vehicles),
+    | jadi kalau dropdown search sedang terbuka dan salah satu result yang
+    | ditampilkan adalah vehicle yang baru saja update, entry itu harus
+    | di-rebuild dan dropdown di-render ulang supaya info-nya (nama, plat)
+    | tidak basi sampai user mengetik ulang keyword.
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.updateSearchResult = function (vehicle) {
+
+        if (
+            !vehicle ||
+            !vehicle.device_id
+        ) {
+            return;
+        }
+
+        if (!this.isSearchOpened()) {
+            return;
+        }
+
+        const results = this.getVehicleSearchResults();
+
+        if (
+            !Array.isArray(results) ||
+            !results.length
+        ) {
+            return;
+        }
+
+        const index = results.findIndex(result => {
+
+            return String(result.device_id) === String(vehicle.device_id);
+
+        });
+
+        if (index === -1) {
+            return;
+        }
+
+        results[index] = this.buildVehicleSearchResult(vehicle);
+
+        this.setVehicleSearchResults(results);
+
+        this.mergeSearchResults();
+
+        this.renderSearchResults(this.getSearchResults());
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
     | Execute Search
     |--------------------------------------------------------------------------
     */
@@ -1087,6 +1144,28 @@ document.addEventListener('gpstracker:map-ready', () => {
 
     /*
     |--------------------------------------------------------------------------
+    | Escape Helper
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.escapeSearchHtml = function (value) {
+
+        if (value === null || value === undefined) {
+
+            return '';
+
+        }
+
+        return String(value).replace(/[&<>"']/g, function (char) {
+
+            return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char];
+
+        });
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
     | Highlight Keyword
     |--------------------------------------------------------------------------
     */
@@ -1096,6 +1175,8 @@ document.addEventListener('gpstracker:map-ready', () => {
         text = ''
 
     ) {
+
+        const safeText = this.escapeSearchHtml(text);
 
         const keyword =
 
@@ -1107,11 +1188,7 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         ) {
 
-            return String(
-
-                text
-
-            );
+            return safeText;
 
         }
 
@@ -1123,11 +1200,7 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         );
 
-        return String(
-
-            text
-
-        ).replace(
+        return safeText.replace(
 
             new RegExp(
 
@@ -1198,7 +1271,7 @@ document.addEventListener('gpstracker:map-ready', () => {
 
                 <div class="mt-1 truncate text-xs text-slate-500">
 
-                    ${result.subtitle ?? ''}
+                    ${this.escapeSearchHtml(result.subtitle ?? '')}
 
                 </div>
 

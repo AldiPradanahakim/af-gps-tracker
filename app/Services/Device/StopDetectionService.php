@@ -2,6 +2,7 @@
 
 namespace App\Services\Device;
 
+use App\Helpers\GpsTimestampParser;
 use App\Models\Device;
 use App\Models\StopHistory;
 use Carbon\Carbon;
@@ -38,10 +39,8 @@ class StopDetectionService
             return null;
         }
 
-        $receivedAt = Carbon::parse(
-            $this->extractReceivedAt(
-                $payload
-            )
+        $receivedAt = $this->extractReceivedAt(
+            $payload
         );
 
         $speed = $this->extractSpeed(
@@ -352,7 +351,7 @@ class StopDetectionService
      */
     protected function extractReceivedAt(
         array $payload
-    ): string {
+    ): Carbon {
 
         if (! isset($payload['received_at'])) {
 
@@ -361,7 +360,9 @@ class StopDetectionService
             );
         }
 
-        return $payload['received_at'];
+        return GpsTimestampParser::parse(
+            $payload['received_at']
+        );
     }
 
     /**

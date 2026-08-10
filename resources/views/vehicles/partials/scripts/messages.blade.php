@@ -62,6 +62,8 @@ window.VehicleMessages = {
             stop: { icon: 'fa-solid fa-pause', color: 'text-amber-600 bg-amber-100' },
             device_online: { icon: 'fa-solid fa-plug-circle-check', color: 'text-emerald-600 bg-emerald-100' },
             device_offline: { icon: 'fa-solid fa-plug-circle-xmark', color: 'text-slate-600 bg-slate-200' },
+            overspeed: { icon: 'fa-solid fa-gauge-high', color: 'text-orange-600 bg-orange-100' },
+            low_battery: { icon: 'fa-solid fa-battery-quarter', color: 'text-red-600 bg-red-100' },
 
         };
 
@@ -136,16 +138,16 @@ window.VehicleMessages = {
                 <div class="min-w-0 flex-1">
 
                     <div class="flex items-center justify-between gap-2">
-                        <div class="truncate text-sm font-semibold text-slate-900">${title}</div>
+                        <div class="truncate text-sm font-semibold text-slate-900">${this.escapeAttribute(title)}</div>
                         ${isRead
                             ? '<span class="shrink-0 text-[10px] font-medium text-slate-400">Dibaca</span>'
                             : '<span class="shrink-0 h-2 w-2 rounded-full bg-blue-500"></span>'
                         }
                     </div>
 
-                    <div class="mt-1 text-sm leading-relaxed text-slate-600">${message}</div>
+                    <div class="mt-1 text-sm leading-relaxed text-slate-600">${this.escapeAttribute(message)}</div>
 
-                    ${address ? `<div class="mt-1 text-xs text-slate-400">${address}</div>` : ''}
+                    ${address ? `<div class="mt-1 text-xs text-slate-400">${this.escapeAttribute(address)}</div>` : ''}
 
                     <div class="mt-2 flex items-center justify-between gap-2">
 
