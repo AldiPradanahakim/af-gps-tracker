@@ -1,0 +1,20 @@
+# --------------------------------------------------------------------------
+# Laravel Scheduler - af-gps-tracker
+# --------------------------------------------------------------------------
+# Menjalankan device:health-check tiap menit (lihat routes/console.php)
+# untuk mendeteksi device yang berhenti mengirim data (alert offline).
+# `php artisan schedule:work` (dipakai saat development) TIDAK dipakai di
+# production - gunakan cron OS asli supaya jadwalnya tetap jalan meskipun
+# server reboot, tanpa perlu proses tambahan yang harus disupervisi lagi.
+#
+# Format file ini mengikuti /etc/cron.d/ (ada kolom "user", beda dengan
+# `crontab -e` biasa).
+#
+# Install:
+#   sudo cp deploy/cron/af-gps-tracker /etc/cron.d/af-gps-tracker
+#   sudo chmod 644 /etc/cron.d/af-gps-tracker
+#
+# GANTI /path/to/af-gps-tracker dan user "www-data" sesuai server Anda.
+# --------------------------------------------------------------------------
+
+* * * * * www-data cd /path/to/af-gps-tracker && php artisan schedule:run >> /dev/null 2>&1
