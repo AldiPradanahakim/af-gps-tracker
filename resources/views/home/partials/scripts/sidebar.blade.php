@@ -58,7 +58,7 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         activateUrl: '/home/devices/activate',
         
-        vehicleUrl: '/home/vehicles',
+        vehicleUrl: '/vehicles',
 
     };
 
@@ -766,21 +766,24 @@ document.addEventListener('gpstracker:map-ready', () => {
 
             </div>
 
-            <div class="mt-6 flex items-center gap-2">
+
+
+            <div class="mt-5 grid grid-cols-2 gap-4">
 
                 <button
+                    id="vehicle-map-btn-${vehicle.device_id}"
                     type="button"
                     onclick="GPSTracker.focusVehicle('${vehicle.device_id}')"
                     ${mapButtonDisabled}
-                    class="flex-1 rounded-xl px-4 py-2.5 text-sm font-semibold transition ${mapButtonClass}">
+                    class="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition ${mapButtonClass}">
 
                     ${mapButtonText}
 
                 </button>
 
                 <a
-                    href="/vehicles/${vehicle.device_id}"
-                    class="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                    href="${GPSTracker.sidebarConfig.vehicleUrl}/${vehicle.device_id}"
+                    class="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
 
                     Detail
 
@@ -845,19 +848,11 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         /*
         |--------------------------------------------------------------------------
-        | Map Button
+        | Action
         |--------------------------------------------------------------------------
         */
 
-        const button = card.querySelector(
-            'button[onclick*="focusVehicle"]'
-        );
-
-        if (!button) {
-
-            return;
-
-        }
+        this.updateVehicleCardAction(vehicle);
 
         const hasCoordinate =
             vehicle.latitude !== null &&
@@ -878,45 +873,6 @@ document.addEventListener('gpstracker:map-ready', () => {
         card.dataset.lng = hasCoordinate
             ? vehicle.longitude
             : '';
-
-        /*
-        |--------------------------------------------------------------------------
-        | Enable / Disable
-        |--------------------------------------------------------------------------
-        */
-
-        button.disabled = !hasCoordinate;
-
-        button.textContent = hasCoordinate
-            ? 'Lihat di Peta'
-            : 'Belum Ada GPS';
-
-        button.classList.remove(
-            'bg-[#2563EB]',
-            'hover:bg-blue-700',
-            'text-white',
-            'bg-slate-300',
-            'text-slate-500',
-            'cursor-not-allowed'
-        );
-
-        if (hasCoordinate) {
-
-            button.classList.add(
-                'bg-[#2563EB]',
-                'text-white',
-                'hover:bg-blue-700'
-            );
-
-        } else {
-
-            button.classList.add(
-                'bg-slate-300',
-                'text-slate-500',
-                'cursor-not-allowed'
-            );
-
-        }
 
     };
 
@@ -1173,6 +1129,46 @@ document.addEventListener('gpstracker:map-ready', () => {
         element.textContent =
 
             vehicle.updated_at ?? '-';
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Update Action
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.updateVehicleCardAction = function (vehicle) {
+
+        const btn = document.getElementById(
+
+            `vehicle-map-btn-${vehicle.device_id}`
+
+        );
+
+        if (!btn) {
+
+            return;
+
+        }
+
+        const hasCoordinate =
+            vehicle.latitude !== null &&
+            vehicle.latitude !== undefined &&
+            vehicle.longitude !== null &&
+            vehicle.longitude !== undefined;
+
+        btn.disabled = !hasCoordinate;
+
+        btn.textContent = hasCoordinate ? 'Lihat di Peta' : 'Belum Ada GPS';
+
+        if (hasCoordinate) {
+            btn.classList.add('bg-[#2563EB]', 'text-white', 'hover:bg-blue-700');
+            btn.classList.remove('cursor-not-allowed', 'bg-slate-300', 'text-slate-500');
+        } else {
+            btn.classList.remove('bg-[#2563EB]', 'text-white', 'hover:bg-blue-700');
+            btn.classList.add('cursor-not-allowed', 'bg-slate-300', 'text-slate-500');
+        }
 
     };
         /*

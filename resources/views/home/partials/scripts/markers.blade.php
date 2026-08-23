@@ -406,35 +406,7 @@ document.addEventListener(
 
         GPSTracker.getMarkerColor = function (vehicle) {
 
-            const colors = {
-
-                green: "#22c55e",
-
-                blue: "#2563eb",
-
-                red: "#ef4444",
-
-                orange: "#f97316",
-
-                yellow: "#eab308",
-
-                purple: "#9333ea",
-
-                black: "#111827",
-
-                gray: "#6b7280",
-
-            };
-
-            if (!vehicle.is_online) {
-
-                return "#9ca3af";
-
-            }
-
-            return colors[
-                vehicle.marker_color
-            ] ?? colors.green;
+            return vehicle.marker_color || '#22c55e';
 
         };
 

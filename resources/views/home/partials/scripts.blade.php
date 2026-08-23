@@ -2,9 +2,9 @@
 
 @include('home.partials.scripts.map')
 
-@include('home.partials.scripts.markers')
-
 @include('home.partials.scripts.popup')
+
+@include('home.partials.scripts.markers')
 
 @include('home.partials.scripts.search')
 

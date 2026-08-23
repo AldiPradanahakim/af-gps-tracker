@@ -219,30 +219,22 @@
 
                     </div>
 
-                    <div class="mt-6 flex items-center gap-2">
-
-                        @php
-                            $hasCoordinate =
-                                !is_null($vehicle['latitude']) &&
-                                !is_null($vehicle['longitude']);
-                        @endphp
+                    <div class="mt-5 grid grid-cols-2 gap-4">
 
                         <button
+                            id="vehicle-map-btn-{{ $vehicle['device_id'] }}"
                             type="button"
                             onclick="GPSTracker.focusVehicle('{{ $vehicle['device_id'] }}')"
-                            @disabled(!$hasCoordinate)
-                            class="flex-1 rounded-xl px-4 py-2.5 text-sm font-semibold transition
-                            {{ $hasCoordinate
-                                ? 'bg-[#2563EB] text-white hover:bg-blue-700'
-                                : 'bg-slate-300 text-slate-500 cursor-not-allowed' }}">
+                            @if(empty($vehicle['latitude']) || empty($vehicle['longitude'])) disabled @endif
+                            class="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition {{ !empty($vehicle['latitude']) && !empty($vehicle['longitude']) ? 'bg-[#2563EB] text-white hover:bg-blue-700' : 'cursor-not-allowed bg-slate-300 text-slate-500' }}">
 
-                            {{ $hasCoordinate ? 'Lihat di Peta' : 'Belum Ada GPS' }}
+                            {{ !empty($vehicle['latitude']) && !empty($vehicle['longitude']) ? 'Lihat di Peta' : 'Belum Ada GPS' }}
 
                         </button>
 
                         <a
-                            href="{{ route('vehicles.show', $vehicle['device_id']) }}"
-                            class="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                            href="/vehicles/{{ $vehicle['device_id'] }}"
+                            class="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
 
                             Detail
 

@@ -760,29 +760,6 @@ document.addEventListener('gpstracker:map-ready', () => {
 
                 </div>
 
-                <div
-                    class="flex items-center gap-2 pt-2">
-
-                    <button
-                        type="button"
-                        data-popup-focus="${vehicle.device_id}"
-                        class="flex-1 rounded-xl bg-[#2563EB] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700">
-
-                        Lihat di Peta
-
-                    </button>
-
-                    <button
-                        type="button"
-                        data-popup-detail="${vehicle.device_id}"
-                        class="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
-
-                        Detail
-
-                    </button>
-
-                </div>
-
             </div>
 
         `;
