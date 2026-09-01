@@ -62,7 +62,7 @@
 
                 <select
                     name="vehicle_type"
-                    class="w-full rounded-xl border border-slate-300 px-4 py-3">
+                    class="dynamic-vehicle-type w-full rounded-xl border border-slate-300 px-4 py-3">
 
                     <option value="motor">
                         🏍 Motor
@@ -72,36 +72,8 @@
                         🚗 Mobil
                     </option>
 
-                    <option value="pickup">
-                        🛻 Pickup
-                    </option>
-
-                    <option value="truck">
-                        🚚 Truk
-                    </option>
-
-                    <option value="bus">
-                        🚌 Bus
-                    </option>
-
-                    <option value="van">
-                        🚐 Van
-                    </option>
-
-                    <option value="taxi">
-                        🚕 Taxi
-                    </option>
-
-                    <option value="ambulance">
-                        🚑 Ambulance
-                    </option>
-
-                    <option value="police">
-                        🚓 Polisi
-                    </option>
-
-                    <option value="bicycle">
-                        🚲 Sepeda
+                    <option value="kendaraan_besar">
+                        🚚 Kendaraan Besar (Truk/Bus)
                     </option>
 
                 </select>
@@ -118,48 +90,8 @@
 
                 <select
                     name="marker_icon"
-                    class="w-full rounded-xl border border-slate-300 px-4 py-3">
-
-                    <option value="car">
-                        🚗 Mobil
-                    </option>
-
-                    <option value="motorcycle">
-                        🏍 Motor
-                    </option>
-
-                    <option value="pickup">
-                        🛻 Pickup
-                    </option>
-
-                    <option value="truck">
-                        🚚 Truk
-                    </option>
-
-                    <option value="bus">
-                        🚌 Bus
-                    </option>
-
-                    <option value="van">
-                        🚐 Van
-                    </option>
-
-                    <option value="taxi">
-                        🚕 Taxi
-                    </option>
-
-                    <option value="ambulance">
-                        🚑 Ambulance
-                    </option>
-
-                    <option value="police">
-                        🚓 Polisi
-                    </option>
-
-                    <option value="bicycle">
-                        🚲 Sepeda
-                    </option>
-
+                    class="dynamic-marker-icon w-full rounded-xl border border-slate-300 px-4 py-3">
+                    <!-- Opsi akan diisi oleh JavaScript di app.blade.php -->
                 </select>
 
             </div>

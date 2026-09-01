@@ -1,4 +1,4 @@
-<div class="relative h-full min-h-0 w-full overflow-hidden">
+<div class="relative h-full w-full overflow-hidden">
 
     {{-- =========================================================================
     | LEAFLET MAP

@@ -6,4 +6,6 @@
 
         <x-vehicle.vehicle-card />
     </x-auth.onboarding-shell>
+
+    @include('components.scripts.dynamic-marker')
 </x-guest-layout>

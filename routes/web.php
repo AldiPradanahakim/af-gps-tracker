@@ -17,6 +17,10 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\Vehicle\VehicleController;
 use App\Http\Controllers\Vehicle\TripController;
 
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\DeviceController as AdminDeviceController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
+
 Route::get('/', function () {
     return redirect()->route('login');
 });
@@ -69,7 +73,7 @@ Route::post('/profile', [ProfileController::class, 'store'])
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'is_user'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
@@ -346,6 +350,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
         NotificationController::class,
         'markAsRead'
     ])->name('notifications.read');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Admin Routes
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', 'verified', 'is_admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::get('devices/export-pdf/{key}', [AdminDeviceController::class, 'exportPdf'])->name('devices.export_pdf');
+    Route::resource('devices', AdminDeviceController::class)->only(['index', 'store', 'destroy']);
+    Route::resource('users', AdminUserController::class)->only(['index', 'destroy']);
+    
+    // Admin Profile
+    Route::get('/profile', [App\Http\Controllers\Admin\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('profile.update');
 });
 
 require __DIR__ . '/auth.php';

@@ -18,7 +18,7 @@ window.GPSTracker = Object.assign(window.GPSTracker || {}, {
 
     config: {
 
-        defaultZoom: 17,
+        defaultZoom: 5,
 
         fitZoom: 16,
 

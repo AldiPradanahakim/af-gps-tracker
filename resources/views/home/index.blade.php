@@ -6,7 +6,7 @@
 
 @section('content')
 
-<div class="h-screen overflow-hidden bg-[#F8FAFC]">
+<div x-data="{ mobileMenuOpen: false }" class="h-screen overflow-hidden bg-[#F8FAFC]">
 
     <div class="flex h-full">
 
@@ -14,13 +14,13 @@
         @include('home.partials.sidebar')
 
         {{-- CONTENT --}}
-        <div class="relative z-10 flex flex-1 flex-col">
+        <div class="relative z-10 flex flex-1 flex-col h-full w-full">
 
             {{-- TOPBAR --}}
             @include('home.partials.topbar')
 
             {{-- MAP --}}
-            <main class="relative flex-1 min-h-0 overflow-hidden">
+            <main class="relative w-full overflow-hidden" style="height: calc(100vh - 72px);">
 
                 @include('home.partials.map')
 

@@ -8,6 +8,7 @@
 
 <div
     id="vehicleDetailPage"
+    x-data="{ mobileMenuOpen: false }"
     class="flex h-screen overflow-hidden bg-slate-50"
 >
 

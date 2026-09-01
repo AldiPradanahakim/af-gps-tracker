@@ -1,7 +1,16 @@
-<div class="flex h-full w-[360px] flex-col border-r border-slate-200 bg-white">
+<!-- Mobile backdrop -->
+<div x-show="mobileMenuOpen" 
+     style="display: none;" 
+     class="fixed inset-0 z-[4000] bg-slate-900/50 backdrop-blur-sm lg:hidden" 
+     @click="mobileMenuOpen = false" 
+     x-transition.opacity></div>
+
+<!-- Sidebar -->
+<div :class="mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'" 
+     class="fixed inset-y-0 left-0 z-[4001] flex h-full w-[320px] sm:w-[360px] flex-col border-r border-slate-200 bg-white transition-transform duration-300 lg:static lg:translate-x-0">
 
     {{-- HEADER --}}
-    <div class="border-b border-slate-200 px-6 py-5">
+    <div class="flex items-center justify-between border-b border-slate-200 px-6 py-5">
 
         <div class="flex items-center gap-4">
 
@@ -23,6 +32,13 @@
             </div>
 
         </div>
+
+        <!-- Close Mobile Menu -->
+        <button @click="mobileMenuOpen = false" type="button" class="lg:hidden rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
 
     </div>
 

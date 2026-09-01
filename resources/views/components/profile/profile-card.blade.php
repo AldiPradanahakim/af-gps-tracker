@@ -1,4 +1,4 @@
-<div class="w-full max-w-[460px] rounded-[24px] bg-white p-8 shadow-xl border border-[#E5E7EB]">
+<div class="w-full max-w-[460px] rounded-[24px] bg-white p-6 sm:p-8 shadow-xl border border-[#E5E7EB]">
 
     <div class="text-center">
 
@@ -8,7 +8,7 @@
                 class="h-[42px] w-[42px] object-contain">
         </div>
 
-        <h2 class="text-[30px] font-semibold tracking-[-0.03em] text-slate-950">
+        <h2 class="text-[24px] sm:text-[30px] font-semibold tracking-[-0.03em] text-slate-950">
             Lengkapi Profil
         </h2>
 

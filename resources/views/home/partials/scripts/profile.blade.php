@@ -72,8 +72,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 </button>
 
-            </div>
-
             <div class="border-t border-slate-200 p-2">
 
                 <form

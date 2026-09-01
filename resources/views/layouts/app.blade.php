@@ -44,6 +44,7 @@
     <x-toast />
 
     @include('components.scripts.toast')
+    @include('components.scripts.dynamic-marker')
     @stack('scripts')
 
 </body>

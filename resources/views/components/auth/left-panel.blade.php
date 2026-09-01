@@ -1,6 +1,6 @@
 @props(['subtext' => null])
 
-<div class="hidden lg:flex h-full w-full rounded-[32px] bg-[#F8FAFC] p-6 xl:p-8">
+<div class="hidden lg:flex h-full w-full bg-[#F8FAFC] p-6 xl:p-8">
     <div class="flex h-full w-full flex-col">
         <div class="flex-shrink-0 space-y-4 max-w-[560px]">
             <div class="flex items-center gap-4">

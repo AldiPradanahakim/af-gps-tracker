@@ -45,14 +45,8 @@ class StoreVehicleRequest extends FormRequest
 
                     'motor',
                     'mobil',
-                    'pickup',
-                    'truck',
-                    'bus',
-                    'van',
-                    'taxi',
-                    'ambulance',
-                    'police',
-                    'bicycle',
+                    'kendaraan_besar',
+                    'sepeda',
 
                 ]),
 

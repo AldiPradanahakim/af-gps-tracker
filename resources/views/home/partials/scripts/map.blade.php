@@ -17,8 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
     */
 
     const DEFAULT_CENTER = [
-        -6.917464,
-        107.619123,
+        -2.5489,
+        118.0148,
     ];
 
     const defaultLayer = L.tileLayer(
@@ -77,6 +77,13 @@ document.addEventListener('DOMContentLoaded', () => {
         GPSTracker.config.defaultZoom
 
     );
+
+    setTimeout(() => {
+        if (GPSTracker.map) {
+            GPSTracker.map.invalidateSize();
+        }
+    }, 100);
+
 
     /*
     |--------------------------------------------------------------------------

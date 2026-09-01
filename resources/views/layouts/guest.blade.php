@@ -19,8 +19,8 @@
             'resources/js/app.js'
         ])
     </head>
-    <body class="min-h-screen bg-[#F8FAFC] antialiased text-slate-900">
-        <main class="min-h-screen flex items-center justify-center px-4 py-6 sm:px-6">
+    <body class="bg-[#F8FAFC] antialiased text-slate-900">
+        <main class="min-h-screen flex items-start lg:items-center justify-center px-4 py-6 sm:px-6 lg:py-8">
             {{ $slot }}
         </main>
     </body>

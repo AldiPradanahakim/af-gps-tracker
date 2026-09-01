@@ -13,6 +13,10 @@ class DashboardController extends Controller
         $user = Auth::user();
         assert($user instanceof User);
 
+        if ($user->is_admin) {
+            return redirect()->route('admin.dashboard');
+        }
+
         if (! $user->devices()->exists()) {
             return redirect()->route('devices.create');
         }

@@ -48,7 +48,7 @@ class DeviceService
             |--------------------------------------------------------------------------
             */
 
-            if (! Hash::check($data['device_password'], $device->device_password)) {
+            if ($data['device_password'] !== $device->device_password) {
 
                 throw ValidationException::withMessages([
 

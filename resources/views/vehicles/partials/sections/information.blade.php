@@ -261,7 +261,7 @@
 
                                 id="vehicleTypeInput"
 
-                                class="hidden h-10 w-full rounded-xl border border-slate-300 bg-white px-3 text-[13px] font-medium text-slate-900 outline-none transition focus:border-blue-500"
+                                class="dynamic-vehicle-type hidden h-10 w-full rounded-xl border border-slate-300 bg-white px-3 text-[13px] font-medium text-slate-900 outline-none transition focus:border-blue-500"
 
                             >
 
@@ -278,7 +278,101 @@
                                 >
                                     Mobil
                                 </option>
+                                
+                                <option
+                                    value="kendaraan_besar"
+                                    @selected(($device->vehicle->vehicle_type ?? '') == 'kendaraan_besar')
+                                >
+                                    Kendaraan Besar
+                                </option>
+                                
 
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                    {{-- Icon Marker --}}
+                    <div
+                        class="grid grid-cols-[145px_15px_1fr] items-center"
+                    >
+
+                        <span
+                            class="text-[13px] text-slate-500"
+                        >
+                            Icon Marker
+                        </span>
+
+                        <span
+                            class="text-center text-slate-400"
+                        >
+                            :
+                        </span>
+
+                        <div>
+
+                            {{-- READ MODE --}}
+                            <span
+                                id="vehicleMarkerIconText"
+                                class="text-[13px] font-semibold text-slate-900 capitalize"
+                            >
+                                {{ str_replace('-', ' ', $device->vehicle->marker_icon ?? '-') }}
+                            </span>
+
+                            {{-- EDIT MODE --}}
+                            <select
+                                id="vehicleMarkerIconInput"
+                                data-selected-icon="{{ $device->vehicle->marker_icon ?? '' }}"
+                                class="dynamic-marker-icon hidden h-10 w-full rounded-xl border border-slate-300 bg-white px-3 text-[13px] font-medium text-slate-900 outline-none transition focus:border-blue-500"
+                            >
+                                <!-- Opsi diisi otomatis via JS di app.blade.php -->
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                    {{-- Warna Marker --}}
+                    <div
+                        class="grid grid-cols-[145px_15px_1fr] items-center"
+                    >
+
+                        <span
+                            class="text-[13px] text-slate-500"
+                        >
+                            Warna Marker
+                        </span>
+
+                        <span
+                            class="text-center text-slate-400"
+                        >
+                            :
+                        </span>
+
+                        <div>
+
+                            {{-- READ MODE --}}
+                            <span
+                                id="vehicleMarkerColorText"
+                                class="text-[13px] font-semibold text-slate-900 capitalize"
+                            >
+                                {{ $device->vehicle->marker_color ?? '-' }}
+                            </span>
+
+                            {{-- EDIT MODE --}}
+                            <select
+                                id="vehicleMarkerColorInput"
+                                class="hidden h-10 w-full rounded-xl border border-slate-300 bg-white px-3 text-[13px] font-medium text-slate-900 outline-none transition focus:border-blue-500"
+                            >
+                                <option value="green" @selected(($device->vehicle->marker_color ?? '') == 'green')>🟢 Hijau</option>
+                                <option value="blue" @selected(($device->vehicle->marker_color ?? '') == 'blue')>🔵 Biru</option>
+                                <option value="red" @selected(($device->vehicle->marker_color ?? '') == 'red')>🔴 Merah</option>
+                                <option value="orange" @selected(($device->vehicle->marker_color ?? '') == 'orange')>🟠 Orange</option>
+                                <option value="yellow" @selected(($device->vehicle->marker_color ?? '') == 'yellow')>🟡 Kuning</option>
+                                <option value="purple" @selected(($device->vehicle->marker_color ?? '') == 'purple')>🟣 Ungu</option>
+                                <option value="black" @selected(($device->vehicle->marker_color ?? '') == 'black')>⚫ Hitam</option>
+                                <option value="gray" @selected(($device->vehicle->marker_color ?? '') == 'gray')>⚪ Abu-abu</option>
                             </select>
 
                         </div>

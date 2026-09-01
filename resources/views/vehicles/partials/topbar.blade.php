@@ -4,7 +4,7 @@
 >
 
     <div
-        class="flex h-16 items-center justify-between px-6"
+        class="flex h-16 items-center justify-between px-4 lg:px-6"
     >
 
         {{-- ========================================================= --}}
@@ -12,22 +12,25 @@
         {{-- ========================================================= --}}
 
         <div
-            class="flex items-center"
+            class="flex items-center gap-2"
         >
+
+            <!-- Hamburger Button -->
+            <button @click="mobileMenuOpen = !mobileMenuOpen" type="button" class="lg:hidden rounded-xl p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700">
+                <i class="fa-solid fa-bars text-[16px]"></i>
+            </button>
 
             <a
                 href="{{ route('home') }}"
-                class="flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-[13px] font-semibold text-slate-700 transition-all duration-200 hover:border-blue-300 hover:text-blue-600"
+                class="flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 md:px-4 text-[13px] font-semibold text-slate-700 transition-all duration-200 hover:border-blue-300 hover:text-blue-600"
             >
 
                 <i
                     class="fa-solid fa-arrow-left text-[12px]"
                 ></i>
 
-                <span>
-
-                    Kembali ke Monitoring
-
+                <span class="hidden md:inline">
+                    Kembali
                 </span>
 
             </a>
@@ -39,7 +42,7 @@
         {{-- ========================================================= --}}
 
         <div
-            class="w-full max-w-[560px]"
+            class="flex-1 px-2 lg:px-4 max-w-[560px]"
         >
 
             <div
@@ -141,7 +144,7 @@
 
                     </div>
 
-                    <div class="text-left">
+                    <div class="hidden sm:block text-left">
 
                         <div class="text-sm font-semibold text-slate-900">
 

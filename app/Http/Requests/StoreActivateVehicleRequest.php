@@ -39,14 +39,8 @@ class StoreActivateVehicleRequest extends FormRequest
                 Rule::in([
                     'motor',
                     'mobil',
-                    'pickup',
-                    'truck',
-                    'bus',
-                    'van',
-                    'taxi',
-                    'ambulance',
-                    'police',
-                    'bicycle',
+                    'kendaraan_besar',
+                    'sepeda',
                 ]),
             ],
 
@@ -54,7 +48,6 @@ class StoreActivateVehicleRequest extends FormRequest
                 'required',
                 'string',
                 'max:20',
-                'unique:vehicles,plate_number',
             ],
 
             /*

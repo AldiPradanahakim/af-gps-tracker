@@ -24,6 +24,20 @@ window.VehicleNavigation = {
 
         stop: 'vehicleStopSection',
 
+        speed: 'vehicleSpeedSection',
+
+        messages: 'vehicleMessagesSection',
+
+    },
+
+    lazyActivators: {
+
+        history: () => window.Vehicle?.history?.activate?.(),
+
+        stop: () => window.Vehicle?.stop?.activate?.(),
+
+        messages: () => window.Vehicle?.messages?.activate?.(),
+
     },
 
     /*
@@ -137,6 +151,8 @@ window.VehicleNavigation = {
 
         this.current = name;
 
+        this.lazyActivators[name]?.();
+
         this.setActive(
 
             name
@@ -215,13 +231,18 @@ window.VehicleNavigation = {
 
             button => {
 
+                // Reset button background and text
                 button.classList.remove(
 
                     'bg-blue-600',
 
                     'text-white',
 
+                    'bg-[#2563EB]',
+
                     'bg-blue-50',
+
+                    'text-blue-700',
 
                     'text-slate-900'
 
@@ -235,6 +256,20 @@ window.VehicleNavigation = {
 
                 );
 
+                const icon = button.querySelector('span:first-child');
+                const text = button.querySelector('span:last-child');
+
+                // Reset icon and text span styles
+                if (icon) {
+                    icon.classList.remove('bg-white', 'text-[#2563EB]', 'text-blue-600', 'bg-blue-100');
+                    icon.classList.add('bg-slate-100', 'text-slate-500');
+                }
+
+                if (text) {
+                    text.classList.remove('text-white', 'text-blue-700');
+                    text.classList.add('text-slate-700');
+                }
+
                 if (
 
                     button.dataset.section ===
@@ -247,17 +282,33 @@ window.VehicleNavigation = {
 
                         'bg-white',
 
-                        'text-slate-700'
+                        'text-slate-700',
+
+                        'hover:bg-slate-50'
 
                     );
 
                     button.classList.add(
 
-                        'bg-blue-600',
+                        'bg-[#2563EB]',
 
                         'text-white'
 
                     );
+
+                    if (icon) {
+                        icon.classList.remove('bg-slate-100', 'text-slate-500');
+                        icon.classList.add('bg-white', 'text-[#2563EB]');
+                    }
+
+                    if (text) {
+                        text.classList.remove('text-slate-700');
+                        text.classList.add('text-white');
+                    }
+
+                } else {
+
+                    button.classList.add('hover:bg-slate-50');
 
                 }
 

@@ -123,29 +123,25 @@
 
     </div>
 
-        {{-- ===================================================== --}}
-    {{-- Floating Toolbar --}}
+    {{-- ===================================================== --}}
+    {{-- Floating Zoom Toolbar --}}
     {{-- ===================================================== --}}
 
     <div
-        class="absolute right-5 top-1/2 z-[700] flex -translate-y-1/2 flex-col gap-3"
+        class="absolute bottom-28 right-4 z-[700] flex flex-col overflow-hidden rounded-lg border border-slate-200 shadow-lg"
     >
 
         <button
             id="vehicleZoomInButton"
             type="button"
-            class="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white shadow-lg transition hover:bg-slate-100"
-        >
-            <i class="fa-solid fa-plus text-slate-700"></i>
-        </button>
+            class="flex h-[34px] w-[34px] items-center justify-center bg-white text-slate-700 text-xl font-light leading-none transition hover:bg-slate-50 border-b border-slate-200"
+        >+</button>
 
         <button
             id="vehicleZoomOutButton"
             type="button"
-            class="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white shadow-lg transition hover:bg-slate-100"
-        >
-            <i class="fa-solid fa-minus text-slate-700"></i>
-        </button>
+            class="flex h-[34px] w-[34px] items-center justify-center bg-white text-slate-700 text-xl font-light leading-none transition hover:bg-slate-50"
+        >−</button>
 
     </div>
 
@@ -153,12 +149,12 @@
     {{-- Map Layer --}}
     {{-- ===================================================== --}}
 
-    <div class="absolute bottom-5 right-5 z-[700]">
+    <div class="absolute bottom-6 right-4 z-[700]">
 
         <button
             id="vehicleLayerButton"
             type="button"
-            class="relative h-16 w-16 overflow-hidden rounded-2xl border border-slate-200 shadow-lg"
+            class="relative h-20 w-20 overflow-hidden rounded-2xl shadow-lg"
         >
 
             <img
@@ -169,16 +165,26 @@
 
             <div class="absolute inset-0 bg-black/20"></div>
 
-            <div class="absolute bottom-1 left-0 right-0 flex items-center justify-center gap-1 px-1 text-[10px] font-semibold text-white">
-                <i class="fa-solid fa-layer-group"></i>
+            <div class="absolute bottom-1 left-0 right-0 flex items-center justify-center gap-1 px-1 text-[11px] font-semibold text-white">
+
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 shrink-0"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path d="M12 2 1 7l11 5 9-4.09V17h2V7L12 2Zm0 12L1 9v2l11 5 11-5V9l-11 5Zm0 5L1 14v2l11 5 11-5v-2l-11 5Z"/>
+                </svg>
+
                 <span class="truncate">Lapisan</span>
+
             </div>
 
         </button>
 
         <div
             id="vehicleLayerDropdown"
-            class="absolute bottom-0 right-[76px] hidden w-44 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
+            class="absolute bottom-0 right-[90px] hidden w-48 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
         >
 
             <button

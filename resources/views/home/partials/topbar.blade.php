@@ -1,11 +1,25 @@
 <div class="relative z-[3000] border-b border-slate-200 bg-white">
 
-    <div class="flex h-[72px] items-center justify-between px-8">
+    <div class="flex h-[72px] items-center justify-between px-4 lg:px-8">
 
-        {{-- SEARCH --}}
-        <div class="relative w-full max-w-xl">
+        {{-- LEFT (Hamburger) --}}
+        <div class="flex items-center">
 
-            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+            <!-- Hamburger Button -->
+            <button @click="mobileMenuOpen = !mobileMenuOpen" type="button" class="lg:hidden mr-3 rounded-xl p-2.5 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
+        </div>
+
+        {{-- CENTER SEARCH --}}
+        <div class="flex flex-1 justify-start px-2 lg:px-6">
+
+            {{-- SEARCH --}}
+            <div class="relative w-full max-w-[450px]">
+
+                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
 
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -39,9 +53,10 @@
             </div>
 
         </div>
+        </div>
 
         {{-- RIGHT MENU --}}
-        <div class="ml-8 flex items-center gap-3">
+        <div class="flex shrink-0 items-center gap-1.5 lg:gap-3">
 
             {{-- HOME --}}
             @php
@@ -75,7 +90,7 @@
 
                 </svg>
 
-                Home
+                <span class="hidden md:inline">Home</span>
 
             </button>
 
@@ -107,7 +122,7 @@
 
                     </svg>
 
-                    Geofence
+                    <span class="hidden md:inline">Geofence</span>
 
                    <svg
                         id="geofenceArrow"
@@ -301,7 +316,7 @@
 
                     </div>
 
-                    <div class="text-left">
+                    <div class="hidden md:block text-left">
 
                         <div class="text-sm font-semibold text-slate-900">
 

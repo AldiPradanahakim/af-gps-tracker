@@ -29,7 +29,14 @@ class VehicleController extends Controller
      */
     private function authorizeDevice(Device $device): void
     {
-        abort_if($device->user_id !== Auth::id(), 403, 'Kendaraan tidak ditemukan.');
+        if ($device->user_id !== Auth::id()) {
+            if (request()->expectsJson()) {
+                abort(403, 'Kendaraan tidak ditemukan.');
+            }
+            throw new \Illuminate\Http\Exceptions\HttpResponseException(
+                redirect()->route('home')->with('error', 'Kendaraan tidak ditemukan.')
+            );
+        }
     }
 
     /**
@@ -81,7 +88,17 @@ class VehicleController extends Controller
 
             'vehicle_type' => [
                 'required',
-                'in:motor,mobil',
+                'in:motor,mobil,kendaraan_besar,sepeda',
+            ],
+
+            'marker_icon' => [
+                'required',
+                'in:motorcycle,car,pickup,truck,bus,van,taxi,ambulance,police,bicycle',
+            ],
+
+            'marker_color' => [
+                'required',
+                'in:green,blue,red,orange,yellow,purple,black,gray',
             ],
 
         ]);

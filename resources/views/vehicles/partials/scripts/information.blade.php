@@ -191,6 +191,18 @@ window.VehicleInformation = {
 
         );
 
+        this.toggleField(
+
+            'vehicleMarkerIcon'
+
+        );
+
+        this.toggleField(
+
+            'vehicleMarkerColor'
+
+        );
+
         document
             .getElementById(
                 'editVehicleButton'
@@ -256,7 +268,30 @@ window.VehicleInformation = {
                 'vehicleTypeText'
 
             ).textContent
+                .trim()
                 .toLowerCase();
+
+        // Marker icon mapping for reset
+        const selectedIcon = document.getElementById('vehicleMarkerIconInput').dataset.selectedIcon;
+        if (selectedIcon) {
+            document.getElementById('vehicleMarkerIconInput').value = selectedIcon;
+        }
+
+        // Marker color mapping for reset
+        const colorMap = {
+            '🟢 Hijau': 'green',
+            '🔵 Biru': 'blue',
+            '🔴 Merah': 'red',
+            '🟠 Orange': 'orange',
+            '🟡 Kuning': 'yellow',
+            '🟣 Ungu': 'purple',
+            '⚫ Hitam': 'black',
+            '⚪ Abu-abu': 'gray'
+        };
+        const colorText = document.getElementById('vehicleMarkerColorText').textContent.trim();
+        if (colorMap[colorText]) {
+            document.getElementById('vehicleMarkerColorInput').value = colorMap[colorText];
+        }
 
         this.toggleField(
 
@@ -273,6 +308,18 @@ window.VehicleInformation = {
         this.toggleField(
 
             'vehicleType'
+
+        );
+
+        this.toggleField(
+
+            'vehicleMarkerIcon'
+
+        );
+
+        this.toggleField(
+
+            'vehicleMarkerColor'
 
         );
 
@@ -382,6 +429,16 @@ window.VehicleInformation = {
                         vehicle_type:
                             document.getElementById(
                                 'vehicleTypeInput'
+                            ).value,
+
+                        marker_icon:
+                            document.getElementById(
+                                'vehicleMarkerIconInput'
+                            ).value,
+
+                        marker_color:
+                            document.getElementById(
+                                'vehicleMarkerColorInput'
                             ).value,
 
                     }),
@@ -531,11 +588,38 @@ window.VehicleInformation = {
 
         ).textContent =
 
-            vehicle.vehicle_type.charAt(0)
+            vehicle.vehicle_type.charAt(0).toUpperCase()
 
             +
 
             vehicle.vehicle_type.slice(1);
+
+        document.getElementById(
+
+            'vehicleMarkerIconText'
+
+        ).textContent =
+
+            (vehicle.marker_icon || '-').replace(/-/g, ' ');
+
+        const colorTextMap = {
+            'green': '🟢 Hijau',
+            'blue': '🔵 Biru',
+            'red': '🔴 Merah',
+            'orange': '🟠 Orange',
+            'yellow': '🟡 Kuning',
+            'purple': '🟣 Ungu',
+            'black': '⚫ Hitam',
+            'gray': '⚪ Abu-abu'
+        };
+
+        document.getElementById(
+
+            'vehicleMarkerColorText'
+
+        ).textContent =
+
+            colorTextMap[vehicle.marker_color] || '-';
 
         document.getElementById(
             'vehicleNameInput'
@@ -551,6 +635,21 @@ window.VehicleInformation = {
             'vehicleTypeInput'
         ).value =
             vehicle.vehicle_type;
+
+        document.getElementById(
+            'vehicleMarkerIconInput'
+        ).value =
+            vehicle.marker_icon;
+        
+        document.getElementById(
+            'vehicleMarkerIconInput'
+        ).dataset.selectedIcon =
+            vehicle.marker_icon;
+
+        document.getElementById(
+            'vehicleMarkerColorInput'
+        ).value =
+            vehicle.marker_color;
 
     },
 

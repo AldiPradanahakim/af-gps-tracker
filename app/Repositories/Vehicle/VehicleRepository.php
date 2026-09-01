@@ -728,7 +728,37 @@ class VehicleRepository
      */
     public function destroy(Device $device): void
     {
-        $device->delete();
+        // 1. Hapus data spesifik milik pengguna (Vehicle)
+        if ($device->vehicle) {
+            $device->vehicle()->delete();
+        }
+
+        // 2. Hapus Geofence yang dibuat pengguna
+        $device->geofences()->delete();
+
+        // 3. Hapus riwayat dan notifikasi (opsional, namun disarankan agar 
+        // pengguna baru tidak melihat riwayat pengguna lama jika device ini dipindahtangankan)
+        $device->notifications()->delete();
+        $device->travelHistories()->delete();
+        $device->stopHistories()->delete();
+        $device->deviceLogs()->delete();
+
+        // 4. Putuskan hubungan device dari akun pengguna dan kembalikan ke status semula
+        $device->update([
+            'user_id' => null,
+            'home_location' => null,
+            'stop_setting' => null,
+            'speed_setting' => null,
+            'notification_setting' => null,
+            'is_active' => false,
+            'last_heartbeat' => null,
+            'last_battery' => null,
+            'low_battery_active' => false,
+            'offline_notified_at' => null,
+            'overspeed_active' => false,
+            'is_inside_geofence' => false,
+            'activated_at' => null,
+        ]);
     }
 
     /**

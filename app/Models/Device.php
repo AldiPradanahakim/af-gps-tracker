@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Hash;
 
 class Device extends Model
 {
@@ -58,15 +59,11 @@ class Device extends Model
      */
     protected $hidden = [
 
-        'device_password',
-
         'mqtt_secret',
 
     ];
 
     protected $casts = [
-
-        'device_password' => 'hashed',
 
         'mqtt_secret' => 'encrypted',
 
@@ -105,6 +102,19 @@ class Device extends Model
             && $this->last_heartbeat->greaterThan(
                 now()->subMinutes(self::ONLINE_THRESHOLD_MINUTES)
             );
+    }
+
+    /**
+     * Otomatis hash device_password dengan Bcrypt setiap kali di-set,
+     * sehingga controller/seeder tidak perlu memanggil Hash::make() secara
+     * eksplisit. Jika nilai sudah berbentuk Bcrypt hash (mis. saat update
+     * tanpa mengubah password), nilai dibiarkan apa adanya.
+     */
+    public function setDevicePasswordAttribute(string $value): void
+    {
+        $this->attributes['device_password'] = Hash::needsRehash($value)
+            ? Hash::make($value)
+            : $value;
     }
 
     protected static function booted(): void

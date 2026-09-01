@@ -456,6 +456,8 @@ document.addEventListener('gpstracker:map-ready', () => {
 
     GPSTracker.updatePopup = function (vehicle) {
 
+        return; // Safely ignore
+
         if (!vehicle) {
 
             return;
@@ -772,6 +774,8 @@ document.addEventListener('gpstracker:map-ready', () => {
     */
 
     GPSTracker.openPopup = function (deviceId) {
+
+        return; // Safely ignore to prevent map freezes
 
         if (
 

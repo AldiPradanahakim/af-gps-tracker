@@ -1,13 +1,21 @@
+<!-- Mobile backdrop -->
+<div x-show="mobileMenuOpen" 
+     style="display: none;" 
+     class="fixed inset-0 z-[4000] bg-slate-900/50 backdrop-blur-sm lg:hidden" 
+     @click="mobileMenuOpen = false" 
+     x-transition.opacity></div>
+
 <aside
     id="vehicleSidebar"
-    class="flex h-screen w-[240px] flex-shrink-0 flex-col border-r border-slate-200 bg-white"
+    :class="mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'"
+    class="fixed inset-y-0 left-0 z-[4001] flex h-screen w-[280px] flex-shrink-0 flex-col border-r border-slate-200 bg-white transition-transform duration-300 lg:static lg:w-[240px] lg:translate-x-0"
 >
 
     {{-- ========================================================= --}}
     {{-- Logo --}}
     {{-- ========================================================= --}}
 
-    <div class="px-4 pt-4 pb-4">
+    <div class="flex items-center justify-between px-4 pt-4 pb-4">
 
         <a
             href="{{ route('home') }}"
@@ -43,6 +51,11 @@
             </div>
 
         </a>
+
+        <!-- Close Mobile Menu -->
+        <button @click="mobileMenuOpen = false" type="button" class="lg:hidden rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700">
+            <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
 
     </div>
 

@@ -569,21 +569,21 @@ document.addEventListener(
 
                 marker.deviceCode = vehicle.device_code;
 
-                marker.bindPopup(
+                // marker.bindPopup(
 
-                    this.createPopupContent(vehicle),
+                //     this.createPopupContent(vehicle),
 
-                    {
+                //     {
 
-                        maxWidth: 320,
+                //         maxWidth: 320,
 
-                        closeButton: false,
+                //         closeButton: false,
 
-                        autoPan: true,
+                //         autoPan: true,
 
-                    }
+                //     }
 
-                );
+                // );
 
                 marker.on(
 
@@ -667,21 +667,21 @@ document.addEventListener(
 
             }
 
-            if (
+            // if (
 
-                typeof this.bindMarkerPopup === 'function'
+            //     typeof this.bindMarkerPopup === 'function'
 
-            ) {
+            // ) {
 
-                this.bindMarkerPopup(
+            //     this.bindMarkerPopup(
 
-                    marker,
+            //         marker,
 
-                    vehicle
+            //         vehicle
 
-                );
+            //     );
 
-            }
+            // }
 
             this.addLayerItem(
 
@@ -1449,7 +1449,7 @@ document.addEventListener(
 
             ) {
 
-                this.fitVehicles();
+                // this.fitVehicles();
 
             }
 
