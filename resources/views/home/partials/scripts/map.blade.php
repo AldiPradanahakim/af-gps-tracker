@@ -1008,7 +1008,7 @@ document.addEventListener('DOMContentLoaded', () => {
         html: `
             <div
                 class="flex h-10 w-10 items-center justify-center rounded-full border-4 border-white bg-blue-600 shadow-xl">
-                🏠
+                <i class="fa-solid fa-house" style="font-size:14px; color:white;"></i>
             </div>
         `,
 
@@ -1229,7 +1229,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             <div class="mb-2 flex items-center gap-2">
 
-                <div class="text-xl">🏠</div>
+                <div
+                class="flex h-10 w-10 items-center justify-center rounded-full border-4 border-white bg-blue-600 shadow-xl">
+                <i class="fa-solid fa-house" style="font-size:14px; color:white;"></i>
+            </div>
 
                 <div>
 
