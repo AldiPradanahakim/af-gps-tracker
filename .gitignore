@@ -3,6 +3,10 @@
 .env
 .env.backup
 .env.production
+# Cadangan bertanggal yang dibuat panel setiap kali .env disunting.
+# Tanpa baris ini, satu suntingan .env memblokir semua deploy berikutnya:
+# skrip deploy menolak jalan kalau working tree tidak bersih.
+.env.bak.*
 .phpactor.json
 .phpunit.result.cache
 /.claude
