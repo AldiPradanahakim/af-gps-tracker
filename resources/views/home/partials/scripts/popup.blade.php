@@ -738,7 +738,7 @@ document.addEventListener('gpstracker:map-ready', () => {
 
                         <p class="mt-1 text-sm font-medium text-slate-900">
 
-                            ${vehicle.updated_at ?? '-'}
+                            ${typeof GPSTracker !== 'undefined' && typeof GPSTracker.formatDateTime === 'function' ? GPSTracker.formatDateTime(vehicle.received_at || vehicle.updated_at) : (vehicle.updated_at || vehicle.received_at || '-')}
 
                         </p>
 

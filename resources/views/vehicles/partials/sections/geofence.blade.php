@@ -470,6 +470,25 @@
 
                     </div>
 
+                    {{-- Sumber Titik --}}
+                    
+                    <div>
+                    
+                        <label class="mb-2 block text-[12px] font-medium text-slate-700">
+                            Titik Pusat
+                        </label>
+                    
+                        <select
+                            id="editRadiusSource"
+                            class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none transition focus:border-blue-500"
+                        >
+                            <option value="keep_current">Pertahankan Titik Saat Ini</option>
+                            <option value="home_location">Home Location</option>
+                            <option value="current_location">Lokasi GPS Terakhir</option>
+                        </select>
+                    
+                    </div>
+
                     {{-- Radius --}}
 
                     <div>
@@ -528,54 +547,11 @@
 
                     </div>
 
-                    {{-- Informasi --}}
-
-                    <div
-                        class="rounded-xl border border-amber-200 bg-amber-50 p-4"
-                    >
-
-                        <div
-                            class="flex items-start gap-3"
-                        >
-
-                            <i
-                                class="fa-solid fa-circle-info mt-0.5 text-amber-600"
-                            ></i>
-
-                            <p
-                                id="radiusCenterStatus"
-                                class="text-[12px] leading-6 text-amber-700"
-                            >
-                                Jika ingin mengubah titik pusat Radius,
-                                klik <b>Ubah Titik</b>,
-                                kemudian klik lokasi baru pada peta.
-                            </p>
-
-                        </div>
-
-                    </div>
-
                     {{-- Action --}}
 
                     <div
-                        class="grid grid-cols-3 gap-3 pt-2"
+                        class="grid grid-cols-2 gap-3 pt-2"
                     >
-
-                        <button
-
-                            id="changeRadiusCenter"
-
-                            type="button"
-
-                            class="rounded-xl border border-blue-200 bg-blue-50 py-2.5 text-[12px] font-semibold text-blue-600"
-
-                        >
-
-                            <i class="fa-solid fa-location-crosshairs mr-2"></i>
-
-                            Ubah Titik
-
-                        </button>
 
                         <button
 

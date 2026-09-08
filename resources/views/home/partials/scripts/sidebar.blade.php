@@ -758,7 +758,7 @@ document.addEventListener('gpstracker:map-ready', () => {
                         data-updated
                         class="mt-1 text-sm font-medium text-slate-500">
 
-                        ${vehicle.updated_at ?? '-'}
+                        ${this.formatDateTime(vehicle.received_at || vehicle.updated_at)}
 
                     </p>
 
@@ -1026,6 +1026,12 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         );
 
+        this.updateVehicleSatellite(
+
+            vehicle
+
+        );
+
     };
 
     /*
@@ -1108,6 +1114,56 @@ document.addEventListener('gpstracker:map-ready', () => {
 
     /*
     |--------------------------------------------------------------------------
+    | Date Time Formatter
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.formatDateTime = function (datetime) {
+
+        if (!datetime || datetime === '-') {
+
+            return '-';
+
+        }
+
+        try {
+
+            const date = new Date(datetime);
+
+            if (isNaN(date.getTime())) {
+
+                return datetime;
+
+            }
+
+            return date.toLocaleString('id-ID', {
+
+                day: '2-digit',
+
+                month: '2-digit',
+
+                year: 'numeric',
+
+                hour: '2-digit',
+
+                minute: '2-digit',
+
+                second: '2-digit',
+
+                hour12: false
+
+            }).replace(/\./g, ':');
+
+        } catch (e) {
+
+            return datetime;
+
+        }
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
     | Update Updated Time
     |--------------------------------------------------------------------------
     */
@@ -1126,9 +1182,37 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         }
 
+        const timeVal = vehicle.received_at || vehicle.updated_at;
+
         element.textContent =
 
-            vehicle.updated_at ?? '-';
+            this.formatDateTime(timeVal);
+
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Update Satellite
+    |--------------------------------------------------------------------------
+    */
+
+    GPSTracker.updateVehicleSatellite = function (vehicle) {
+
+        const element = document.getElementById(
+
+            `vehicle-satellite-${vehicle.device_id}`
+
+        );
+
+        if (!element) {
+
+            return;
+
+        }
+
+        element.textContent =
+
+            vehicle.satellite !== undefined && vehicle.satellite !== null ? vehicle.satellite : '-';
 
     };
 

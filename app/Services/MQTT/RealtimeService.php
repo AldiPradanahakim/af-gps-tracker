@@ -10,31 +10,33 @@ class RealtimeService
 {
     /**
      * Broadcast realtime location.
+     *
+     * Broadcast dilakukan untuk SETIAP payload MQTT
+     * yang bukan duplicate message.
+     *
+     * Broadcast TIDAK bergantung pada DeviceLog
+     * maupun TravelHistory.
      */
     public function broadcast(
         Device $device,
-        TravelHistory $travelHistory,
-        array $geofenceResult
+        array $payload,
+        array $geofenceResult = [],
+        ?TravelHistory $travelHistory = null,
+        ?string $searchAddress = null
     ): void {
 
         event(
-
             new VehicleLocationUpdated(
-
                 deviceId: (string) $device->id,
 
                 payload: $this->payload(
-
                     $device,
-
+                    $payload,
+                    $geofenceResult,
                     $travelHistory,
-
-                    $geofenceResult
-
+                    $searchAddress
                 )
-
             )
-
         );
     }
 
@@ -43,13 +45,98 @@ class RealtimeService
      */
     protected function payload(
         Device $device,
-        TravelHistory $travelHistory,
-        array $geofenceResult
+        array $payload,
+        array $geofenceResult,
+        ?TravelHistory $travelHistory,
+        ?string $searchAddress
     ): array {
 
         $vehicle = $device->vehicle;
 
-        $location = $travelHistory->location ?? [];
+        /*
+        |--------------------------------------------------------------------------
+        | Latest GPS Position
+        |--------------------------------------------------------------------------
+        |
+        | PENTING:
+        |
+        | Realtime SELALU menggunakan payload MQTT terbaru.
+        |
+        | Jangan menggunakan TravelHistory sebagai sumber posisi
+        | karena TravelHistory hanya dibuat ketika posisi melewati
+        | threshold persistence.
+        |
+        */
+
+        $latitude = (float) ($payload['lat'] ?? 0);
+
+        $longitude = (float) ($payload['lng'] ?? 0);
+
+        $speed = (float) ($payload['speed'] ?? 0);
+
+        $heading = (float) ($payload['heading'] ?? 0);
+
+        $battery = (int) ($payload['battery'] ?? 0);
+
+        $satellite = (int) ($payload['satellite'] ?? 0);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Address
+        |--------------------------------------------------------------------------
+        */
+
+        $address =
+            $searchAddress
+            ??
+            $travelHistory?->search_address;
+
+        /*
+        |--------------------------------------------------------------------------
+        | Received At
+        |--------------------------------------------------------------------------
+        */
+
+        $receivedAt = null;
+
+        if (! empty($payload['received_at'])) {
+
+            try {
+
+                $receivedAt = \App\Helpers\GpsTimestampParser::parse(
+                    $payload['received_at']
+                )->toISOString();
+
+            } catch (\Throwable) {
+
+                $receivedAt = now()->toISOString();
+            }
+        } else {
+
+            $receivedAt = now()->toISOString();
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Distance / Odometer (jika dikirim oleh ESP32)
+        |--------------------------------------------------------------------------
+        */
+
+        $distance = null;
+
+        if (isset($payload['total_distance'])) {
+            $distance = (float) $payload['total_distance'];
+        } elseif (isset($payload['distance'])) {
+            $distance = (float) $payload['distance'];
+        } elseif (isset($payload['odometer'])) {
+            $distance = (float) $payload['odometer'];
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Broadcast Payload
+        |--------------------------------------------------------------------------
+        */
 
         return [
 
@@ -59,7 +146,7 @@ class RealtimeService
             |--------------------------------------------------------------------------
             */
 
-            'device_id' => $device->id,
+            'device_id' => (string) $device->id,
 
             'device_code' => $device->device_id,
 
@@ -95,7 +182,7 @@ class RealtimeService
 
             'is_active' => (bool) $device->is_active,
 
-            'is_online' => $device->is_online,
+            'is_online' => (bool) $device->is_online,
 
             /*
             |--------------------------------------------------------------------------
@@ -103,79 +190,57 @@ class RealtimeService
             |--------------------------------------------------------------------------
             */
 
-            'latitude' => (float) (
+            'latitude' => $latitude,
 
-                $location['latitude']
+            'longitude' => $longitude,
 
-                ?? $location['lat']
+            'lat' => $latitude,
 
-                ?? 0
+            'lng' => $longitude,
 
-            ),
+            /*
+            |--------------------------------------------------------------------------
+            | GPS Data
+            |--------------------------------------------------------------------------
+            */
 
-            'longitude' => (float) (
+            'speed' => $speed,
 
-                $location['longitude']
+            'heading' => $heading,
 
-                ?? $location['lng']
+            'battery' => $battery,
 
-                ?? 0
+            'satellite' => $satellite,
 
-            ),
+            'total_distance' => $distance,
 
-            'lat' => (float) (
+            'distance' => $distance,
 
-                $location['lat']
+            /*
+            |--------------------------------------------------------------------------
+            | Complete Location
+            |--------------------------------------------------------------------------
+            */
 
-                ?? $location['latitude']
+            'location' => [
 
-                ?? 0
+                'lat' => $latitude,
 
-            ),
+                'lng' => $longitude,
 
-            'lng' => (float) (
+                'speed' => $speed,
 
-                $location['lng']
+                'heading' => $heading,
 
-                ?? $location['longitude']
+                'battery' => $battery,
 
-                ?? 0
+                'satellite' => $satellite,
 
-            ),
+                'received_at' => $receivedAt,
 
-            'speed' => (float) (
+                'total_distance' => $distance,
 
-                $location['speed']
-
-                ?? 0
-
-            ),
-
-            'heading' => (float) (
-
-                $location['heading']
-
-                ?? 0
-
-            ),
-
-            'battery' => (int) (
-
-                $location['battery']
-
-                ?? 0
-
-            ),
-
-            'satellite' => (int) (
-
-                $location['satellite']
-
-                ?? 0
-
-            ),
-
-            'location' => $location,
+            ],
 
             /*
             |--------------------------------------------------------------------------
@@ -183,7 +248,15 @@ class RealtimeService
             |--------------------------------------------------------------------------
             */
 
-            'search_address' => $travelHistory->search_address,
+            'search_address' => $address,
+
+            /*
+            |--------------------------------------------------------------------------
+            | MQTT Message
+            |--------------------------------------------------------------------------
+            */
+
+            'message_id' => $payload['message_id'] ?? null,
 
             /*
             |--------------------------------------------------------------------------
@@ -191,11 +264,9 @@ class RealtimeService
             |--------------------------------------------------------------------------
             */
 
-            'received_at' => optional(
+            'received_at' => $receivedAt,
 
-                $travelHistory->received_at
-
-            )->toISOString(),
+            'updated_at' => $receivedAt,
 
             /*
             |--------------------------------------------------------------------------
@@ -203,15 +274,32 @@ class RealtimeService
             |--------------------------------------------------------------------------
             */
 
-            'inside_geofence' => $geofenceResult['inside'] ?? false,
+            'inside_geofence' =>
+                (bool) (
+                    $geofenceResult['inside']
+                    ?? false
+                ),
 
-            'entered_geofence' => $geofenceResult['entered'] ?? false,
+            'entered_geofence' =>
+                (bool) (
+                    $geofenceResult['entered']
+                    ?? false
+                ),
 
-            'exited_geofence' => $geofenceResult['exited'] ?? false,
+            'exited_geofence' =>
+                (bool) (
+                    $geofenceResult['exited']
+                    ?? false
+                ),
 
-            'geofence_changed' => $geofenceResult['has_changed'] ?? false,
+            'geofence_changed' =>
+                (bool) (
+                    $geofenceResult['has_changed']
+                    ?? false
+                ),
 
-            'geofence_name' => $geofenceResult['geofence']?->name,
+            'geofence_name' =>
+                ($geofenceResult['geofence'] ?? null)?->name,
 
         ];
     }

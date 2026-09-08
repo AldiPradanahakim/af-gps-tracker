@@ -227,7 +227,7 @@
                                 data-updated
                                 class="mt-1 text-sm font-medium text-slate-500">
 
-                                {{ $vehicle['updated_at'] ?? '-' }}
+                                {{ !empty($vehicle['updated_at']) ? \Carbon\Carbon::parse($vehicle['updated_at'])->timezone(config('app.timezone', 'Asia/Jakarta'))->format('d/m/Y H:i:s') : (!empty($vehicle['received_at']) ? \Carbon\Carbon::parse($vehicle['received_at'])->timezone(config('app.timezone', 'Asia/Jakarta'))->format('d/m/Y H:i:s') : '-') }}
 
                             </p>
 

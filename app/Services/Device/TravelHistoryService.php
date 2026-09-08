@@ -11,6 +11,8 @@ class TravelHistoryService
 {
     /**
      * Store travel history.
+     *
+     * Method ini hanya dipanggil apabila DeviceLog berhasil dibuat.
      */
     public function store(
         Device $device,
@@ -26,12 +28,31 @@ class TravelHistoryService
             'device_id' => $device->id,
 
             'location' => [
-                'lat'       => $payload['lat'],
-                'lng'       => $payload['lng'],
-                'speed'     => $payload['speed'] ?? 0,
-                'heading'   => $payload['heading'] ?? 0,
-                'battery'   => $payload['battery'] ?? null,
-                'satellite' => $payload['satellite'] ?? null,
+
+                'lat' => (float) $payload['lat'],
+
+                'lng' => (float) $payload['lng'],
+
+                'speed' => (float) (
+                    $payload['speed'] ?? 0
+                ),
+
+                'heading' => (float) (
+                    $payload['heading'] ?? 0
+                ),
+
+                'battery' => isset(
+                    $payload['battery']
+                )
+                    ? (int) $payload['battery']
+                    : null,
+
+                'satellite' => isset(
+                    $payload['satellite']
+                )
+                    ? (int) $payload['satellite']
+                    : null,
+
             ],
 
             'search_address' => $searchAddress,

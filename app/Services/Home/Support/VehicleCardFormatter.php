@@ -225,6 +225,12 @@ class VehicleCardFormatter
 
             )->toISOString(),
 
+            'updated_at' => optional(
+
+                $latestLog?->received_at
+
+            )->toISOString(),
+
         ];
     }
 }

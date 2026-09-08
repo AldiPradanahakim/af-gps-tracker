@@ -13,7 +13,7 @@
         {{-- ========================================================= --}}
 
         <section
-            class="col-span-12 xl:col-span-6 flex h-[370px] flex-col overflow-hidden rounded-[20px] border border-slate-200 bg-white vehicle-panel-shadow"
+            class="col-span-12 xl:col-span-6 flex h-full min-h-[370px] flex-col overflow-hidden rounded-[20px] border border-slate-200 bg-white vehicle-panel-shadow"
         >
 
             {{-- ===================================================== --}}
@@ -412,15 +412,19 @@
                                 class="mt-1 flex items-center gap-2"
                             >
 
+                                @php
+                                    $isOnline = $device->is_active && $device->last_heartbeat && \Carbon\Carbon::parse($device->last_heartbeat)->diffInMinutes(now()) <= 5;
+                                @endphp
+
                                 <span
-                                    class="h-2 w-2 rounded-full bg-emerald-500"
+                                    class="h-2 w-2 rounded-full {{ $isOnline ? 'bg-emerald-500' : 'bg-slate-400' }}"
                                 ></span>
 
                                 <span
                                     id="vehicleStatus"
-                                    class="text-[13px] font-semibold text-emerald-600"
+                                    class="text-[13px] font-semibold {{ $isOnline ? 'text-emerald-600' : 'text-slate-500' }}"
                                 >
-                                    -
+                                    {{ $isOnline ? 'Online' : 'Offline' }}
                                 </span>
 
                             </div>
@@ -433,16 +437,21 @@
                         >
 
                             <p
+                                id="vehicleSpeedLabel"
                                 class="text-[10px] text-slate-500"
                             >
-                                Kecepatan
+                                {{ $isOnline ? 'Kecepatan' : 'Terakhir Update' }}
                             </p>
 
                             <p
                                 id="vehicleSpeed"
                                 class="mt-1 text-[13px] font-semibold text-slate-900"
                             >
-                                0 km/jam
+                                @if($isOnline)
+                                    {{ isset($latestLocation['speed']) ? round($latestLocation['speed']) : 0 }} km/jam
+                                @else
+                                    {{ \Carbon\Carbon::parse($latestLocation['received_at'] ?? $device->updated_at)->timezone(config('app.timezone', 'Asia/Jakarta'))->format('d M Y H:i') }}
+                                @endif
                             </p>
 
                         </div>
@@ -458,11 +467,20 @@
                                 Arah
                             </p>
 
+                            @php
+                                $heading = $latestLocation['heading'] ?? null;
+                                $direction = '-';
+                                if ($heading !== null) {
+                                    $directions = ['Utara', 'Timur Laut', 'Timur', 'Tenggara', 'Selatan', 'Barat Daya', 'Barat', 'Barat Laut'];
+                                    $direction = $directions[round(($heading % 360) / 45) % 8];
+                                }
+                            @endphp
+
                             <p
                                 id="vehicleDirection"
                                 class="mt-1 text-[13px] font-semibold text-slate-900"
                             >
-                                -
+                                {{ $direction }}
                             </p>
 
                         </div>
@@ -490,7 +508,7 @@
                                     id="vehicleBattery"
                                     class="text-[13px] font-semibold text-slate-900"
                                 >
-                                    -
+                                    {{ isset($latestLocation['battery']) ? $latestLocation['battery'] . ' %' : '-' }}
                                 </span>
 
                             </div>
@@ -509,7 +527,7 @@
         {{-- ===================================================== --}}
 
         <section
-            class="col-span-12 xl:col-span-3 flex h-[370px] flex-col overflow-hidden rounded-[20px] border border-slate-200 bg-white vehicle-panel-shadow"
+            class="col-span-12 xl:col-span-3 flex h-full min-h-[370px] flex-col overflow-hidden rounded-[20px] border border-slate-200 bg-white vehicle-panel-shadow"
         >
 
             {{-- ===================================================== --}}
@@ -630,7 +648,7 @@
         {{-- ===================================================== --}}
 
         <section
-            class="col-span-12 xl:col-span-3 flex h-[370px] flex-col overflow-hidden rounded-[20px] border border-slate-200 bg-white vehicle-panel-shadow"
+            class="col-span-12 xl:col-span-3 flex h-full min-h-[370px] flex-col overflow-hidden rounded-[20px] border border-slate-200 bg-white vehicle-panel-shadow"
         >
 
             {{-- ===================================================== --}}

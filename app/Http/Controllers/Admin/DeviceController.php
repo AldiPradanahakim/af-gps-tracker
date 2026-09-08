@@ -38,7 +38,7 @@ class DeviceController extends Controller
         ]);
 
         $jumlah = (int) $request->jumlah_perangkat;
-        $prefix = 'AF-GPS-';
+        $prefix = 'GPS-AF-';
 
         // Cari device_id terakhir yang sesuai prefix
         $lastDevice = Device::where('device_id', 'like', $prefix . '%')

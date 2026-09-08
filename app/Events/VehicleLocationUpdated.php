@@ -3,11 +3,11 @@
 namespace App\Events;
 
 use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class VehicleLocationUpdated implements ShouldBroadcast
+class VehicleLocationUpdated implements ShouldBroadcastNow
 {
     use Dispatchable;
     use SerializesModels;
@@ -29,7 +29,6 @@ class VehicleLocationUpdated implements ShouldBroadcast
         string $deviceId,
         array $payload
     ) {
-
         $this->deviceId = $deviceId;
 
         $this->payload = $payload;
@@ -40,15 +39,10 @@ class VehicleLocationUpdated implements ShouldBroadcast
      */
     public function broadcastOn(): array
     {
-
         return [
-
             new PrivateChannel(
-
                 "vehicle.{$this->deviceId}"
-
             ),
-
         ];
     }
 
@@ -57,7 +51,6 @@ class VehicleLocationUpdated implements ShouldBroadcast
      */
     public function broadcastAs(): string
     {
-
         return 'location.updated';
     }
 
@@ -66,7 +59,6 @@ class VehicleLocationUpdated implements ShouldBroadcast
      */
     public function broadcastWith(): array
     {
-
         return $this->payload;
     }
 }

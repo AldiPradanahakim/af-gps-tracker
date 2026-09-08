@@ -2,9 +2,11 @@
 
 namespace App\Services\MQTT;
 
+use App\Events\VehicleLocationUpdated;
 use App\Helpers\GpsTimestampParser;
 use App\Jobs\ResolveGpsAddressJob;
 use App\Models\Device;
+use App\Models\TravelHistory;
 use App\Services\Device\DeviceLookupService;
 use App\Services\Device\DeviceLogService;
 use App\Services\Device\TravelHistoryService;
@@ -15,15 +17,14 @@ use App\Services\Geofence\ReverseGeocodingService;
 use App\Services\Notification\NotificationService;
 use Illuminate\Support\Carbon;
 use InvalidArgumentException;
-use App\Services\MQTT\RealtimeService;
 
 class GPSProcessingService
 {
     /**
-     * Placeholder search_address saat cache reverse-geocoding miss di
-     * jalur sinkron - diganti alamat asli oleh ResolveGpsAddressJob.
+     * Placeholder search_address saat cache reverse-geocoding miss.
      */
-    private const ADDRESS_PENDING_PLACEHOLDER = 'Memuat alamat...';
+    private const ADDRESS_PENDING_PLACEHOLDER =
+        'Memuat alamat...';
 
     public function __construct(
 
@@ -58,7 +59,7 @@ class GPSProcessingService
 
         /*
         |--------------------------------------------------------------------------
-        | Validate Payload
+        | 1. Validate Payload
         |--------------------------------------------------------------------------
         */
 
@@ -68,45 +69,39 @@ class GPSProcessingService
 
         /*
         |--------------------------------------------------------------------------
-        | Find Device
+        | 2. Find Device
         |--------------------------------------------------------------------------
         */
 
         $device =
-
             $this->deviceLookupService
-            ->findFromPayload(
-                $payload
-            );
+                ->findFromPayload(
+                    $payload
+                );
 
         /*
         |--------------------------------------------------------------------------
-        | Ensure Activated
+        | 3. Ensure Activated
         |--------------------------------------------------------------------------
         */
 
         $device =
-
             $this->deviceLookupService
-            ->ensureActivated(
-                $device
-            );
+                ->ensureActivated(
+                    $device
+                );
 
         /*
         |--------------------------------------------------------------------------
-        | Verify Signature
-        |--------------------------------------------------------------------------
-        |
-        | Mencegah device_id spoofing: siapa pun yang tahu kredensial broker
-        | MQTT bisa mencantumkan device_id milik orang lain di payload.
-        | Signature HMAC per-device memastikan payload benar-benar berasal
-        | dari device yang mengetahui mqtt_secret-nya. Bisa dimatikan
-        | sementara lewat MQTT_REQUIRE_SIGNATURE=false saat firmware belum
-        | mendukung signing (mis. tahap awal bring-up perangkat).
+        | 4. Verify Signature
         |--------------------------------------------------------------------------
         */
 
-        if (config('mqtt.require_signature')) {
+        if (
+            config(
+                'mqtt.require_signature'
+            )
+        ) {
 
             $this->signatureService->verify(
                 $device,
@@ -116,42 +111,41 @@ class GPSProcessingService
 
         /*
         |--------------------------------------------------------------------------
-        | Load Required Relations
+        | 5. Load Relations
         |--------------------------------------------------------------------------
         */
 
         $device =
-
             $this->deviceLookupService
-            ->loadRelations(
-                $device
+                ->loadRelations(
+                    $device
+                );
+
+        /*
+        |--------------------------------------------------------------------------
+        | 6. Heartbeat
+        |--------------------------------------------------------------------------
+        */
+
+        $wasOfflineNotified =
+            $device->offline_notified_at !== null;
+
+        $receivedAt =
+            $this->extractReceivedAt(
+                $payload
+            );
+
+        $this->deviceLookupService
+            ->updateHeartbeat(
+                $device,
+                $receivedAt
             );
 
         /*
         |--------------------------------------------------------------------------
-        | Update Heartbeat
-        |--------------------------------------------------------------------------
-        |
-        | Jika device sebelumnya sempat ditandai offline (lihat
-        | DeviceHealthCheckCommand), heartbeat baru ini berarti dia
-        | baru saja kembali online - kirim notifikasi "online kembali"
-        | tepat di titik transisinya, bukan menunggu job berkala
-        | berikutnya berjalan.
+        | Device Online Notification
         |--------------------------------------------------------------------------
         */
-
-        $wasOfflineNotified = $device->offline_notified_at !== null;
-
-        $this->deviceLookupService
-            ->updateHeartbeat(
-
-                $device,
-
-                $this->extractReceivedAt(
-                    $payload
-                )
-
-            );
 
         if ($wasOfflineNotified) {
 
@@ -163,13 +157,7 @@ class GPSProcessingService
 
         /*
         |--------------------------------------------------------------------------
-        | Update Battery + Low Battery Detection
-        |--------------------------------------------------------------------------
-        |
-        | Battery didenormalisasi ke devices.last_battery (dipakai juga
-        | oleh tampilan status device). Deteksi transisi normal ->
-        | baterai lemah dilakukan sinkron di sini (bukan job berkala)
-        | karena nilainya sudah tersedia di setiap payload yang masuk.
+        | 7. Battery
         |--------------------------------------------------------------------------
         */
 
@@ -177,20 +165,32 @@ class GPSProcessingService
 
         $this->deviceLookupService
             ->updateBattery(
-
                 $device,
-
                 $battery
-
             );
 
-        $lowBatteryThreshold = (int) config('mqtt.alerts.low_battery_threshold');
+        /*
+        |--------------------------------------------------------------------------
+        | Low Battery Detection
+        |--------------------------------------------------------------------------
+        */
 
-        $isLowBattery = $battery <= $lowBatteryThreshold;
+        $lowBatteryThreshold =
+            (int) config(
+                'mqtt.alerts.low_battery_threshold'
+            );
 
-        $wasLowBattery = (bool) $device->low_battery_active;
+        $isLowBattery =
+            $battery <= $lowBatteryThreshold;
 
-        if ($isLowBattery && ! $wasLowBattery) {
+        $wasLowBattery =
+            (bool) $device->low_battery_active;
+
+        if (
+            $isLowBattery
+            &&
+            ! $wasLowBattery
+        ) {
 
             $device->update([
                 'low_battery_active' => true,
@@ -198,14 +198,15 @@ class GPSProcessingService
 
             $this->notificationService
                 ->createLowBatteryNotification(
-
                     $device,
-
                     $battery
-
                 );
 
-        } elseif (! $isLowBattery && $wasLowBattery) {
+        } elseif (
+            ! $isLowBattery
+            &&
+            $wasLowBattery
+        ) {
 
             $device->update([
                 'low_battery_active' => false,
@@ -214,157 +215,195 @@ class GPSProcessingService
 
         /*
         |--------------------------------------------------------------------------
-        | Store Device Log
+        | 8. Duplicate Message Check
         |--------------------------------------------------------------------------
         |
-        | Menyimpan payload asli MQTT.
-        | Menghindari duplikasi berdasarkan message_id.
+        | Duplicate message tidak boleh diproses ulang.
+        |
+        | Heartbeat dan battery sudah diproses sebelumnya.
         |
         */
 
         $isDuplicateMessage =
-
             $this->deviceLogService
-            ->isDuplicate(
-
-                $device,
-
-                $payload
-
-            );
-
-        $deviceLog =
-
-            $this->deviceLogService
-            ->store(
-
-                $device,
-
-                $payload
-
-            );
-
-        /*
-        |--------------------------------------------------------------------------
-        | Skip Duplicate Message
-        |--------------------------------------------------------------------------
-        |
-        | Pesan MQTT dengan message_id yang sama (retry/replay dari
-        | broker) tidak boleh diproses ulang: reverse geocoding, travel
-        | history, stop detection, geofence check, notifikasi, dan
-        | broadcast realtime semuanya hanya untuk pesan baru.
-        |
-        */
+                ->isDuplicate(
+                    $device,
+                    $payload
+                );
 
         if ($isDuplicateMessage) {
+
             return;
         }
 
         /*
         |--------------------------------------------------------------------------
-        | Reverse Geocoding (Cache-Only, Non-Blocking)
+        | 9. Geofence
         |--------------------------------------------------------------------------
         |
-        | HANYA cek cache di jalur sinkron ini - memanggil provider
-        | reverse-geocoding secara sinkron (search()) berarti pipeline
-        | ingest MQTT (satu proses, satu pesan diproses per waktu) ikut
-        | menunggu throttle rate limit global provider (600ms-1,1 detik
-        | per panggilan), yang secara langsung melanggar target NF-01
-        | (update posisi <=3 detik) begitu ada lebih dari beberapa
-        | device/menit dengan koordinat baru. Kalau belum ada di cache,
-        | pakai placeholder dan selesaikan alamat sesungguhnya secara
-        | asinkron lewat ResolveGpsAddressJob (lihat di bawah).
-        |--------------------------------------------------------------------------
+        | Geofence dihitung SEBELUM realtime supaya payload realtime
+        | tetap membawa status geofence terbaru.
+        |
         */
 
-        $searchAddress =
-
-            $this->reverseGeocodingService
-            ->searchCached(
-
-                (float) $payload['lat'],
-
-                (float) $payload['lng']
-
-            );
-
-        $addressPending = $searchAddress === null;
-
-        $searchAddress ??= self::ADDRESS_PENDING_PLACEHOLDER;
+        $geofenceResult =
+            $this->geofenceCheckerService
+                ->process(
+                    $device,
+                    $payload
+                );
 
         /*
         |--------------------------------------------------------------------------
-        | Store Travel History
+        | 10. REALTIME BROADCAST
         |--------------------------------------------------------------------------
         |
-        | Menyimpan histori perjalanan kendaraan.
+        | SANGAT PENTING:
+        |
+        | Realtime dilakukan SEBELUM:
+        |
+        | - DeviceLog persistence
+        | - TravelHistory
+        | - Reverse geocoding
+        | - Stop detection
+        | - Overspeed notification
+        | - Geofence notification
+        |
+        | VehicleLocationUpdated menggunakan ShouldBroadcastNow,
+        | sehingga tidak menunggu queue worker.
         |
         */
 
-        $travelHistory =
-
-            $this->travelHistoryService
-            ->store(
-
+        $this->realtimeService
+            ->broadcast(
                 device: $device,
-
-                deviceLog: $deviceLog,
 
                 payload: $payload,
 
-                searchAddress: $searchAddress
+                geofenceResult:
+                    $geofenceResult,
 
+                travelHistory: null,
+
+                searchAddress: null
             );
 
         /*
         |--------------------------------------------------------------------------
-        | Resolve Address Asynchronously
+        | 11. Reverse Geocoding Cache
         |--------------------------------------------------------------------------
         |
-        | Cache miss di atas - selesaikan alamat sesungguhnya di queue
-        | worker (boleh menunggu throttle provider) lalu update baris
-        | travel_history ini setelahnya. Tidak memblokir proses ingest.
-        |--------------------------------------------------------------------------
+        | Setelah realtime dikirim, baru kita proses alamat.
+        |
         */
 
-        if ($addressPending) {
+        $searchAddress =
+            $this->reverseGeocodingService
+                ->searchCached(
 
-            ResolveGpsAddressJob::dispatch(
+                    (float) $payload['lat'],
 
-                latitude: (float) $payload['lat'],
+                    (float) $payload['lng']
 
-                longitude: (float) $payload['lng'],
+                );
 
-                travelHistoryId: $travelHistory->id,
+        $addressPending =
+            $searchAddress === null;
 
-            );
+        $searchAddress ??=
+            self::ADDRESS_PENDING_PLACEHOLDER;
+
+        /*
+        |--------------------------------------------------------------------------
+        | 12. DeviceLog + Position Threshold
+        |--------------------------------------------------------------------------
+        |
+        | DeviceLogService:
+        |
+        | distance < 0.5 m
+        |     -> null
+        |
+        | distance >= 0.5 m
+        |     -> insert DeviceLog
+        |
+        | Realtime TIDAK dipengaruhi threshold ini.
+        |
+        */
+
+        $deviceLog =
+            $this->deviceLogService
+                ->store(
+                    $device,
+                    $payload
+                );
+
+        /*
+        |--------------------------------------------------------------------------
+        | 13. Travel History
+        |--------------------------------------------------------------------------
+        |
+        | TravelHistory hanya dibuat ketika DeviceLog dibuat.
+        |
+        */
+
+        $travelHistory = null;
+
+        if ($deviceLog !== null) {
+
+            $travelHistory =
+                $this->travelHistoryService
+                    ->store(
+
+                        device: $device,
+
+                        deviceLog: $deviceLog,
+
+                        payload: $payload,
+
+                        searchAddress: $searchAddress
+                    );
+
+            /*
+            |--------------------------------------------------------------------------
+            | Resolve Address Asynchronously
+            |--------------------------------------------------------------------------
+            */
+
+            if ($addressPending) {
+
+                ResolveGpsAddressJob::dispatch(
+
+                    latitude:
+                        (float) $payload['lat'],
+
+                    longitude:
+                        (float) $payload['lng'],
+
+                    travelHistoryId:
+                        $travelHistory->id,
+                );
+            }
         }
 
         /*
         |--------------------------------------------------------------------------
-        | Stop Detection
+        | 14. Stop Detection
         |--------------------------------------------------------------------------
         |
-        | Akan mengembalikan StopHistory apabila:
-        | - Stop Detection aktif
-        | - Kendaraan berhenti
-        | - Durasi minimal tercapai
-        | - Notification belum pernah dikirim
+        | Tetap setiap payload.
         |
         */
 
         $stopHistory =
-
             $this->stopDetectionService
-            ->process(
+                ->process(
 
-                device: $device,
+                    device: $device,
 
-                payload: $payload,
+                    payload: $payload,
 
-                searchAddress: $searchAddress
-
-            );
+                    searchAddress: $searchAddress
+                );
 
         /*
         |--------------------------------------------------------------------------
@@ -380,38 +419,29 @@ class GPSProcessingService
                     $device,
 
                     $stopHistory
-
                 );
 
             $this->stopDetectionService
                 ->markNotificationSent(
-
                     $stopHistory
-
                 );
         }
 
         /*
         |--------------------------------------------------------------------------
-        | Overspeed Detection
+        | 15. Overspeed Detection
         |--------------------------------------------------------------------------
         |
-        | Notifikasi hanya dikirim saat transisi normal -> overspeed
-        | (lihat OverspeedDetectionService), bukan setiap titik selama
-        | kendaraan masih di atas batas.
-        |--------------------------------------------------------------------------
+        | Tetap setiap payload.
+        |
         */
 
         $isOverspeedTransition =
-
             $this->overspeedDetectionService
-            ->process(
-
-                $device,
-
-                $payload
-
-            );
+                ->process(
+                    $device,
+                    $payload
+                );
 
         if ($isOverspeedTransition) {
 
@@ -421,111 +451,86 @@ class GPSProcessingService
                     $device,
 
                     [
+                        'lat' =>
+                            $payload['lat'],
 
-                        'lat' => $payload['lat'],
+                        'lng' =>
+                            $payload['lng'],
 
-                        'lng' => $payload['lng'],
+                        'speed' =>
+                            $payload['speed'],
 
-                        'speed' => $payload['speed'],
-
-                        'search_address' => $searchAddress,
-
+                        'search_address' =>
+                            $searchAddress,
                     ]
-
                 );
         }
 
         /*
         |--------------------------------------------------------------------------
-        | Geofence Checking
+        | 16. Geofence Exit Notification
         |--------------------------------------------------------------------------
         */
 
-        $geofenceResult =
-
-            $this->geofenceCheckerService
-            ->process(
-
-                $device,
-
-                $payload
-
-            );
-
-        /*
-        |--------------------------------------------------------------------------
-        | Geofence Enter / Exit Notification
-        |--------------------------------------------------------------------------
-        |
-        | Notification hanya dibuat ketika status berubah
-        | (INSIDE <-> OUTSIDE), bukan setiap posisi GPS baru.
-        |
-        */
-
-        if ($geofenceResult['exited']) {
+        if (
+            $geofenceResult['exited']
+            ?? false
+        ) {
 
             $this->notificationService
                 ->createGeofenceExitNotification(
 
                     device: $device,
 
-                    geofence: $geofenceResult['geofence'],
+                    geofence:
+                        $geofenceResult['geofence'],
 
                     payload: [
 
-                        'lat' => $payload['lat'],
+                        'lat' =>
+                            $payload['lat'],
 
-                        'lng' => $payload['lng'],
+                        'lng' =>
+                            $payload['lng'],
 
-                        'search_address' => $searchAddress,
-
+                        'search_address' =>
+                            $searchAddress,
                     ]
-
                 );
         }
 
-        if ($geofenceResult['entered']) {
+        /*
+        |--------------------------------------------------------------------------
+        | 17. Geofence Enter Notification
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $geofenceResult['entered']
+            ?? false
+        ) {
 
             $this->notificationService
                 ->createGeofenceEnterNotification(
 
                     device: $device,
 
-                    geofence: $geofenceResult['geofence'],
+                    geofence:
+                        $geofenceResult['geofence'],
 
                     payload: [
 
-                        'lat' => $payload['lat'],
+                        'lat' =>
+                            $payload['lat'],
 
-                        'lng' => $payload['lng'],
+                        'lng' =>
+                            $payload['lng'],
 
-                        'search_address' => $searchAddress,
-
+                        'search_address' =>
+                            $searchAddress,
                     ]
-
                 );
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Realtime Broadcast
-        |--------------------------------------------------------------------------
-        |
-        | Broadcast lokasi terbaru kendaraan ke frontend
-        | menggunakan Laravel Broadcasting.
-        |
-        */
-
-        $this->realtimeService
-            ->broadcast(
-
-                device: $device,
-
-                travelHistory: $travelHistory,
-
-                geofenceResult: $geofenceResult
-
-            );
     }
 
     /**
@@ -536,6 +541,12 @@ class GPSProcessingService
     protected function validatePayload(
         array $payload
     ): void {
+
+        /*
+        |--------------------------------------------------------------------------
+        | Required Fields
+        |--------------------------------------------------------------------------
+        */
 
         $required = [
 
@@ -556,7 +567,6 @@ class GPSProcessingService
             'satellite',
 
             'received_at',
-
         ];
 
         foreach ($required as $field) {
@@ -572,80 +582,206 @@ class GPSProcessingService
                         '%s is required.',
                         $field
                     )
-
                 );
             }
         }
 
         /*
         |--------------------------------------------------------------------------
-        | Bounds Check
+        | Numeric Fields
         |--------------------------------------------------------------------------
-        |
-        | Payload GPS berasal dari perangkat fisik (atau siapa pun yang
-        | bisa publish ke broker MQTT dengan kredensial yang valid), jadi
-        | nilainya tidak bisa dipercaya begitu saja sebelum disimpan dan
-        | di-broadcast ke live map.
-        |
         */
 
         $numericFields = [
-            'lat', 'lng', 'speed', 'heading', 'battery', 'satellite',
+
+            'lat',
+
+            'lng',
+
+            'speed',
+
+            'heading',
+
+            'battery',
+
+            'satellite',
         ];
 
         foreach ($numericFields as $field) {
 
-            if (! is_numeric($payload[$field])) {
+            if (! is_numeric(
+                $payload[$field]
+            )) {
 
                 throw new InvalidArgumentException(
 
-                    sprintf('%s must be numeric.', $field)
-
+                    sprintf(
+                        '%s must be numeric.',
+                        $field
+                    )
                 );
             }
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | Cast
+        |--------------------------------------------------------------------------
+        */
+
         $lat = (float) $payload['lat'];
+
         $lng = (float) $payload['lng'];
+
         $speed = (float) $payload['speed'];
+
         $heading = (float) $payload['heading'];
+
         $battery = (float) $payload['battery'];
+
         $satellite = (float) $payload['satellite'];
 
-        if ($lat < -90 || $lat > 90) {
-            throw new InvalidArgumentException('lat is out of range.');
+        /*
+        |--------------------------------------------------------------------------
+        | Latitude
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $lat < -90
+            ||
+            $lat > 90
+        ) {
+
+            throw new InvalidArgumentException(
+                'lat is out of range.'
+            );
         }
 
-        if ($lng < -180 || $lng > 180) {
-            throw new InvalidArgumentException('lng is out of range.');
+        /*
+        |--------------------------------------------------------------------------
+        | Longitude
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $lng < -180
+            ||
+            $lng > 180
+        ) {
+
+            throw new InvalidArgumentException(
+                'lng is out of range.'
+            );
         }
 
-        if ($speed < 0 || $speed > 300) {
-            throw new InvalidArgumentException('speed is out of range.');
+        /*
+        |--------------------------------------------------------------------------
+        | Speed
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $speed < 0
+            ||
+            $speed > 300
+        ) {
+
+            throw new InvalidArgumentException(
+                'speed is out of range.'
+            );
         }
 
-        if ($heading < 0 || $heading > 360) {
-            throw new InvalidArgumentException('heading is out of range.');
+        /*
+        |--------------------------------------------------------------------------
+        | Heading
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $heading < 0
+            ||
+            $heading > 360
+        ) {
+
+            throw new InvalidArgumentException(
+                'heading is out of range.'
+            );
         }
 
-        if ($battery < 0 || $battery > 100) {
-            throw new InvalidArgumentException('battery is out of range.');
+        /*
+        |--------------------------------------------------------------------------
+        | Battery
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $battery < 0
+            ||
+            $battery > 100
+        ) {
+
+            throw new InvalidArgumentException(
+                'battery is out of range.'
+            );
         }
 
-        if ($satellite < 0 || $satellite > 50) {
-            throw new InvalidArgumentException('satellite is out of range.');
+        /*
+        |--------------------------------------------------------------------------
+        | Satellite
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $satellite < 0
+            ||
+            $satellite > 50
+        ) {
+
+            throw new InvalidArgumentException(
+                'satellite is out of range.'
+            );
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | received_at
+        |--------------------------------------------------------------------------
+        */
 
         try {
-            $receivedAt = $this->extractReceivedAt($payload);
+
+            $receivedAt =
+                $this->extractReceivedAt(
+                    $payload
+                );
+
         } catch (\Throwable) {
-            throw new InvalidArgumentException('received_at is invalid.');
+
+            throw new InvalidArgumentException(
+                'received_at is invalid.'
+            );
         }
 
-        if ($receivedAt->lessThan(now()->subDay()) || $receivedAt->greaterThan(now()->addMinutes(5))) {
+        /*
+        |--------------------------------------------------------------------------
+        | Timestamp Window
+        |--------------------------------------------------------------------------
+        */
 
-            throw new InvalidArgumentException('received_at is outside the acceptable time window.');
+        if (
+            $receivedAt->lessThan(
+                now()->subDay()
+            )
+            ||
+            $receivedAt->greaterThan(
+                now()->addMinutes(5)
+            )
+        ) {
 
+            throw new InvalidArgumentException(
+                'received_at is outside the acceptable time window.'
+            );
         }
     }
 

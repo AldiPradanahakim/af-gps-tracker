@@ -1239,20 +1239,23 @@ window.VehicleInformation = {
 
         }
 
-        if (
+        const device = this.state.device;
+        const now = new Date().getTime();
+        const heartbeat = device && device.last_heartbeat ? new Date(device.last_heartbeat).getTime() : 0;
+        const isOnline = device && device.is_active && (now - heartbeat <= 5 * 60 * 1000);
 
-            !location ||
-
-            location.lat == null ||
-
-            location.lng == null
-
-        ) {
+        if (!isOnline) {
 
             element.textContent = 'Offline';
 
             element.className =
-                'rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-700';
+                'text-[13px] font-semibold text-slate-500';
+
+            const container = element.parentElement;
+            if (container) {
+                const circle = container.querySelector('span:first-child');
+                if (circle) circle.className = 'h-2 w-2 rounded-full bg-slate-400';
+            }
 
             return;
 
@@ -1261,8 +1264,61 @@ window.VehicleInformation = {
         element.textContent = 'Online';
 
         element.className =
-            'rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700';
+            'text-[13px] font-semibold text-emerald-600';
 
+        const container = element.parentElement;
+        if (container) {
+            const circle = container.querySelector('span:first-child');
+            if (circle) circle.className = 'h-2 w-2 rounded-full bg-emerald-500';
+        }
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Speed
+    |--------------------------------------------------------------------------
+    */
+
+    updateSpeed(location) {
+        const element = document.getElementById('vehicleSpeed');
+        const labelElement = document.getElementById('vehicleSpeedLabel');
+
+        if (!element || !labelElement) {
+            return;
+        }
+
+        const device = this.state.device;
+        const now = new Date().getTime();
+        const heartbeat = device && device.last_heartbeat ? new Date(device.last_heartbeat).getTime() : 0;
+        const isOnline = device && device.is_active && (now - heartbeat <= 5 * 60 * 1000);
+
+        if (!isOnline) {
+            labelElement.textContent = 'Terakhir Update';
+            
+            let lastTime = '-';
+            if (device && device.last_heartbeat) {
+                const dt = new Date(device.last_heartbeat);
+                const day = String(dt.getDate()).padStart(2, '0');
+                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'];
+                const month = months[dt.getMonth()];
+                const year = dt.getFullYear();
+                const hours = String(dt.getHours()).padStart(2, '0');
+                const minutes = String(dt.getMinutes()).padStart(2, '0');
+                lastTime = `${day} ${month} ${year} ${hours}:${minutes}`;
+            }
+            element.textContent = lastTime;
+            return;
+        }
+
+        labelElement.textContent = 'Kecepatan';
+
+        if (!location || location.speed == null) {
+            element.textContent = '0 km/jam';
+            return;
+        }
+
+        element.textContent = Math.round(location.speed) + ' km/jam';
     },
 
     /*

@@ -33,11 +33,15 @@ class DeviceLog extends Model
 
     public function device()
     {
-        return $this->belongsTo(Device::class);
+        return $this->belongsTo(
+            Device::class
+        );
     }
 
     public function travelHistories()
     {
-        return $this->hasMany(TravelHistory::class);
+        return $this->hasMany(
+            TravelHistory::class
+        );
     }
 }

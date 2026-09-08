@@ -26,11 +26,11 @@ return [
 
     'username' => env(
         'MQTT_USERNAME'
-    ),
+    ) ?: null,
 
     'password' => env(
         'MQTT_PASSWORD'
-    ),
+    ) ?: null,
 
     /*
     |--------------------------------------------------------------------------
@@ -82,6 +82,7 @@ return [
     | koneksi putus, mqtt:subscribe akan crash dan proses ingestion
     | GPS berhenti total sampai ada yang restart manual.
     |--------------------------------------------------------------------------
+
     */
 
     'reconnect' => [
@@ -127,11 +128,47 @@ return [
     | HMAC per-device (lihat MQTTSignatureService). Set false hanya untuk
     | testing/bring-up sebelum firmware mendukung signing.
     |--------------------------------------------------------------------------
+
     */
 
     'require_signature' => (bool) env(
         'MQTT_REQUIRE_SIGNATURE',
         true
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Position Filter
+    |--------------------------------------------------------------------------
+    |
+    | Minimum perpindahan posisi GPS yang diperlukan sebelum payload
+    | disimpan sebagai DeviceLog dan TravelHistory.
+    |
+    | Unit: meter
+    |
+    | Contoh:
+    |
+    | MQTT_POSITION_THRESHOLD=0.5
+    |
+    | distance < 0.5 m
+    |     -> tidak INSERT DeviceLog
+    |     -> tidak INSERT TravelHistory
+    |
+    | distance >= 0.5 m
+    |     -> INSERT DeviceLog
+    |     -> INSERT TravelHistory
+    |
+    | Catatan:
+    | Threshold ini HANYA memengaruhi penyimpanan histori.
+    | MQTT payload tetap diproses untuk heartbeat, battery,
+    | stop detection, overspeed, geofence, dan realtime.
+    |
+    |--------------------------------------------------------------------------
+    */
+
+    'position_threshold' => (float) env(
+        'MQTT_POSITION_THRESHOLD',
+        0.5
     ),
 
     /*
@@ -156,6 +193,12 @@ return [
         ),
 
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | TLS
+    |--------------------------------------------------------------------------
+    */
 
     'tls' => [
 

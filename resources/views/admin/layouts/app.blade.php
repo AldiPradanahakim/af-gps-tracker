@@ -2,13 +2,21 @@
 
 @section('content')
 
-<div class="h-screen overflow-hidden bg-[#F8FAFC] flex" x-data="{ openProfileModal: {{ $errors->any() ? 'true' : 'false' }} }">
+<div class="h-screen overflow-hidden bg-[#F8FAFC] flex" x-data="{ openProfileModal: {{ $errors->any() ? 'true' : 'false' }}, mobileMenuOpen: false }">
+
+    <!-- Mobile backdrop -->
+    <div x-show="mobileMenuOpen" 
+         style="display: none;" 
+         class="fixed inset-0 z-[4000] bg-slate-900/50 backdrop-blur-sm lg:hidden" 
+         @click="mobileMenuOpen = false" 
+         x-transition.opacity></div>
 
     {{-- Admin Sidebar --}}
-    <div class="flex h-full w-[280px] flex-col border-r border-slate-200 bg-white">
+    <div :class="mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'" 
+         class="fixed inset-y-0 left-0 z-[4001] flex h-full w-[280px] flex-col border-r border-slate-200 bg-white transition-transform duration-300 lg:static lg:translate-x-0">
         
         {{-- Header --}}
-        <div class="flex h-24 shrink-0 items-center border-b border-slate-200 px-6">
+        <div class="flex h-24 shrink-0 items-center justify-between border-b border-slate-200 px-6">
             <div class="flex items-center gap-4">
                 <img src="{{ asset('images/logo-gps.png') }}" alt="GPS Tracker" class="h-12 w-12 object-contain">
                 <div>
@@ -16,6 +24,12 @@
                     <p class="mt-1 text-sm text-slate-500">Dashboard</p>
                 </div>
             </div>
+            <!-- Close Mobile Menu -->
+            <button @click="mobileMenuOpen = false" type="button" class="lg:hidden rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
         </div>
 
         {{-- Nav Links --}}
@@ -51,10 +65,18 @@
     {{-- Main Content --}}
     <div class="relative z-10 flex flex-1 flex-col overflow-y-auto">
         {{-- Top Header --}}
-        <header class="sticky top-0 z-20 flex h-24 shrink-0 items-center justify-between border-b border-slate-200 bg-white/90 px-10 backdrop-blur-md">
-            <div>
-                <h2 class="text-2xl font-bold text-slate-900 tracking-tight">@yield('page_title', 'Admin Panel')</h2>
-                <p class="text-sm font-medium text-slate-500 mt-1">@yield('page_description', 'Kendali penuh atas sistem ini.')</p>
+        <header class="sticky top-0 z-20 flex h-24 shrink-0 items-center justify-between border-b border-slate-200 bg-white/90 px-4 lg:px-10 backdrop-blur-md">
+            <div class="flex items-center gap-3">
+                <!-- Hamburger Button -->
+                <button @click="mobileMenuOpen = !mobileMenuOpen" type="button" class="lg:hidden rounded-xl p-2.5 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+                <div>
+                    <h2 class="text-xl lg:text-2xl font-bold text-slate-900 tracking-tight">@yield('page_title', 'Admin Panel')</h2>
+                    <p class="text-xs lg:text-sm font-medium text-slate-500 mt-1 hidden sm:block">@yield('page_description', 'Kendali penuh atas sistem ini.')</p>
+                </div>
             </div>
             
             {{-- Profile Dropdown in Header --}}
@@ -103,7 +125,7 @@
             </div>
         </header>
 
-        <main class="p-8">
+        <main class="p-4 lg:p-8">
             @if(session('success'))
                 <div class="mb-8 rounded-2xl border border-green-200 bg-green-50 p-4 text-green-700 font-medium">
                     {{ session('success') }}

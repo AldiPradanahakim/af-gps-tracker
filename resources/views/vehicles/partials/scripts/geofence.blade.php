@@ -511,54 +511,38 @@ window.VehicleGeofence = {
                 event.preventDefault();
 
                 const id = document.getElementById('editRadiusId').value;
+                const source = document.getElementById('editRadiusSource').value;
+                
+                let latitude = document.getElementById('editRadiusLatitude').value;
+                let longitude = document.getElementById('editRadiusLongitude').value;
+                
+                if (source === 'home_location') {
+                    if (this.state.homeLocation && this.state.homeLocation.lat) {
+                        latitude = this.state.homeLocation.lat;
+                        longitude = this.state.homeLocation.lng;
+                    } else {
+                        this.toast('error', 'Peringatan', 'Home Location belum diatur.');
+                        return;
+                    }
+                } else if (source === 'current_location') {
+                    if (this.state.latestLocation && this.state.latestLocation.lat) {
+                        latitude = this.state.latestLocation.lat;
+                        longitude = this.state.latestLocation.lng;
+                    } else {
+                        this.toast('error', 'Peringatan', 'Lokasi kendaraan tidak ditemukan.');
+                        return;
+                    }
+                }
 
                 await this.submitUpdate(id, {
                     name: document.getElementById('editRadiusName').value,
                     status: document.getElementById('editRadiusStatus').value,
                     radius: document.getElementById('editRadiusValue').value,
+                    latitude: latitude,
+                    longitude: longitude,
                 }, 'Radius');
 
             });
-
-        document.getElementById('changeRadiusCenter')
-            ?.addEventListener('click', () => this.pickRadiusCenter());
-
-    },
-
-    pickRadiusCenter() {
-
-        if (!window.VehicleMap?.map) {
-            return;
-        }
-
-        const status = document.getElementById('radiusCenterStatus');
-
-        if (status) {
-            status.innerHTML = 'Klik pada peta untuk memilih titik baru...';
-        }
-
-        this.toast('info', 'Ubah Titik', 'Klik pada peta untuk memilih lokasi baru.');
-
-        VehicleMap.map.once('click', async (event) => {
-
-            const { lat, lng } = event.latlng;
-
-            if (status) {
-                status.innerHTML =
-                    `Titik baru dipilih: <b>${lat.toFixed(6)}, ${lng.toFixed(6)}</b>. Menyimpan...`;
-            }
-
-            const id = document.getElementById('editRadiusId').value;
-
-            await this.submitUpdate(id, {
-                name: document.getElementById('editRadiusName').value,
-                status: document.getElementById('editRadiusStatus').value,
-                radius: document.getElementById('editRadiusValue').value,
-                latitude: lat,
-                longitude: lng,
-            }, 'Radius');
-
-        });
 
     },
 
@@ -980,13 +964,18 @@ window.VehicleGeofence = {
                         geojson: JSON.stringify(geojson),
                     }, 'Polygon');
 
+                }, () => {
+                    const layer = this.layers[id];
+                    if (layer) {
+                        VehicleMap.removeOverlay(`geofence-${id}`);
+                    }
                 });
 
             });
 
     },
 
-    startPolygonDrawing(onFinish) {
+    startPolygonDrawing(onFinish, onFirstClick = null) {
 
         if (!window.VehicleMap?.map) {
             return;
@@ -1028,6 +1017,10 @@ window.VehicleGeofence = {
         };
 
         const onClick = (event) => {
+
+            if (points.length === 0 && typeof onFirstClick === 'function') {
+                onFirstClick();
+            }
 
             const point = event.latlng;
 
