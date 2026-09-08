@@ -1,0 +1,61 @@
+name: Deploy ke produksi
+
+# Push ke main memicu deploy di VPS lewat webhook panel.
+#
+# Sengaja TIDAK memakai SSH: kredensial SSH di GitHub Actions memberi akses
+# penuh ke server, sementara webhook hanya bisa memicu satu skrip yang sudah
+# ditentukan. Kalau token bocor, yang bisa dilakukan penyerang cuma menyuruh
+# server menarik kode dari repo ini.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:        # tombol "Run workflow" untuk deploy manual
+
+concurrency:
+  # Dua deploy berbarengan bisa saling menimpa saat composer/npm menulis.
+  # Push yang lebih baru membatalkan yang masih antre.
+  group: deploy-produksi
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Picu deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Kirim sinyal ke webhook panel
+        env:
+          URL:   ${{ secrets.DEPLOY_WEBHOOK_URL }}
+          TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${URL:-}" ] || [ -z "${TOKEN:-}" ]; then
+            echo "::error::Secret DEPLOY_WEBHOOK_URL atau DEPLOY_TOKEN belum diisi."
+            echo "Isi di Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+
+          # --fail-with-body supaya pesan error dari server ikut tercetak,
+          # bukan cuma kode status.
+          echo "Memicu deploy..."
+          curl --fail-with-body --silent --show-error \
+               --max-time 30 \
+               -X POST "$URL" \
+               -H "X-Deploy-Token: $TOKEN" \
+               -H "Accept: application/json"
+
+          echo
+          echo "Webhook menerima. Deploy berjalan di latar belakang pada server."
+
+      - name: Ke mana melihat hasilnya
+        if: always()
+        run: |
+          echo "Keluaran deploy lengkap ada di panel:"
+          echo "  https://panel-gps.krevostudio.com/deploy.php"
+          echo
+          echo "Webhook hanya MEMICU deploy - langkah ini hijau begitu server"
+          echo "menerima sinyalnya, bukan setelah deploy selesai. Kalau migrasi"
+          echo "atau build gagal, kegagalannya muncul di halaman panel itu,"
+          echo "bukan di sini."

@@ -7,6 +7,7 @@ use App\Models\StopHistory;
 use App\Services\Geofence\ReverseGeocodingService;
 use App\Services\Notification\NotificationService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 
 class SendTestNotification extends Command
 {
@@ -190,9 +191,23 @@ class SendTestNotification extends Command
             return Device::query()->with('vehicle')->first();
         }
 
-        return Device::query()
-            ->where('id', $identifier)
-            ->orWhere('device_id', $identifier)
-            ->first();
+        /*
+         * Kolom id bertipe uuid. Membandingkannya dengan teks bebas seperti
+         * "GPS-AF-0001" membuat PostgreSQL membatalkan seluruh query dengan
+         * "invalid input syntax for type uuid" - jadi device_id yang sah pun
+         * tidak pernah sempat dicoba, padahal argumen ini memang menerima
+         * keduanya. MySQL memaafkan hal itu, PostgreSQL tidak.
+         */
+        $query = Device::query()->with('vehicle');
+
+        if (Str::isUuid($identifier)) {
+
+            $query->where('id', $identifier);
+        } else {
+
+            $query->where('device_id', $identifier);
+        }
+
+        return $query->first();
     }
 }
