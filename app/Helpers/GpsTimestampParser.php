@@ -24,6 +24,18 @@ class GpsTimestampParser
             throw new InvalidArgumentException('received_at is invalid.');
         }
 
+        /*
+         * Hasilnya SELALU dinormalkan ke zona waktu aplikasi.
+         *
+         * Tanpa ini, momen yang sama tersimpan dengan angka jam berbeda
+         * tergantung bentuk kiriman firmware: "2026-09-08T14:16:30Z"
+         * menghasilkan Carbon ber-zona UTC, dan Laravel menuliskannya apa
+         * adanya ke kolom timestamp tanpa zona - dibaca ulang sebagai
+         * 14:16 waktu lokal, yaitu tujuh jam terlalu awal untuk WIB.
+         * Epoch juga default-nya UTC. Riwayat perjalanan, playback, dan
+         * deteksi berhenti semuanya ikut salah, dan gejalanya sulit
+         * dikenali karena datanya tetap masuk.
+         */
         if (is_numeric($value)) {
 
             $number = (float) $value;
@@ -33,9 +45,11 @@ class GpsTimestampParser
                 $number = $number / 1000;
             }
 
-            return Carbon::createFromTimestamp((int) $number);
+            return Carbon::createFromTimestamp((int) $number)
+                ->setTimezone(config('app.timezone'));
         }
 
-        return Carbon::parse((string) $value);
+        return Carbon::parse((string) $value)
+            ->setTimezone(config('app.timezone'));
     }
 }

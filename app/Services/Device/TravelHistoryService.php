@@ -2,6 +2,7 @@
 
 namespace App\Services\Device;
 
+use App\Helpers\GpsTimestampParser;
 use App\Models\Device;
 use App\Models\DeviceLog;
 use App\Models\TravelHistory;
@@ -57,7 +58,17 @@ class TravelHistoryService
 
             'search_address' => $searchAddress,
 
-            'received_at' => Carbon::parse(
+            /*
+             * Lewat GpsTimestampParser, bukan Carbon::parse langsung.
+             *
+             * Firmware mengirim UTC ("...Z"), dan Carbon::parse mempertahankan
+             * zona itu sehingga Laravel menuliskan angka jam UTC ke kolom
+             * timestamp tanpa zona - terbaca tujuh jam terlalu awal untuk WIB.
+             * Parser menormalkan semua bentuk (ISO8601, offset, epoch) ke zona
+             * aplikasi, dan DeviceLogService sudah memakainya; tanpa ini kedua
+             * tabel menyimpan jam berbeda untuk kejadian yang sama.
+             */
+            'received_at' => GpsTimestampParser::parse(
                 $payload['received_at']
             ),
 
