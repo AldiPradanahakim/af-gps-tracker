@@ -4,7 +4,7 @@
 
         <div class="mx-auto mb-4 flex h-[72px] w-[72px] items-center justify-center rounded-full bg-[#EFF6FF] shadow-sm">
             <img src="{{ asset('images/logo-gps.png') }}"
-                alt="Trackio"
+                alt="AF GPS TRACKER"
                 class="h-[42px] w-[42px] object-contain">
         </div>
 
@@ -106,7 +106,7 @@
                 <input
                     :type="show ? 'text' : 'password'"
                     name="password"
-                    placeholder="Minimal 8 karakter"
+                    placeholder="Contoh: Gps#Tracker2026"
                     required
                     class="h-full w-full rounded-xl border-0 bg-transparent pl-14 pr-12 text-sm outline-none focus:ring-0">
                 <button type="button" @click="show = !show" class="absolute right-4 text-slate-400 transition hover:text-slate-600">
@@ -114,6 +114,8 @@
                     <svg x-show="show" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-5 0-9.27-3.11-11-7 1.16-2.91 3.13-5.29 5.58-6.69"/><path d="M1 1l22 22"/></svg>
                 </button>
             </div>
+
+            <x-password-requirements class="mt-2" />
 
         </div>
 
