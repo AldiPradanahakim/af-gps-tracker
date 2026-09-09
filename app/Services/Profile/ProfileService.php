@@ -64,6 +64,19 @@ class ProfileService
 
         ];
 
+        /*
+        |--------------------------------------------------------------------------
+        | Zona waktu hanya ditulis kalau memang dikirim, supaya formulir
+        | lama yang belum punya field ini tidak mengosongkan pilihan
+        | pengguna secara tidak sengaja.
+        |--------------------------------------------------------------------------
+        */
+
+        if (array_key_exists('timezone', $data) && $data['timezone']) {
+
+            $payload['timezone'] = $data['timezone'];
+        }
+
         if (!empty($data['password'])) {
 
             if (

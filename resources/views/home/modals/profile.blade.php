@@ -132,6 +132,43 @@
 
                 </div>
 
+                {{-- ZONA WAKTU --}}
+                {{--
+                    Menentukan jam yang dilihat pengguna ini di SELURUH
+                    aplikasi: halaman, export PDF, dan notifikasi Email/
+                    WhatsApp. Data tetap disimpan apa adanya - hanya
+                    tampilannya yang dikonversi, jadi tidak ada biaya
+                    query tambahan.
+                --}}
+                <div>
+
+                    <label class="mb-2 block text-sm font-medium text-slate-700">
+                        Zona Waktu
+                    </label>
+
+                    <select
+                        id="profileTimezone"
+                        name="timezone"
+                        disabled
+                        class="w-full rounded-xl border border-slate-300 bg-slate-100 px-4 py-3 text-sm text-slate-700">
+
+                        @foreach(\App\Models\User::TIMEZONE_OPTIONS as $value => $label)
+                            <option
+                                value="{{ $value }}"
+                                @selected(auth()->user()->displayTimezone() === $value)>
+                                {{ $label }}
+                            </option>
+                        @endforeach
+
+                    </select>
+
+                    <p class="mt-1.5 text-[11px] text-slate-500">
+                        Dipakai untuk semua tanggal &amp; jam yang Anda lihat &mdash;
+                        termasuk export PDF dan notifikasi Email/WhatsApp.
+                    </p>
+
+                </div>
+
                 {{-- PASSWORD --}}
                 <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
 
@@ -160,6 +197,7 @@
                             id="newPassword"
                             name="password"
                             type="password"
+                            placeholder="Contoh: Gps#Tracker2026"
                             disabled
                             class="w-full rounded-xl border border-slate-300 bg-slate-100 px-4 py-3 text-sm">
 
@@ -181,6 +219,9 @@
                     </div>
 
                 </div>
+
+                {{-- Syarat kata sandi (hanya relevan saat mode edit aktif) --}}
+                <x-password-requirements id="passwordRequirements" class="hidden" />
 
             </form>
 

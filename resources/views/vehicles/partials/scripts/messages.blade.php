@@ -80,8 +80,8 @@ window.VehicleMessages = {
 
         return new Date(value).toLocaleString('id-ID', {
             day: '2-digit', month: 'short', year: 'numeric',
-            hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta',
-        }) + ' WIB';
+            hour: '2-digit', minute: '2-digit', timeZone: (window.AppTimezone?.name ?? 'Asia/Jakarta'),
+        }) + ' ' + (window.AppTimezone?.label ?? 'WIB');
 
     },
 

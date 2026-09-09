@@ -75,6 +75,8 @@ class ProfileController extends Controller
 
                     'phone' => $user->phone,
 
+                    'timezone' => $user->displayTimezone(),
+
                 ],
 
             ]);

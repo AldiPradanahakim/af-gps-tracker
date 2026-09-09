@@ -78,6 +78,24 @@ class ProfileUpdateRequest extends FormRequest
                 'max:20',
             ],
 
+            /*
+            |------------------------------------------------------------------
+            | Zona Waktu
+            |------------------------------------------------------------------
+            |
+            | Indonesia punya tiga zona waktu. Pilihan ini menentukan jam
+            | yang dilihat pengguna di seluruh aplikasi - halaman, export
+            | PDF, dan notifikasi Email/WhatsApp - tanpa mengubah cara
+            | data disimpan. Dibatasi ke daftar resmi supaya tidak ada
+            | nilai aneh yang lolos ke database.
+            |
+            */
+
+            'timezone' => [
+                'nullable',
+                Rule::in(User::SUPPORTED_TIMEZONES),
+            ],
+
             'current_password' => [
                 'nullable',
                 'required_with:password',
@@ -103,7 +121,11 @@ class ProfileUpdateRequest extends FormRequest
 
             'password.mixed' => 'Kata sandi harus mengandung huruf besar dan huruf kecil.',
 
-            'password.regex' => 'Kata sandi harus mengandung angka atau karakter khusus.',
+            'password.numbers' => 'Kata sandi harus mengandung minimal satu angka (0-9).',
+
+            'password.symbols' => 'Kata sandi harus mengandung minimal satu karakter khusus (contoh: ! @ # $ %).',
+
+            'timezone.in' => 'Zona waktu yang dipilih tidak dikenali.',
 
         ];
     }

@@ -69,6 +69,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Display Timezone
+    |--------------------------------------------------------------------------
+    |
+    | Zona waktu yang dipakai untuk SEMUA tanggal/jam yang dilihat
+    | pengguna: notifikasi Email/WhatsApp, halaman pelacakan publik, dan
+    | seluruh export PDF. Dipisahkan dari APP_TIMEZONE supaya tampilan
+    | tetap WIB walau penyimpanan diubah ke UTC (atau sebaliknya) -
+    | konversi Carbon ke zona yang sama bersifat no-op, jadi aman untuk
+    | kedua konfigurasi.
+    |
+    */
+
+    'display_timezone' => env('APP_DISPLAY_TIMEZONE', 'Asia/Jakarta'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Locale Configuration
     |--------------------------------------------------------------------------
     |

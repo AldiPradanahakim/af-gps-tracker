@@ -123,8 +123,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const profileForm = document.getElementById('profileForm');
 
+    /*
+    |--------------------------------------------------------------------------
+    | Termasuk <select> (Zona Waktu) - kalau hanya <input>, selektor zona
+    | waktunya tetap terkunci walau tombol Edit sudah ditekan.
+    |--------------------------------------------------------------------------
+    */
+
     const inputs = profileForm
-        ? profileForm.querySelectorAll('input')
+        ? profileForm.querySelectorAll('input, select')
         : [];
 
     let profileDefault = {};
@@ -171,6 +178,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         saveProfileButton.classList.add('hidden');
 
+        // Syarat kata sandi hanya relevan saat pengguna benar-benar
+        // sedang mengetik kata sandi baru.
+        document.getElementById('passwordRequirements')
+            ?.classList.add('hidden');
+
     }
 
     function enableProfileForm() {
@@ -190,6 +202,9 @@ document.addEventListener('DOMContentLoaded', function () {
         cancelProfileButton.classList.remove('hidden');
 
         saveProfileButton.classList.remove('hidden');
+
+        document.getElementById('passwordRequirements')
+            ?.classList.remove('hidden');
 
     }
 
@@ -387,6 +402,21 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('profileEmail').value = user.email;
 
         document.getElementById('profilePhone').value = user.phone ?? '';
+
+        /*
+        |--------------------------------------------------------------------------
+        | Zona waktu ikut disegarkan supaya nilainya tidak balik ke pilihan
+        | lama kalau server menormalisasi/menolak kiriman.
+        |--------------------------------------------------------------------------
+        */
+
+        const timezoneSelect = document.getElementById('profileTimezone');
+
+        if (timezoneSelect && user.timezone) {
+
+            timezoneSelect.value = user.timezone;
+
+        }
 
         document.getElementById('currentPassword').value = '';
 

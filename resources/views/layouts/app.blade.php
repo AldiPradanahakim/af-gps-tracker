@@ -9,7 +9,7 @@
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <meta name="description" content="@yield('meta_description', 'Trackio: pantau lokasi kendaraan Anda secara real-time, lihat riwayat perjalanan, dan kelola geofence dalam satu platform.')">
+    <meta name="description" content="@yield('meta_description', 'AF GPS TRACKER: pantau lokasi kendaraan Anda secara real-time, lihat riwayat perjalanan, dan kelola geofence dalam satu platform.')">
 
     <title>
         @yield('title', config('app.name'))
@@ -35,6 +35,22 @@
 
 <body class="font-sans antialiased bg-[#F8FAFC]">
 
+    {{-- ===================================================== --}}
+    {{-- Zona Waktu Tampilan --}}
+    {{-- ===================================================== --}}
+    {{--
+        Zona waktu pilihan pengguna dibagikan ke seluruh JavaScript
+        supaya jam yang dirender di sisi klien (notifikasi realtime,
+        popup peta, timeline) memakai zona yang sama dengan yang
+        dirender server - bukan WIB yang dipaku.
+    --}}
+    <script>
+        window.AppTimezone = @json([
+            'name' => \App\Helpers\AppTime::displayTimezone(),
+            'label' => \App\Helpers\AppTime::timezoneLabel(),
+        ]);
+    </script>
+
     @yield('content')
 
     {{-- ===================================================== --}}
@@ -43,6 +59,13 @@
 
     <x-toast />
 
+    {{-- ===================================================== --}}
+    {{-- Global Loading Overlay --}}
+    {{-- ===================================================== --}}
+
+    <x-loading-overlay />
+
+    @include('components.scripts.loading-overlay')
     @include('components.scripts.toast')
     @include('components.scripts.dynamic-marker')
     @stack('scripts')
