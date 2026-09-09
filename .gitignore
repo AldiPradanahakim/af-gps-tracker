@@ -20,7 +20,18 @@
 /auth.json
 CLAUDE.md
 /node_modules
-/public/build
+
+# public/build SENGAJA di-commit (bukan di-ignore). Deploy ke produksi
+# lewat webhook panel hosting yang HANYA menjalankan git pull secara
+# otomatis - "npm run build" ada di checklist manual deploy/README.md,
+# gampang lupa di-jalankan lewat SSH, dan hasilnya kelas Tailwind yang
+# baru ditambahkan (mis. backdrop-blur pada loading-overlay) tidak
+# pernah ikut ter-build di server sehingga hilang di production padahal
+# ada di local. Commit hasil build supaya git pull saja sudah cukup.
+#
+# WAJIB jalankan `npm run build` dan commit ulang public/build setiap
+# kali ada perubahan pada resources/css, resources/js, atau class
+# Tailwind baru di file .blade.php.
 /public/fonts-manifest.dev.json
 /public/hot
 /public/storage
