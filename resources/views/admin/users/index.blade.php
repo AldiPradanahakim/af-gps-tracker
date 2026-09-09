@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Manajemen Pengguna')
+@section('title', 'Manajemen Pengguna - ' . config('app.name'))
 @section('page_title', 'Manajemen Pengguna')
 @section('page_description', 'Kelola semua akun pengguna yang terdaftar di dalam sistem.')
 

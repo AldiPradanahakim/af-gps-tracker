@@ -2,7 +2,30 @@
 
 @section('content')
 
-<div class="h-screen overflow-hidden bg-[#F8FAFC] flex" x-data="{ openProfileModal: {{ $errors->any() ? 'true' : 'false' }}, mobileMenuOpen: false }">
+{{--
+    editingProfile  : modal dibuka dalam mode BACA. Data hanya bisa diubah
+                      setelah tombol "Edit Profil" ditekan, supaya isian
+                      tidak terubah tanpa sengaja.
+    changingPassword: bagian ganti kata sandi terpisah dan opsional -
+                      admin boleh mengubah nama SAJA, email SAJA, atau
+                      keduanya, tanpa wajib menyentuh kata sandi.
+
+    Kalau validasi gagal, modal langsung dibuka kembali dalam mode edit
+    (dan bagian kata sandi ikut terbuka bila errornya memang di situ)
+    supaya pesan errornya terlihat.
+--}}
+<div class="h-screen overflow-hidden bg-[#F8FAFC] flex"
+     x-data="{
+        openProfileModal: {{ $errors->any() ? 'true' : 'false' }},
+        editingProfile: {{ $errors->any() ? 'true' : 'false' }},
+        changingPassword: {{ $errors->has('password') ? 'true' : 'false' }},
+        mobileMenuOpen: false,
+        closeProfileModal() {
+            this.openProfileModal = false;
+            this.editingProfile = false;
+            this.changingPassword = false;
+        },
+     }">
 
     <!-- Mobile backdrop -->
     <div x-show="mobileMenuOpen" 
@@ -18,10 +41,10 @@
         {{-- Header --}}
         <div class="flex h-24 shrink-0 items-center justify-between border-b border-slate-200 px-6">
             <div class="flex items-center gap-4">
-                <img src="{{ asset('images/logo-gps.png') }}" alt="GPS Tracker" class="h-12 w-12 object-contain">
+                <img src="{{ asset('images/logo-gps.png') }}" alt="AF GPS TRACKER" class="h-12 w-12 object-contain">
                 <div>
-                    <h1 class="text-sm font-bold uppercase tracking-[0.35em] text-[#2563EB]">ADMIN</h1>
-                    <p class="mt-1 text-sm text-slate-500">Dashboard</p>
+                    <h1 class="text-[12px] font-bold uppercase tracking-[0.22em] text-[#2563EB]">AF GPS TRACKER</h1>
+                    <p class="mt-1 text-sm text-slate-500">Dashboard Admin</p>
                 </div>
             </div>
             <!-- Close Mobile Menu -->
@@ -58,7 +81,7 @@
         
         {{-- Footer Sidebar --}}
         <div class="p-6 text-center text-xs text-slate-400">
-            &copy; {{ date('Y') }} GPS Tracker<br>Admin Panel
+            &copy; {{ date('Y') }} AF GPS TRACKER<br>Panel Admin
         </div>
     </div>
 
@@ -74,7 +97,7 @@
                     </svg>
                 </button>
                 <div>
-                    <h2 class="text-xl lg:text-2xl font-bold text-slate-900 tracking-tight">@yield('page_title', 'Admin Panel')</h2>
+                    <h2 class="text-xl lg:text-2xl font-bold text-slate-900 tracking-tight">@yield('page_title', 'Dashboard Admin')</h2>
                     <p class="text-xs lg:text-sm font-medium text-slate-500 mt-1 hidden sm:block">@yield('page_description', 'Kendali penuh atas sistem ini.')</p>
                 </div>
             </div>
@@ -141,8 +164,11 @@
         </main>
     </div>
 
-    {{-- Admin Profile Modal --}}
-    <div x-show="openProfileModal" 
+    {{-- ================================================================= --}}
+    {{-- Modal Profil Admin                                                --}}
+    {{-- ================================================================= --}}
+
+    <div x-show="openProfileModal"
          class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 sm:p-0"
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0"
@@ -151,9 +177,9 @@
          x-transition:leave-start="opacity-100"
          x-transition:leave-end="opacity-0"
          style="display: none;">
-        
+
         <div class="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl"
-             @click.outside="openProfileModal = false"
+             @click.outside="closeProfileModal()"
              x-show="openProfileModal"
              x-transition:enter="transition ease-out duration-300"
              x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-8 sm:scale-95"
@@ -161,70 +187,139 @@
              x-transition:leave="transition ease-in duration-200"
              x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
              x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-8 sm:scale-95">
-             
-             <div class="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-                 <h3 class="text-lg font-bold text-slate-900">Profil Admin</h3>
-                 <button @click="openProfileModal = false" class="rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors">
-                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                     </svg>
-                 </button>
-             </div>
 
-             <div class="p-6">
-                 <form action="{{ route('admin.profile.update') }}" method="POST">
-                     @csrf
-                     @method('PATCH')
-                     
-                     <div class="space-y-5">
-                         <div>
-                             <label for="name" class="block text-sm font-medium text-slate-700">Nama Lengkap</label>
-                             <input type="text" name="name" id="name" value="{{ old('name', auth()->user()->name) }}" required class="mt-1.5 block w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:ring-blue-500">
-                             @error('name')
-                                 <span class="mt-1 block text-xs text-red-500">{{ $message }}</span>
-                             @enderror
-                         </div>
+            <div class="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900">Profil Admin</h3>
+                    <p class="text-xs text-slate-500" x-show="!editingProfile">Data akun administrator Anda.</p>
+                    <p class="text-xs text-slate-500" x-show="editingProfile" style="display: none;">Ubah data yang perlu saja, lalu simpan.</p>
+                </div>
+                <button type="button" @click="closeProfileModal()" class="rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
 
-                         <div>
-                             <label for="email" class="block text-sm font-medium text-slate-700">Email Login</label>
-                             <input type="email" name="email" id="email" value="{{ old('email', auth()->user()->email) }}" required class="mt-1.5 block w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:ring-blue-500">
-                             @error('email')
-                                 <span class="mt-1 block text-xs text-red-500">{{ $message }}</span>
-                             @enderror
-                         </div>
-                         
-                         <hr class="border-slate-100">
+            <div class="max-h-[70vh] overflow-y-auto p-6">
+                <form action="{{ route('admin.profile.update') }}" method="POST">
+                    @csrf
+                    @method('PATCH')
 
-                         <div>
-                             <h4 class="text-sm font-bold text-slate-900">Ubah Password</h4>
-                             <p class="text-xs text-slate-500">Kosongkan jika tidak ingin mengubah password.</p>
-                         </div>
-                         
-                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                             <div>
-                                 <label for="password" class="block text-sm font-medium text-slate-700">Password Baru</label>
-                                 <input type="password" name="password" id="password" class="mt-1.5 block w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:ring-blue-500">
-                                 @error('password')
-                                     <span class="mt-1 block text-xs text-red-500">{{ $message }}</span>
-                                 @enderror
-                             </div>
-                             <div>
-                                 <label for="password_confirmation" class="block text-sm font-medium text-slate-700">Konfirmasi Password</label>
-                                 <input type="password" name="password_confirmation" id="password_confirmation" class="mt-1.5 block w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:ring-blue-500">
-                             </div>
-                         </div>
-                     </div>
-                     
-                     <div class="mt-8 flex justify-end gap-3">
-                         <button type="button" @click="openProfileModal = false" class="rounded-xl px-5 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-100 transition-colors">
-                             Batal
-                         </button>
-                         <button type="submit" class="rounded-xl bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-md transition-all hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/30">
-                             Simpan Perubahan
-                         </button>
-                     </div>
-                 </form>
-             </div>
+                    <div class="space-y-5">
+
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-slate-700">Nama Lengkap</label>
+                            <input type="text" name="name" id="name"
+                                   value="{{ old('name', auth()->user()->name) }}"
+                                   required
+                                   :disabled="!editingProfile"
+                                   :class="editingProfile
+                                        ? 'border-slate-300 bg-white text-slate-900'
+                                        : 'border-slate-200 bg-slate-50 text-slate-600'"
+                                   class="mt-1.5 block w-full rounded-xl border px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-blue-500">
+                            @error('name')
+                                <span class="mt-1 block text-xs text-red-500">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-slate-700">Email Login</label>
+                            <input type="email" name="email" id="email"
+                                   value="{{ old('email', auth()->user()->email) }}"
+                                   required
+                                   :disabled="!editingProfile"
+                                   :class="editingProfile
+                                        ? 'border-slate-300 bg-white text-slate-900'
+                                        : 'border-slate-200 bg-slate-50 text-slate-600'"
+                                   class="mt-1.5 block w-full rounded-xl border px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-blue-500">
+                            @error('email')
+                                <span class="mt-1 block text-xs text-red-500">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        {{--
+                            Ganti kata sandi sengaja disembunyikan di balik
+                            sakelar terpisah: mengubah nama atau email TIDAK
+                            mewajibkan admin mengisi kata sandi baru.
+                        --}}
+                        <div x-show="editingProfile" style="display: none;">
+
+                            <hr class="border-slate-100">
+
+                            <button type="button"
+                                    @click="changingPassword = !changingPassword"
+                                    class="mt-5 flex w-full items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-left transition hover:bg-slate-100">
+                                <span>
+                                    <span class="block text-sm font-bold text-slate-900">Ubah Kata Sandi</span>
+                                    <span class="block text-xs text-slate-500">Opsional &mdash; lewati jika hanya mengubah nama atau email.</span>
+                                </span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 text-slate-400 transition-transform"
+                                     :class="changingPassword ? 'rotate-180' : ''"
+                                     viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+
+                            <div x-show="changingPassword" style="display: none;" class="mt-4 space-y-4">
+
+                                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                    <div>
+                                        <label for="password" class="block text-sm font-medium text-slate-700">Kata Sandi Baru</label>
+                                        <input type="password" name="password" id="password"
+                                               placeholder="Contoh: Gps#Tracker2026"
+                                               :disabled="!changingPassword"
+                                               class="mt-1.5 block w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:ring-blue-500">
+                                        @error('password')
+                                            <span class="mt-1 block text-xs text-red-500">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                    <div>
+                                        <label for="password_confirmation" class="block text-sm font-medium text-slate-700">Konfirmasi Kata Sandi</label>
+                                        <input type="password" name="password_confirmation" id="password_confirmation"
+                                               :disabled="!changingPassword"
+                                               class="mt-1.5 block w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:ring-blue-500">
+                                    </div>
+                                </div>
+
+                                <x-password-requirements />
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    {{-- Aksi: mode baca --}}
+                    <div class="mt-8 flex justify-end gap-3" x-show="!editingProfile">
+                        <button type="button" @click="closeProfileModal()"
+                                class="rounded-xl px-5 py-2.5 text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-100">
+                            Tutup
+                        </button>
+                        <button type="button" @click="editingProfile = true"
+                                class="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-md transition-all hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/30">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            Edit Profil
+                        </button>
+                    </div>
+
+                    {{-- Aksi: mode edit --}}
+                    <div class="mt-8 flex justify-end gap-3" x-show="editingProfile" style="display: none;">
+                        <button type="button"
+                                @click="editingProfile = false; changingPassword = false"
+                                class="rounded-xl px-5 py-2.5 text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-100">
+                            Batal
+                        </button>
+                        <button type="submit"
+                                class="rounded-xl bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-md transition-all hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/30">
+                            Simpan Perubahan
+                        </button>
+                    </div>
+
+                </form>
+            </div>
         </div>
     </div>
 

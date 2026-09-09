@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Dashboard Admin')
+@section('title', 'Dashboard Admin - ' . config('app.name'))
 @section('page_title', 'Statistik Sistem')
 @section('page_description', 'Ringkasan penggunaan perangkat dan akun.')
 
@@ -11,10 +11,10 @@
     {{-- Welcome Card --}}
     <div class="relative overflow-hidden rounded-2xl bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 flex flex-col md:flex-row items-center justify-between">
         <div class="p-8 max-w-xl z-10">
-            <h2 class="text-sm font-bold text-slate-400 uppercase tracking-[0.2em] mb-2">Welcome Back</h2>
+            <h2 class="text-sm font-bold text-slate-400 uppercase tracking-[0.2em] mb-2">Selamat Datang Kembali</h2>
             <h1 class="text-3xl font-black text-blue-600 tracking-tight mb-4">{{ auth()->user()->name }}!</h1>
             <p class="text-sm text-slate-600 leading-relaxed max-w-md">
-                Ini adalah dashboard admin untuk mengelola perangkat pelacak GPS. Anda dapat memantau aktivitas perangkat, mendaftarkan perangkat baru, serta mengelola pengguna yang terdaftar di dalam sistem secara real-time.
+                Ini adalah dashboard admin {{ config('app.name') }} untuk mengelola perangkat pelacak GPS. Anda dapat memantau aktivitas perangkat, mendaftarkan perangkat baru, serta mengelola pengguna yang terdaftar di dalam sistem secara real-time.
             </p>
         </div>
         <div class="hidden md:block w-72 h-auto absolute right-0 top-0 bottom-0 pointer-events-none opacity-90">

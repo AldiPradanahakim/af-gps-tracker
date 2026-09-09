@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Manajemen Perangkat')
+@section('title', 'Manajemen Perangkat - ' . config('app.name'))
 @section('page_title', 'Manajemen Perangkat')
 @section('page_description', 'Kelola semua perangkat GPS yang terdaftar di dalam sistem.')
 
