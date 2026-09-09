@@ -435,9 +435,9 @@ class VehicleRepository
 
             $device->travelHistories()
 
-                ->whereDate(
+                ->whereBetween(
                     'received_at',
-                    today()
+                    [AppTime::startOfDay(), AppTime::endOfDay()]
                 )
 
                 ->orderBy('received_at')
@@ -583,7 +583,7 @@ class VehicleRepository
 
         $todayStop = $device->stopHistories()
 
-            ->whereDate('start_time', today())
+            ->whereBetween('start_time', [AppTime::startOfDay(), AppTime::endOfDay()])
 
             ->count();
 
@@ -901,19 +901,19 @@ class VehicleRepository
 
         if ($startDate) {
 
-            $query->whereDate(
+            $query->where(
                 'received_at',
                 '>=',
-                $startDate
+                AppTime::parseInput($startDate)
             );
         }
 
         if ($endDate) {
 
-            $query->whereDate(
+            $query->where(
                 'received_at',
                 '<=',
-                $endDate
+                AppTime::parseInput($endDate, endOfDay: true)
             );
         }
 
@@ -948,11 +948,11 @@ class VehicleRepository
 
         if ($date) {
 
-            $query->whereDate(
+            $query->whereBetween(
 
                 'received_at',
 
-                $date
+                [AppTime::parseInput($date), AppTime::parseInput($date, endOfDay: true)]
 
             );
         }
@@ -1343,31 +1343,31 @@ class VehicleRepository
 
         if ($startDate) {
 
-            $travelQuery->whereDate(
+            $travelQuery->where(
                 'received_at',
                 '>=',
-                $startDate
+                AppTime::parseInput($startDate)
             );
 
-            $stopQuery->whereDate(
+            $stopQuery->where(
                 'start_time',
                 '>=',
-                $startDate
+                AppTime::parseInput($startDate)
             );
         }
 
         if ($endDate) {
 
-            $travelQuery->whereDate(
+            $travelQuery->where(
                 'received_at',
                 '<=',
-                $endDate
+                AppTime::parseInput($endDate, endOfDay: true)
             );
 
-            $stopQuery->whereDate(
+            $stopQuery->where(
                 'start_time',
                 '<=',
-                $endDate
+                AppTime::parseInput($endDate, endOfDay: true)
             );
         }
 
@@ -1437,19 +1437,19 @@ class VehicleRepository
 
         if ($startDate) {
 
-            $query->whereDate(
+            $query->where(
                 'start_time',
                 '>=',
-                $startDate
+                AppTime::parseInput($startDate)
             );
         }
 
         if ($endDate) {
 
-            $query->whereDate(
+            $query->where(
                 'start_time',
                 '<=',
-                $endDate
+                AppTime::parseInput($endDate, endOfDay: true)
             );
         }
 
