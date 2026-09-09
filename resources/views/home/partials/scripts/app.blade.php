@@ -2188,6 +2188,46 @@ window.GPSTracker = Object.assign(window.GPSTracker || {}, {
 
     };
 
+    /*
+    |--------------------------------------------------------------------------
+    | Onboarding Popup
+    |--------------------------------------------------------------------------
+    |
+    | Pengguna yang sudah punya akun tapi belum (atau tidak lagi) punya
+    | perangkat/kendaraan - mis. setelah menghapus kendaraan terakhirnya -
+    | langsung disambut popup yang sesuai di halaman Utama, tanpa perlu
+    | melewati alur registrasi awal (aktivasi -> lengkapi profil).
+    |
+    | Nilai window.GPSOnboardingStep diisi HomeService::index().
+    |
+    */
+
+    GPSTracker.startOnboarding = function () {
+
+        const step = window.GPSOnboardingStep ?? null;
+
+        if (!step) {
+
+            return;
+
+        }
+
+        if (step === 'device') {
+
+            this.openActivateDeviceModal();
+
+            return;
+
+        }
+
+        if (step === 'vehicle') {
+
+            this.openVehicleInformationModal();
+
+        }
+
+    };
+
     document.addEventListener(
 
         'DOMContentLoaded',
@@ -2195,6 +2235,8 @@ window.GPSTracker = Object.assign(window.GPSTracker || {}, {
         () => {
 
             window.GPSTracker.start();
+
+            window.GPSTracker.startOnboarding();
 
         }
 

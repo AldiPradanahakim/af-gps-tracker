@@ -2193,6 +2193,52 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         }
 
+        const emptyStateButton = document.getElementById(
+
+            'emptyStateAddVehicle'
+
+        );
+
+        if (
+
+            emptyStateButton &&
+
+            emptyStateButton.dataset.sidebarBound !== 'true'
+
+        ) {
+
+            emptyStateButton.dataset.sidebarBound = 'true';
+
+            emptyStateButton.addEventListener(
+
+                'click',
+
+                () => {
+
+                    /*
+                    |--------------------------------------------------
+                    | Pengguna yang perangkatnya sudah aktif tapi belum
+                    | mengisi kendaraan langsung dibawa ke popup
+                    | Informasi Kendaraan - tidak perlu aktivasi ulang.
+                    |--------------------------------------------------
+                    */
+
+                    if (emptyStateButton.dataset.step === 'vehicle') {
+
+                        this.openVehicleInformationModal();
+
+                        return;
+
+                    }
+
+                    this.openActivateDeviceModal();
+
+                }
+
+            );
+
+        }
+
         const addButton = document.getElementById(
 
             'addVehicle'

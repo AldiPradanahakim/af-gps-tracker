@@ -85,11 +85,23 @@ class HomeService
         |--------------------------------------------------------------------------
         */
 
-        $vehicles = $user->devices->map(
+        /*
+        |--------------------------------------------------------------------------
+        | Hanya perangkat yang SUDAH punya data kendaraan yang tampil
+        | sebagai kartu "Kendaraan". Perangkat yang baru diaktivasi tapi
+        | informasi kendaraannya belum diisi akan memunculkan kartu kosong
+        | tanpa nama/plat - membingungkan, dan menutupi ajakan untuk
+        | melengkapi informasi kendaraan pada empty state.
+        |--------------------------------------------------------------------------
+        */
 
-            fn($device) => VehicleCardFormatter::make($device)
+        $vehicles = $user->devices
 
-        )->values();
+            ->filter(fn($device) => $device->vehicle !== null)
+
+            ->map(fn($device) => VehicleCardFormatter::make($device))
+
+            ->values();
 
         /*
         |--------------------------------------------------------------------------
@@ -118,6 +130,38 @@ class HomeService
 
             ->values();
 
+        /*
+        |--------------------------------------------------------------------------
+        | Onboarding State
+        |--------------------------------------------------------------------------
+        |
+        | Pengguna yang SUDAH punya akun tapi belum (atau tidak lagi)
+        | punya perangkat/kendaraan - mis. setelah menghapus kendaraan
+        | terakhirnya - tidak boleh dilempar balik ke alur registrasi
+        | awal (aktivasi perangkat -> lengkapi profil), karena profilnya
+        | sudah ada. Dia cukup diarahkan ke halaman Utama, lalu popup
+        | yang sesuai dibuka otomatis di sini:
+        |
+        | - belum punya perangkat  -> popup "Aktivasi Perangkat"
+        |   (yang setelah sukses otomatis lanjut ke popup kendaraan)
+        |
+        | - sudah punya perangkat  -> popup "Informasi Kendaraan"
+        |   tapi belum ada kendaraan
+        |
+        */
+
+        $hasDevice = $user->devices->isNotEmpty();
+
+        $hasVehicle = $user->devices->contains(
+            fn ($device) => $device->vehicle !== null
+        );
+
+        $onboardingStep = match (true) {
+            ! $hasDevice => 'device',
+            ! $hasVehicle => 'vehicle',
+            default => null,
+        };
+
         return [
 
             'user' => $user,
@@ -129,6 +173,8 @@ class HomeService
             'notifications' => $notifications,
 
             'geofences' => $geofences,
+
+            'onboardingStep' => $onboardingStep,
 
         ];
     }

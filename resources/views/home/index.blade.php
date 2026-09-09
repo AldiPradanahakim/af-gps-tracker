@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard')
+@section('title', 'Halaman Utama - ' . config('app.name'))
 
 @section('meta_description', 'Dashboard pemantauan lokasi kendaraan secara real-time, status perangkat GPS, dan geofence dalam satu peta interaktif.')
 
@@ -163,6 +163,19 @@ body{
 <script>
 
     window.GPSHomeLocations = @json($devices);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Onboarding Step
+    |--------------------------------------------------------------------------
+    |
+    | Diisi HomeService ketika pengguna belum punya perangkat/kendaraan
+    | (mis. setelah menghapus kendaraan terakhirnya). Popup yang sesuai
+    | dibuka otomatis di sini - lihat home/partials/scripts/app.blade.php.
+    |
+    */
+
+    window.GPSOnboardingStep = @json($onboardingStep ?? null);
 
 </script>
 
