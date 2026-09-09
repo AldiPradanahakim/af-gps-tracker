@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Daftar Perangkat GPS ({{ $date }})</title>
+    <title>{{ config('app.name') }} - Daftar Perangkat GPS ({{ $date }})</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -46,7 +46,8 @@
     </style>
 </head>
 <body>
-    <h2>Daftar Kredensial Perangkat GPS</h2>
+    <h2>{{ config('app.name') }}</h2>
+    <h3 style="text-align:center;margin-top:0;margin-bottom:5px;font-weight:normal;">Daftar Kredensial Perangkat GPS</h3>
     <p class="subtitle">Digenerate pada: {{ $date }}</p>
 
     <table>

@@ -95,7 +95,7 @@ class DeviceController extends Controller
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.devices.pdf', [
             'devices' => $generatedDevices,
-            'date' => now()->format('d/m/Y H:i')
+            'date' => \App\Helpers\AppTime::format(now(), 'd/m/Y H:i'),
         ]);
 
         return $pdf->download('Device_Credentials_' . now()->format('YmdHis') . '.pdf');

@@ -167,7 +167,7 @@
     <table class="header-table">
         <tr>
             <td>
-                <div class="app-name">{{ config('app.name', 'Trackio') }}</div>
+                <div class="app-name">{{ config('app.name', 'AF GPS TRACKER') }}</div>
                 <div class="doc-title">Laporan Riwayat Kendaraan Berhenti</div>
                 <div class="doc-subtitle">
                     Periode {{ \Illuminate\Support\Carbon::parse($startDate)->format('d/m/Y') }}
@@ -175,7 +175,7 @@
                 </div>
             </td>
             <td class="header-right">
-                Dicetak: {{ $generatedAt->format('d/m/Y H:i') }} WIB<br>
+                Dicetak: {{ \App\Helpers\AppTime::format($generatedAt, 'd/m/Y H:i') }}<br>
                 Total Stop: {{ count($stops) }}
             </td>
         </tr>
@@ -247,8 +247,16 @@
 
     @endif
 
+    @if(($totalRows ?? 0) > ($maxRows ?? 0))
+        <div class="footer-note">
+            Ditampilkan {{ number_format($maxRows) }} data terbaru dari total
+            {{ number_format($totalRows) }} data pada rentang ini. Persempit rentang
+            tanggal untuk melihat sisanya.
+        </div>
+    @endif
+
     <div class="footer-note">
-        Dokumen ini dibuat otomatis oleh {{ config('app.name', 'Trackio') }} dan tidak memerlukan tanda tangan basah.
+        Dokumen ini dibuat otomatis oleh {{ config('app.name', 'AF GPS TRACKER') }} dan tidak memerlukan tanda tangan basah.
     </div>
 
 </body>
