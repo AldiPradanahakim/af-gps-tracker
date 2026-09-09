@@ -268,6 +268,29 @@ class GeofenceService
                 $longitude = (float) $location['lng'];
 
                 break;
+
+            case 'manual':
+
+                if (
+                    ! isset($data['latitude']) ||
+                    ! isset($data['longitude'])
+                ) {
+
+                    throw ValidationException::withMessages([
+                        'radius_source' => 'Titik pusat manual belum ditentukan.',
+                    ]);
+                }
+
+                $latitude = (float) $data['latitude'];
+                $longitude = (float) $data['longitude'];
+
+                break;
+
+            default:
+
+                throw ValidationException::withMessages([
+                    'radius_source' => 'Sumber titik pusat tidak dikenali.',
+                ]);
         }
 
         return [

@@ -1484,7 +1484,19 @@ window.VehicleHistory = {
 
     today() {
 
-        return new Date().toISOString().split('T')[0];
+        // new Date().toISOString() selalu memberi tanggal UTC - untuk
+        // pengguna WIB/WITA/WIT, jam 00:00-06:59 waktu lokal masih
+        // "kemarin" di UTC, sehingga "Hari Ini" salah ambil rentang.
+        // Pakai getter tanggal LOKAL (timezone browser) sebagai gantinya.
+        const now = new Date();
+
+        const year = now.getFullYear();
+
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+
+        const day = String(now.getDate()).padStart(2, '0');
+
+        return `${year}-${month}-${day}`;
 
     },
 

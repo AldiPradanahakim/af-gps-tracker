@@ -468,8 +468,11 @@ class NotificationService
     /**
      * Cek apakah channel notifikasi (email/whatsapp) aktif untuk
      * notifikasi ini. Notifikasi tipe "stop" mengikuti pengaturan
-     * Stop Detection (device.stop_setting), tipe lain mengikuti
-     * pengaturan notifikasi umum (device.notification_setting).
+     * Stop Detection (device.stop_setting), tipe "overspeed" mengikuti
+     * pengaturan Batas Kecepatan (device.speed_setting) - masing-masing
+     * tab punya toggle Email/WhatsApp sendiri. Tipe lain (geofence,
+     * device online/offline, dst) mengikuti pengaturan notifikasi umum
+     * (device.notification_setting, tab Geofence).
      */
     protected function isChannelEnabled(
         Notification $notification,
@@ -481,6 +484,15 @@ class NotificationService
             return (bool) data_get(
                 $notification->device,
                 "stop_setting.{$channel}_notification",
+                false
+            );
+        }
+
+        if ($notification->type === 'overspeed') {
+
+            return (bool) data_get(
+                $notification->device,
+                "speed_setting.{$channel}_notification",
                 false
             );
         }

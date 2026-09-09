@@ -47,6 +47,25 @@ class ActivateVehicleService
                 );
             }
 
+            /*
+            |--------------------------------------------------------------------------
+            | Kendaraan Sudah Ada
+            |--------------------------------------------------------------------------
+            |
+            | Tanpa ini, submit ulang (reload/back-button setelah onboarding
+            | selesai) jatuh ke QueryException dari unique('device_id') di
+            | tabel vehicles - 500 mentah alih-alih pesan yang jelas.
+            |--------------------------------------------------------------------------
+            */
+
+            if (Vehicle::where('device_id', $device->id)->exists()) {
+
+                throw new HttpException(
+                    422,
+                    'Kendaraan untuk perangkat ini sudah terdaftar.'
+                );
+            }
+
             return Vehicle::create([
 
                 /*

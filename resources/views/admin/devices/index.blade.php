@@ -93,11 +93,18 @@
                             {{ $device->device_id }}
                         </td>
                         <td class="px-6 py-4">
-                            @if(!$device->user_id)
-                                <span class="font-mono text-slate-700 bg-slate-100 px-2 py-1 rounded text-sm select-all">{{ $device->device_password }}</span>
-                            @else
-                                <span class="text-slate-400 italic text-sm">Tersembunyi</span>
-                            @endif
+                            {{--
+                                device_password di database SELALU berupa hash
+                                bcrypt (lihat Device::setDevicePasswordAttribute),
+                                bukan kata sandi asli - tidak ada cara untuk
+                                menampilkannya lagi setelah pembuatan. Jangan
+                                render kolom ini langsung, itu cuma
+                                menampilkan hash yang terlihat seperti kata
+                                sandi asli tapi tidak bisa dipakai login.
+                            --}}
+                            <span class="text-slate-400 italic text-sm" title="Kata sandi hanya ditampilkan sekali saat perangkat dibuat (lewat Export PDF) dan tidak bisa dilihat lagi setelahnya.">
+                                Hanya tampil sekali saat dibuat
+                            </span>
                         </td>
                         <td class="px-6 py-4">
                             @if($device->user_id)

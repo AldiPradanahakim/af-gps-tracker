@@ -40,6 +40,8 @@ class ProfileController extends Controller
 
         Auth::login($user);
 
+        $request->session()->regenerate();
+
         session()->forget('activated_device_id');
 
         return redirect()->route('vehicles.create');

@@ -80,6 +80,14 @@ window.VehicleInformation = {
 
             (event) => {
 
+                // Sama seperti guard di VehiclePath/VehicleMarker: selama
+                // Playback aktif, event ini juga dipicu tiap tick playback,
+                // jangan sampai kartu Informasi Kendaraan menampilkan posisi
+                // playback seolah itu posisi kendaraan saat ini.
+                if (window.VehiclePath?.playbackActive) {
+                    return;
+                }
+
                 this.state.latestLocation = event.detail;
 
                 this.renderLocation();

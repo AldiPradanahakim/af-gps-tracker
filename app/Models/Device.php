@@ -61,6 +61,8 @@ class Device extends Model
 
         'mqtt_secret',
 
+        'device_password',
+
     ];
 
     protected $casts = [

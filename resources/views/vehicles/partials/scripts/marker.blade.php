@@ -294,6 +294,16 @@ window.VehicleMarker = {
 
             (event) => {
 
+                // Selama Playback aktif, event ini juga dipicu oleh tiap
+                // tick playback (lihat VehiclePlayback.next() ->
+                // Vehicle.updateLatestLocation()) - abaikan supaya marker
+                // tidak lompat-lompat antara posisi live dan posisi
+                // playback yang sedang diputar. Sama seperti guard
+                // VehiclePath.playbackActive untuk garis rute.
+                if (window.VehiclePath?.playbackActive) {
+                    return;
+                }
+
                 this.update(
 
                     event.detail

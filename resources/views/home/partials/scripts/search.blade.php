@@ -1575,8 +1575,15 @@ document.addEventListener('gpstracker:map-ready', () => {
 
             case 'vehicle':
 
+                // GPSTracker.vehicles mengindeks kartu kendaraan dengan
+                // field "device_id" yang isinya UUID Device (lihat
+                // VehicleCardFormatter::make(), 'device_id' => $device->id) -
+                // BUKAN kode fisik perangkat. Hasil pencarian menaruh UUID
+                // itu di "id" (SearchRepository::searchVehicle()) dan kode
+                // fisik terpisah di "device_id" - pakai "id" di sini supaya
+                // cocok dengan findVehicle().
                 this.focusVehicle(
-                    result.device_id
+                    result.id
                 );
 
                 this.clearTemporary();

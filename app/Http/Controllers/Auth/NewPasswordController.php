@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
@@ -51,6 +52,26 @@ class NewPasswordController extends Controller
                     'password' => Hash::make($request->password),
                     'remember_token' => Str::random(60),
                 ])->save();
+
+                /*
+                |--------------------------------------------------------------------------
+                | Putuskan Sesi Lama
+                |--------------------------------------------------------------------------
+                |
+                | Kalau ada penyerang yang sudah menyandera sesi korban
+                | sebelum reset password ini, mengganti password saja
+                | tidak mengusirnya - sesi lamanya tetap valid sampai
+                | expired sendiri. Hapus semua baris sesi milik user ini
+                | supaya sesi mana pun yang aktif langsung ter-logout.
+                |--------------------------------------------------------------------------
+                */
+
+                if (config('session.driver') === 'database') {
+                    DB::connection(config('session.connection'))
+                        ->table(config('session.table', 'sessions'))
+                        ->where('user_id', $user->id)
+                        ->delete();
+                }
 
                 event(new PasswordReset($user));
             }

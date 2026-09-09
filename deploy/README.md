@@ -94,6 +94,24 @@ Berkas konfigurasi contoh ada di folder ini:
       menyentuh langsung pipeline ingest GPS (`GPSProcessingService` dan
       layanan-layanan yang dipanggilnya).
 
+### Membuat akun admin pertama (sekali saja, bukan setiap deploy)
+
+`DatabaseSeeder` sengaja tidak membuat akun admin di luar environment
+`local` (repositori ini publik - jangan sampai ada akun dengan kata
+sandi yang tertulis di kode terbuat otomatis di produksi). Setelah
+deploy pertama, buat akun admin dengan:
+
+```bash
+php artisan db:seed --class=AdminSeeder
+```
+
+Isi `ADMIN_EMAIL`/`ADMIN_PASSWORD` di `.env` server dulu kalau ingin
+kredensial tertentu; kalau dikosongkan, seeder mencetak kata sandi acak
+sekali ke layar - catat saat itu juga, tidak disimpan di mana pun.
+Aman dijalankan ulang: kalau akun dengan email itu sudah ada, seeder
+tidak melakukan apa-apa (tidak menimpa kata sandi yang sudah diganti
+lewat aplikasi).
+
 ### Variabel lingkungan yang wajib diisi di server production
 
 Lihat `.env.example` untuk daftar lengkap. Yang paling gampang lupa saat

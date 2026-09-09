@@ -16,6 +16,21 @@ window.VehicleStop = {
 
     /*
     |--------------------------------------------------------------------------
+    | Batas Render
+    |--------------------------------------------------------------------------
+    |
+    | Sama seperti VehicleHistory.MAX_TIMELINE_ROWS - tanpa batas ini,
+    | perangkat yang sudah lama berhenti berkali-kali (riwayat berhenti
+    | sekarang selalu tercatat, tidak lagi tergantung notifikasi
+    | diaktifkan) bisa mengirim ribuan baris yang seluruhnya dirender
+    | sekaligus ke tabel dan membuat tab browser tidak responsif.
+    |--------------------------------------------------------------------------
+    */
+
+    MAX_TABLE_ROWS: 200,
+
+    /*
+    |--------------------------------------------------------------------------
     | Initialize
     |--------------------------------------------------------------------------
     */
@@ -346,7 +361,19 @@ window.VehicleStop = {
 
         empty?.classList.add('hidden');
 
-        table.innerHTML = this.stops.map(stop => this.row(stop)).join('');
+        const visible = this.stops.slice(0, this.MAX_TABLE_ROWS);
+
+        table.innerHTML = visible.map(stop => this.row(stop)).join('');
+
+        const notice = document.getElementById('stopHistoryTruncatedNotice');
+
+        if (notice) {
+
+            notice.classList.toggle('hidden', this.stops.length <= visible.length);
+
+            notice.textContent = `Menampilkan ${visible.length} dari ${this.stops.length} riwayat berhenti terbaru. Gunakan Export PDF untuk data lengkap.`;
+
+        }
 
         this.bindRowActions();
 

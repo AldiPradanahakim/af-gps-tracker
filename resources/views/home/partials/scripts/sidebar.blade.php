@@ -57,8 +57,17 @@ document.addEventListener('gpstracker:map-ready', () => {
         scrollBlock: 'center',
 
         activateUrl: '/home/devices/activate',
-        
+
+        // Dipakai untuk link ke halaman Detail Kendaraan (GET /vehicles/{device_id}).
         vehicleUrl: '/vehicles',
+
+        // Endpoint submit modal "Tambah Kendaraan" dari Home (POST, balas JSON).
+        // BUKAN vehicleUrl di atas - itu route ActivateVehicleController yang
+        // dipakai onboarding awal (POST /vehicles), tidak membalas JSON dan
+        // tidak mengecek kendaraan yang sudah ada, sehingga submit dari modal
+        // ini pernah salah sasaran ke sana (silent failure + potensi 500 di
+        // percobaan kedua).
+        vehicleCreateUrl: '/home/vehicles',
 
     };
 
@@ -1788,7 +1797,7 @@ document.addEventListener('gpstracker:map-ready', () => {
 
                 const response = await fetch(
 
-                    this.sidebarConfig.vehicleUrl,
+                    this.sidebarConfig.vehicleCreateUrl,
 
                     {
 

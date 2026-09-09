@@ -53,6 +53,29 @@
 
     @yield('content')
 
+    {{--
+        Flash message umum (mis. IsAdmin middleware menolak akses non-admin
+        lewat session('error') sebelum redirect ke dashboard). Layout ini
+        tidak punya header/nav bersama seperti admin/layouts/app.blade.php,
+        jadi dipakai lewat toast (mekanisme yang sudah ada di tiap halaman)
+        alih-alih banner inline yang gayanya tidak akan cocok di semua
+        halaman yang memakai layout ini.
+    --}}
+    @if(session('success') || session('error'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const type = {{ session('error') ? "'error'" : "'success'" }};
+                const message = @json(session('error') ?? session('success'));
+
+                if (window.GPSTracker?.showToast) {
+                    window.GPSTracker.showToast(type, type === 'error' ? 'Gagal' : 'Berhasil', message);
+                } else {
+                    alert(message);
+                }
+            });
+        </script>
+    @endif
+
     {{-- ===================================================== --}}
     {{-- Global Toast --}}
     {{-- ===================================================== --}}
