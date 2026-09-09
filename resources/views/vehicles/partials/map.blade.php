@@ -203,14 +203,6 @@
                 🛰️ Satellite
             </button>
 
-            <button
-                type="button"
-                class="vehicle-layer-option flex w-full items-center gap-3 border-t px-4 py-3 text-left text-sm hover:bg-slate-50"
-                data-layer="dark"
-            >
-                🌙 Dark
-            </button>
-
         </div>
 
     </div>

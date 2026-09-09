@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\User;
+use App\Rules\NotTypoEmailDomain;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
@@ -32,6 +33,7 @@ class ProfileUpdateRequest extends FormRequest
                     'required',
                     'email:rfc,dns',
                     'max:255',
+                    new NotTypoEmailDomain(),
                     'unique:users,email',
                 ],
 
@@ -70,6 +72,7 @@ class ProfileUpdateRequest extends FormRequest
                 'required',
                 'email:rfc,dns',
                 'max:255',
+                new NotTypoEmailDomain(),
                 Rule::unique(User::class)->ignore($user->id),
             ],
 

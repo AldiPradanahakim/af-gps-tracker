@@ -138,7 +138,7 @@ window.VehicleMap = {
 
     /*
     |--------------------------------------------------------------------------
-    | Layer Switcher (Default / Satellite / Dark)
+    | Layer Switcher (Default / Satellite)
     |--------------------------------------------------------------------------
     */
 
@@ -195,7 +195,7 @@ window.VehicleMap = {
 
         const key = layer === 'satellite'
             ? 'Satellite'
-            : (layer === 'dark' ? 'Dark' : 'Default');
+            : 'Default';
 
         this.baseLayers[key].addTo(this.map);
 
@@ -237,22 +237,6 @@ window.VehicleMap = {
 
         );
 
-        const dark = L.tileLayer(
-
-            'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-
-            {
-
-                subdomains: 'abcd',
-
-                maxZoom: 22,
-
-                attribution: '&copy; CARTO'
-
-            }
-
-        );
-
         osm.addTo(this.map);
 
         this.baseLayers = {
@@ -260,8 +244,6 @@ window.VehicleMap = {
             "Default": osm,
 
             "Satellite": satellite,
-
-            "Dark": dark,
 
         };
 

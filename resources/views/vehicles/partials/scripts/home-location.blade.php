@@ -209,7 +209,7 @@ window.VehicleHomeLocation = {
             }
         } catch (error) {
             console.error(error);
-            if (window.GPSTracker) GPSTracker.showToast('error', 'Error', 'Terjadi kesalahan');
+            if (window.GPSTracker) GPSTracker.showToast('error', 'Gagal', 'Terjadi kesalahan');
         } finally {
             const btn = this.els.confirmDeleteBtn;
             if (btn) {
@@ -256,7 +256,7 @@ window.VehicleHomeLocation = {
             }
         } catch (error) {
             console.error(error);
-            if (window.GPSTracker) GPSTracker.showToast('error', 'Error', 'Terjadi kesalahan saat menyimpan');
+            if (window.GPSTracker) GPSTracker.showToast('error', 'Gagal', 'Terjadi kesalahan saat menyimpan');
         } finally {
             const btn = this.els.saveBtn;
             if (btn) {

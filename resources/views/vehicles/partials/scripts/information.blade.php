@@ -325,6 +325,18 @@ window.VehicleInformation = {
 
             ).textContent;
 
+        // Sinkronkan juga ketiga kotak (Huruf-Angka-Huruf) supaya tidak
+        // menampilkan nilai lama yang sempat diketik sebelum Batal.
+        window.PlateNumberInputs?.['vehiclePlateInput']?.setValue(
+
+            document.getElementById(
+
+                'vehiclePlateText'
+
+            ).textContent
+
+        );
+
         document.getElementById(
 
             'vehicleTypeInput'
@@ -431,6 +443,16 @@ window.VehicleInformation = {
 
         );
 
+        // Field kotak-terpisah (mis. plate-number-input 3 kotak) punya
+        // wrapper visual sendiri di ${prefix}InputBoxes - toggle bareng
+        // supaya tampil/sembunyi sinkron dengan ${prefix}Input (yang
+        // untuk field ini adalah hidden input pembawa nilai gabungan).
+        const inputBoxes = document.getElementById(
+
+            `${prefix}InputBoxes`
+
+        );
+
         text?.classList.toggle(
 
             'hidden'
@@ -438,6 +460,12 @@ window.VehicleInformation = {
         );
 
         input?.classList.toggle(
+
+            'hidden'
+
+        );
+
+        inputBoxes?.classList.toggle(
 
             'hidden'
 

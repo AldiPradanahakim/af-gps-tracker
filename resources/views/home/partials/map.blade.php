@@ -71,14 +71,6 @@
 
         </button>
 
-        <button
-            class="layer-option flex w-full items-center gap-3 border-t px-4 py-3 hover:bg-slate-50"
-            data-layer="dark">
-
-            🌙 Dark
-
-        </button>
-
     </div>
 
 </div>

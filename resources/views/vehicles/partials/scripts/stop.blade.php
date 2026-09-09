@@ -180,7 +180,7 @@ window.VehicleStop = {
 
             console.error(error);
 
-            GPSTracker.showToast('error', 'Error', 'Terjadi kesalahan pada server.');
+            GPSTracker.showToast('error', 'Gagal', 'Terjadi kesalahan pada server.');
 
         } finally {
 

@@ -42,20 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     );
 
-    const darkLayer = L.tileLayer(
-
-        'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-
-        {
-
-            subdomains:'abcd',
-
-            maxZoom:22,
-
-        }
-
-    );
-
     /*
     |--------------------------------------------------------------------------
     | Initialize Leaflet
@@ -97,8 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
         "Default": defaultLayer,
 
         "Satellite": satelliteLayer,
-
-        "Dark": darkLayer,
 
     };
 
@@ -1756,12 +1740,6 @@ layerButton?.addEventListener('click', function (event) {
                 case 'satellite':
 
                     GPSTracker.baseLayers.Satellite.addTo(GPSTracker.map);
-
-                    break;
-
-                case 'dark':
-
-                    GPSTracker.baseLayers.Dark.addTo(GPSTracker.map);
 
                     break;
 

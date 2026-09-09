@@ -46,13 +46,10 @@
 
                 </label>
 
-                <input
+                <x-vehicle.plate-number-input
+                    id="plateNumberHome"
                     name="plate_number"
-                    placeholder="Contoh : D 1234 ABC"
-                    pattern="[A-Za-z]{1,2}\s\d{1,4}\s[A-Za-z]{1,3}"
-                    title="Format: Huruf-Angka-Huruf, contoh: D 1234 ABC"
-                    maxlength="20"
-                    class="w-full rounded-xl border border-slate-300 px-4 py-3 uppercase">
+                />
 
             </div>
 
