@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             console.error(error);
 
-            toast('error', 'Error', 'Terjadi kesalahan pada server.');
+            toast('error', 'Gagal', 'Terjadi kesalahan pada server.');
 
         } finally {
 
@@ -201,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             console.error(error);
 
-            toast('error', 'Error', 'Terjadi kesalahan pada server.');
+            toast('error', 'Gagal', 'Terjadi kesalahan pada server.');
 
         } finally {
 
@@ -317,7 +317,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 console.error(error);
 
-                toast('error', 'Error', 'Terjadi kesalahan pada server.');
+                toast('error', 'Gagal', 'Terjadi kesalahan pada server.');
 
             } finally {
 

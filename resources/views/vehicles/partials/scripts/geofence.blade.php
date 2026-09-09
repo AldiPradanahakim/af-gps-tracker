@@ -299,7 +299,7 @@ window.VehicleGeofence = {
 
             console.error(error);
 
-            this.toast('error', 'Error', 'Terjadi kesalahan pada server.');
+            this.toast('error', 'Gagal', 'Terjadi kesalahan pada server.');
 
         }
 
@@ -410,7 +410,7 @@ window.VehicleGeofence = {
 
             console.error(error);
 
-            this.toast('error', 'Error', 'Terjadi kesalahan pada server.');
+            this.toast('error', 'Gagal', 'Terjadi kesalahan pada server.');
 
         }
 
@@ -446,7 +446,7 @@ window.VehicleGeofence = {
 
             console.error(error);
 
-            this.toast('error', 'Error', 'Terjadi kesalahan pada server.');
+            this.toast('error', 'Gagal', 'Terjadi kesalahan pada server.');
 
         }
 
@@ -1183,7 +1183,7 @@ window.VehicleGeofence = {
 
                     console.error(error);
 
-                    this.toast('error', 'Error', 'Terjadi kesalahan pada server.');
+                    this.toast('error', 'Gagal', 'Terjadi kesalahan pada server.');
 
                 } finally {
 

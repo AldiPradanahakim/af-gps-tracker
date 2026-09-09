@@ -35,7 +35,11 @@ window.GPSLoading = (function () {
 
     const SHOW_DELAY_MS = 180;
 
-    const SAFETY_TIMEOUT_MS = 30000;
+    // Diperpendek dari 30 detik: kalau ada pemanggil yang lupa hide()
+    // (atau depth tidak seimbang karena request yang tidak pernah
+    // settle), pengguna paling lama menunggu 8 detik sebelum overlay
+    // memaksa dirinya sendiri tertutup, bukan terasa "macet".
+    const SAFETY_TIMEOUT_MS = 8000;
 
     let depth = 0;
 

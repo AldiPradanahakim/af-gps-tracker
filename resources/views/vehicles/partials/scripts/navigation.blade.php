@@ -127,6 +127,12 @@ window.VehicleNavigation = {
 
     show(name) {
 
+        // Pengaman: kalau overlay loading global sempat nyangkut dari
+        // section sebelumnya, jangan sampai terbawa ke section baru -
+        // activate() di bawah akan menyalakannya lagi kalau memang
+        // section ini butuh fetch data.
+        window.GPSLoading?.reset?.();
+
         this.hideAll();
 
         const section =
