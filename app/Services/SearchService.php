@@ -101,6 +101,24 @@ class SearchService
             'q' => $keyword,
             'format' => 'jsonv2',
             'addressdetails' => 1,
+
+            /*
+            |------------------------------------------------------------------
+            | namedetails + accept-language
+            |------------------------------------------------------------------
+            |
+            | namedetails memberi kita NAMA tempat (mis. "Kota Bandung")
+            | terpisah dari alamat lengkapnya, dan accept-language=id
+            | memastikan namanya berbahasa Indonesia - tanpa keduanya
+            | provider mengembalikan "Bandung City" dan satu-satunya
+            | label yang tersedia hanyalah tipe OSM mentah
+            | ("administrative") yang tampil di bawah hasil pencarian.
+            |
+            */
+
+            'namedetails' => 1,
+            'accept-language' => 'id',
+
             'limit' => 8,
             'countrycodes' => 'id',
         ];
@@ -164,15 +182,21 @@ class SearchService
         return collect($response->json())
             ->map(function ($item) {
 
+                $displayName = $item['display_name'] ?? null;
+
+                $title = $this->resolveTitle($item);
+
                 return [
 
                     'type' => 'location',
 
                     'id' => $item['place_id'] ?? null,
 
-                    'title' => $item['display_name'] ?? null,
+                    'title' => $title,
 
-                    'subtitle' => $item['type'] ?? null,
+                    'subtitle' => $this->resolveSubtitle($item, $title),
+
+                    'display_name' => $displayName,
 
                     'latitude' => isset($item['lat'])
                         ? (float) $item['lat']
@@ -192,5 +216,148 @@ class SearchService
             })
             ->values()
             ->toArray();
+    }
+
+    /**
+     * Nama tempat yang ditampilkan sebagai judul hasil pencarian.
+     *
+     * Nominatim/LocationIQ mengembalikan `display_name` berupa alamat
+     * penuh yang panjang ("Bandung, Jawa Barat, Jawa, Indonesia").
+     * Yang dicari pengguna adalah NAMA tempatnya saja - "Kota Bandung",
+     * atau nama kafe yang dia ketik - jadi kita pakai field `name`
+     * (nama resmi tempat) dan hanya jatuh ke potongan pertama
+     * display_name kalau `name` tidak ada.
+     */
+    private function resolveTitle(array $item): ?string
+    {
+        $name = trim((string) (
+            $item['name']
+                ?? data_get($item, 'namedetails.name:id')
+                ?? data_get($item, 'namedetails.name')
+                ?? ''
+        ));
+
+        if ($name !== '') {
+
+            return $this->prefixAdministrativeName($item, $name);
+        }
+
+        $displayName = (string) ($item['display_name'] ?? '');
+
+        if ($displayName === '') {
+
+            return null;
+        }
+
+        return $this->prefixAdministrativeName(
+            $item,
+            trim(explode(',', $displayName)[0])
+        );
+    }
+
+    /**
+     * Beri awalan jenis wilayah untuk hasil administratif supaya
+     * "Bandung" terbaca jelas sebagai "Kota Bandung" / "Kabupaten
+     * Bandung" / "Provinsi Jawa Barat" - bukan sekadar label mentah
+     * "administrative" seperti sebelumnya.
+     */
+    private function prefixAdministrativeName(array $item, string $name): string
+    {
+        $addressType = $item['addresstype'] ?? $item['type'] ?? null;
+
+        $prefix = match ($addressType) {
+            'city' => 'Kota',
+            'town' => 'Kota',
+            'municipality' => 'Kota',
+            'county', 'regency' => 'Kabupaten',
+            'state', 'province' => 'Provinsi',
+            'village', 'hamlet' => 'Desa',
+            'suburb', 'neighbourhood' => 'Kelurahan',
+            'city_district', 'district' => 'Kecamatan',
+            default => null,
+        };
+
+        if ($prefix === null) {
+
+            return $name;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Jangan menggandakan awalan kalau nama resminya memang sudah
+        | mengandungnya (mis. "Kota Bandung", "Kabupaten Garut").
+        |--------------------------------------------------------------------------
+        */
+
+        if (str_starts_with(mb_strtolower($name), mb_strtolower($prefix) . ' ')) {
+
+            return $name;
+        }
+
+        return $prefix . ' ' . $name;
+    }
+
+    /**
+     * Baris kedua hasil pencarian: konteks alamat, BUKAN label mentah
+     * OSM seperti "administrative", "boundary", atau "cafe".
+     *
+     * Diambil dari display_name dengan bagian nama tempat dibuang,
+     * sehingga hasilnya terbaca seperti di aplikasi peta pada umumnya:
+     *
+     *   Kota Bandung
+     *   Jawa Barat, Indonesia
+     */
+    private function resolveSubtitle(array $item, ?string $title): ?string
+    {
+        $displayName = trim((string) ($item['display_name'] ?? ''));
+
+        if ($displayName === '') {
+
+            return null;
+        }
+
+        $segments = array_values(array_filter(
+            array_map('trim', explode(',', $displayName)),
+            static fn (string $segment) => $segment !== ''
+        ));
+
+        $firstSegment = $segments[0] ?? '';
+
+        /*
+        |--------------------------------------------------------------------------
+        | Buang segmen pertama kalau isinya cuma mengulang judul, supaya
+        | nama tempat tidak tampil dua kali.
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $title !== null
+            && $firstSegment !== ''
+            && str_contains(mb_strtolower((string) $title), mb_strtolower($firstSegment))
+        ) {
+
+            array_shift($segments);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Batasi jadi maksimal 3 segmen terakhir yang paling informatif
+        | (mis. "Coblong, Kota Bandung, Jawa Barat") supaya tidak
+        | memanjang sampai kode pos dan "Indonesia".
+        |--------------------------------------------------------------------------
+        */
+
+        $segments = array_values(array_filter(
+            $segments,
+            static fn (string $segment) => ! preg_match('/^\d{4,6}$/', $segment)
+                && mb_strtolower($segment) !== 'indonesia'
+        ));
+
+        if ($segments === []) {
+
+            return 'Indonesia';
+        }
+
+        return implode(', ', array_slice($segments, 0, 3));
     }
 }
