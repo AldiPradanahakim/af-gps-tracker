@@ -4,6 +4,63 @@ window.VehicleHistory = {
 
     /*
     |--------------------------------------------------------------------------
+    | Batas Render di Sisi Klien
+    |--------------------------------------------------------------------------
+    |
+    | Satu kendaraan bisa menghasilkan ribuan titik GPS untuk rentang
+    | beberapa hari (mis. 6.200 titik untuk 3 hari). Merender semuanya
+    | sekaligus membuat tab browser "Page Unresponsive", karena tiga hal
+    | terjadi serentak di satu tick:
+    |
+    |   - timeline  : ribuan elemen HTML + satu listener per barisnya
+    |   - peta      : ribuan L.circleMarker beserta popup-nya
+    |   - playback  : dua <select> diisi ribuan <option> satu per satu
+    |
+    | Batas di bawah ini menjaga jumlah elemen DOM tetap masuk akal.
+    | Yang DIBATASI hanya tampilannya - data mentahnya tetap utuh di
+    | this.histories, sehingga garis rute, ringkasan jarak/kecepatan, dan
+    | export PDF tetap memakai seluruh titik.
+    |
+    */
+
+    MAX_TIMELINE_ROWS: 200,
+
+    MAX_MAP_MARKERS: 1200,
+
+    MAX_PLAYBACK_OPTIONS: 400,
+
+    /**
+     * Ambil maksimal $max item yang tersebar merata di sepanjang array.
+     * Titik pertama dan terakhir selalu ikut, dan indeks aslinya
+     * dipertahankan supaya penomoran yang dilihat pengguna tetap benar.
+     */
+    sample(items, max) {
+
+        if (items.length <= max) {
+
+            return items.map((item, index) => ({ item, index }));
+
+        }
+
+        const step = (items.length - 1) / (max - 1);
+
+        const picked = [];
+
+        for (let i = 0; i < max; i++) {
+
+            const index = Math.round(i * step);
+
+            picked.push({ item: items[index], index });
+
+        }
+
+        return picked;
+
+    },
+
+
+    /*
+    |--------------------------------------------------------------------------
     | Properties
     |--------------------------------------------------------------------------
     */
@@ -150,6 +207,79 @@ window.VehicleHistory = {
         document.getElementById('historyPlaybackRangeReset')
             ?.addEventListener('click', () => this.resetPlaybackRange());
 
+        /*
+        |--------------------------------------------------------------------------
+        | Refresh
+        |--------------------------------------------------------------------------
+        |
+        | Memuat ulang rentang tanggal yang sedang aktif dari server.
+        | Tombol dikunci + ikon berputar selama request berlangsung, lalu
+        | ditutup toast, supaya jelas bahwa datanya benar-benar diambil
+        | ulang dari database.
+        |
+        */
+
+        const refreshButton = document.getElementById('historyRefreshButton');
+
+        refreshButton?.addEventListener('click', async () => {
+
+            this.startDate = document.getElementById('historyStartDate')?.value
+                || this.startDate;
+
+            this.endDate = document.getElementById('historyEndDate')?.value
+                || this.endDate;
+
+            this.updateExportLink();
+
+            this.setRefreshLoading(refreshButton, true);
+
+            try {
+
+                await this.load();
+
+                GPSTracker.showToast(
+                    'success',
+                    'Diperbarui',
+                    'Riwayat perjalanan berhasil dimuat ulang.'
+                );
+
+            }
+
+            finally {
+
+                this.setRefreshLoading(refreshButton, false);
+
+            }
+
+
+        });
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Refresh Loading State
+    |--------------------------------------------------------------------------
+    */
+
+    setRefreshLoading(button, isLoading) {
+
+        if (!button) {
+
+            return;
+
+        }
+
+        const icon = button.querySelector('i');
+
+        button.disabled = isLoading;
+
+        button.classList.toggle('opacity-60', isLoading);
+
+        button.classList.toggle('cursor-not-allowed', isLoading);
+
+        icon?.classList.toggle('fa-spin', isLoading);
+
     },
 
     /*
@@ -192,19 +322,66 @@ window.VehicleHistory = {
 
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | Dropdown titik playback
+        |--------------------------------------------------------------------------
+        |
+        | Versi sebelumnya memanggil select.add() sekali per titik untuk
+        | DUA dropdown - 6.200 titik berarti 12.400 penyisipan DOM satu
+        | per satu, dan itulah penyebab utama tab browser membeku saat
+        | memfilter rentang beberapa hari.
+        |
+        | Sekarang:
+        |
+        |   - Seluruh <option> dirangkai jadi satu string, lalu ditulis
+        |     SEKALI lewat innerHTML.
+        |   - Isinya di-sampling merata sampai MAX_PLAYBACK_OPTIONS. Ini
+        |     bukan kompromi yang nyata: menggulir 6.200 baris di dropdown
+        |     bawaan browser memang tidak bisa dipakai manusia. Nilai
+        |     option tetap memakai NOMOR TITIK ASLI, jadi rentang yang
+        |     dipilih tetap menunjuk titik yang benar dan playback tetap
+        |     memutar seluruh titik di antaranya.
+        |
+        */
+
         // this.histories selalu urut kronologis (ascending), jadi nomor
         // titik di dropdown sesuai urutan waktu sebenarnya.
-        this.histories.forEach((history, index) => {
+        const options = this.sample(
 
-            const label = this.playbackPointLabel(history, index);
+            this.histories,
 
-            fromSelect.add(new Option(label, index + 1));
+            this.MAX_PLAYBACK_OPTIONS
 
-            toSelect.add(new Option(label, index + 1));
+        ).map(({ item: history, index }) =>
 
-        });
+            `<option value="${index + 1}">${this.escapeOption(
+                this.playbackPointLabel(history, index)
+            )}</option>`
+
+        ).join('');
+
+        fromSelect.innerHTML = options;
+
+        toSelect.innerHTML = options;
 
         this.resetPlaybackRange();
+
+    },
+
+    /**
+     * Alamat berasal dari data eksternal (reverse geocoding), jadi harus
+     * di-escape sebelum ditempel sebagai HTML.
+     */
+    escapeOption(value) {
+
+        return String(value).replace(/[&<>"']/g, (char) => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;',
+        })[char]);
 
     },
 
@@ -287,6 +464,25 @@ window.VehicleHistory = {
 
         this.loaded = true;
 
+        /*
+        |--------------------------------------------------------------------------
+        | Overlay loading global
+        |--------------------------------------------------------------------------
+        |
+        | Rentang tanggal yang lebar bisa menarik ribuan titik GPS dan
+        | butuh beberapa detik. Tanpa umpan balik, halaman terlihat diam
+        | dan pengguna mengira tombol "Tampilkan" tidak berfungsi.
+        |
+        | Overlay ditutup di blok finally supaya tetap hilang walau
+        | request-nya gagal.
+        |
+        */
+
+        GPSLoading.show(
+            'Memuat riwayat perjalanan',
+            'Mengambil data dari server…'
+        );
+
         try {
 
             const response = await VehicleApi.history(
@@ -322,6 +518,12 @@ window.VehicleHistory = {
                 'Gagal',
                 'Gagal mengambil riwayat perjalanan.'
             );
+
+        }
+
+        finally {
+
+            GPSLoading.hide();
 
         }
 
@@ -375,6 +577,11 @@ window.VehicleHistory = {
     */
 
     render() {
+
+        // Data baru -> timeline kembali ke jumlah baris awal, supaya
+        // hasil "Muat lebih banyak" dari pencarian sebelumnya tidak
+        // terbawa ke rentang tanggal yang baru.
+        this.timelineLimit = this.MAX_TIMELINE_ROWS;
 
         this.toggleEmptyState();
 
@@ -432,24 +639,50 @@ window.VehicleHistory = {
 
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | Penanda titik GPS
+        |--------------------------------------------------------------------------
+        |
+        | Tiga hal yang membuat versi sebelumnya membekukan browser saat
+        | rentangnya beberapa hari (6.000+ titik):
+        |
+        |   1. Satu L.circleMarker per titik - ribuan layer SVG sekaligus.
+        |   2. HTML popup dibangun untuk SEMUA titik di depan, padahal
+        |      99% tidak pernah dibuka.
+        |   3. Satu listener klik per titik.
+        |
+        | Perbaikannya:
+        |
+        |   1. Penanda di-sampling merata sampai MAX_MAP_MARKERS. GARIS
+        |      RUTE tetap memakai SELURUH titik (lihat renderMapLine),
+        |      jadi bentuk perjalanannya tidak berubah - yang berkurang
+        |      hanya jumlah bulatan yang bisa diklik.
+        |   2. Popup dipasang sebagai fungsi, jadi HTML-nya baru dibuat
+        |      saat popup benar-benar dibuka (fitur bawaan Leaflet).
+        |   3. Semua penanda digambar di SATU canvas (L.canvas) - jauh
+        |      lebih ringan daripada ribuan elemen SVG terpisah.
+        |
+        */
+
         const group = L.layerGroup();
 
-        this.histories.forEach(history => {
+        const renderer = L.canvas({ padding: 0.3 });
 
-            if (
-                history.lat == null ||
-                history.lng == null
-            ) {
+        const valid = this.histories.filter(
 
-                return;
+            history => history.lat != null && history.lng != null
 
-            }
+        );
+
+        this.sample(valid, this.MAX_MAP_MARKERS).forEach(({ item: history }) => {
 
             const isMoving = Number(history.speed ?? 0) > 0;
 
             const point = L.circleMarker(
                 [history.lat, history.lng],
                 {
+                    renderer: renderer,
                     radius: 5,
                     weight: 2,
                     color: '#ffffff',
@@ -458,7 +691,7 @@ window.VehicleHistory = {
                 }
             );
 
-            point.bindPopup(`
+            point.bindPopup(() => `
                 <div class="min-w-[220px] p-1">
                     <div class="text-sm font-semibold text-slate-900">${history.address ?? 'Lokasi tidak diketahui'}</div>
                     <div class="mt-1 text-xs text-slate-500">${history.received_at ?? '-'}</div>
@@ -741,11 +974,50 @@ window.VehicleHistory = {
             ? [...this.histories]
             : [...this.histories].reverse();
 
-        container.innerHTML = ordered.map(
+        /*
+        |--------------------------------------------------------------------------
+        | Hanya sebagian yang dirender
+        |--------------------------------------------------------------------------
+        |
+        | Baris ditambah bertahap lewat tombol "Muat lebih banyak".
+        | Menyuntikkan ribuan baris sekaligus adalah salah satu penyebab
+        | tab browser membeku saat memfilter rentang beberapa hari.
+        |
+        */
+
+        const limit = this.timelineLimit ?? this.MAX_TIMELINE_ROWS;
+
+        const visible = ordered.slice(0, limit);
+
+        const remaining = ordered.length - visible.length;
+
+        container.innerHTML = visible.map(
 
             history => this.timelineItem(history)
 
-        ).join('');
+        ).join('') + (
+
+            remaining > 0
+
+                ? `
+                    <div class="px-6 py-5 text-center">
+                        <button
+                            id="historyTimelineMore"
+                            type="button"
+                            class="inline-flex items-center gap-2 rounded-[14px] border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-100">
+                            <i class="fa-solid fa-chevron-down text-[11px]"></i>
+                            Muat ${Math.min(remaining, this.MAX_TIMELINE_ROWS)} titik lagi
+                        </button>
+                        <p class="mt-2 text-[12px] text-slate-500">
+                            Menampilkan ${visible.length} dari ${ordered.length} titik.
+                            Garis rute di peta tetap memakai seluruh titik.
+                        </p>
+                    </div>
+                `
+
+                : ''
+
+        );
 
         this.bindTimeline();
 
@@ -1050,39 +1322,88 @@ window.VehicleHistory = {
 
     bindTimeline() {
 
-        document.querySelectorAll('#historyTimeline button').forEach(button => {
+        const container = document.getElementById('historyTimeline');
 
-            button.addEventListener('click', () => {
+        if (!container) {
 
-                const history = this.histories.find(
+            return;
 
-                    item => String(item.id) === String(button.dataset.id)
+        }
 
-                );
+        /*
+        |--------------------------------------------------------------------------
+        | Event delegation
+        |--------------------------------------------------------------------------
+        |
+        | SATU listener di container, bukan satu listener per baris.
+        | Versi sebelumnya memasang ribuan listener setiap kali timeline
+        | dirender ulang - itu sendiri sudah cukup membekukan tab browser
+        | pada rentang tanggal yang lebar.
+        |
+        | Listener dipasang sekali saja (ditandai lewat dataset), karena
+        | container-nya tidak pernah diganti - hanya isinya yang berubah.
+        |
+        */
 
-                if (!history) {
+        if (container.dataset.timelineBound === 'true') {
 
-                    return;
+            return;
 
-                }
+        }
 
-                this.activeHistory = history.id;
+        container.dataset.timelineBound = 'true';
 
-                this.highlight();
+        container.addEventListener('click', (event) => {
 
-                const isMoving = Number(history.speed ?? 0) > 0;
+            const more = event.target.closest('#historyTimelineMore');
 
-                window.VehicleEventFocus?.focusOn({
+            if (more) {
 
-                    type: isMoving ? 'travel_moving' : 'travel_stopped',
-                    title: isMoving ? 'Kendaraan Bergerak' : 'Kendaraan Berhenti',
-                    message: `Kecepatan ${Number(history.speed ?? 0).toFixed(0)} km/jam`,
-                    address: history.address,
-                    latitude: history.lat,
-                    longitude: history.lng,
-                    time: history.received_at,
+                this.timelineLimit =
+                    (this.timelineLimit ?? this.MAX_TIMELINE_ROWS)
+                    + this.MAX_TIMELINE_ROWS;
 
-                });
+                this.renderTimeline();
+
+                return;
+
+            }
+
+            const button = event.target.closest('button[data-id]');
+
+            if (!button) {
+
+                return;
+
+            }
+
+            const history = this.histories.find(
+
+                item => String(item.id) === String(button.dataset.id)
+
+            );
+
+            if (!history) {
+
+                return;
+
+            }
+
+            this.activeHistory = history.id;
+
+            this.highlight();
+
+            const isMoving = Number(history.speed ?? 0) > 0;
+
+            window.VehicleEventFocus?.focusOn({
+
+                type: isMoving ? 'travel_moving' : 'travel_stopped',
+                title: isMoving ? 'Kendaraan Bergerak' : 'Kendaraan Berhenti',
+                message: `Kecepatan ${Number(history.speed ?? 0).toFixed(0)} km/jam`,
+                address: history.address,
+                latitude: history.lat,
+                longitude: history.lng,
+                time: history.received_at,
 
             });
 
