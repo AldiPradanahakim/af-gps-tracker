@@ -243,9 +243,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const button = document.getElementById('confirmDeleteVehicle');
 
+            /*
+            | Menandai bahwa halaman akan berpindah. Kalau true, overlay
+            | sengaja DIBIARKAN menyala sampai perpindahan benar-benar
+            | terjadi - menutupnya lebih dulu membuat halaman detail yang
+            | datanya sudah hilang sempat terlihat kosong.
+            */
+
+            let willNavigate = false;
+
             try {
 
                 button.disabled = true;
+
+                GPSLoading.show(
+                    'Menghapus kendaraan',
+                    'Menghapus data dan melepas perangkat…'
+                );
 
                 const response = await fetch(`/vehicles/${id}`, {
 
@@ -288,6 +302,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 |--------------------------------------------------------------------------
                 */
 
+                willNavigate = true;
+
+                GPSLoading.show(
+                    'Mengalihkan ke Halaman Utama',
+                    'Sebentar lagi…'
+                );
+
                 setTimeout(() => {
                     window.location.replace('/home');
                 }, 800);
@@ -301,6 +322,14 @@ document.addEventListener('DOMContentLoaded', () => {
             } finally {
 
                 button.disabled = false;
+
+                if (!willNavigate) {
+
+                    // Termasuk jalur gagal yang keluar lebih awal lewat
+                    // return - tanpa ini overlay bisa mengunci halaman.
+                    GPSLoading.reset();
+
+                }
 
             }
 

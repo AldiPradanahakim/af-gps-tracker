@@ -28,7 +28,111 @@ window.VehicleApi = {
     |--------------------------------------------------------------------------
     */
 
+    /*
+    |--------------------------------------------------------------------------
+    | Endpoint yang TIDAK memunculkan overlay loading
+    |--------------------------------------------------------------------------
+    |
+    | Dipanggil di latar belakang (polling posisi terakhir, daftar wilayah
+    | untuk autocomplete). Memunculkan overlay untuk ini justru membuat
+    | halaman berkedip terus-menerus tanpa alasan.
+    |
+    */
+
+    silentEndpoints: [
+        '/latest',
+        '/administrative',
+    ],
+
+    /**
+     * Judul overlay per endpoint, supaya pengguna tahu apa yang sedang
+     * ditunggu - bukan sekadar "Memuat...".
+     */
+    loadingLabels: [
+        ['/history', 'Memuat riwayat perjalanan'],
+        ['/trips', 'Menyusun data perjalanan'],
+        ['/stop', 'Memuat riwayat berhenti'],
+        ['/summary', 'Memuat ringkasan'],
+        ['/activity', 'Memuat aktivitas kendaraan'],
+        ['/playback', 'Menyiapkan playback'],
+        ['/route', 'Menyesuaikan rute ke jalan'],
+        ['/geofences', 'Menyimpan geofence'],
+    ],
+
+    isSilent(url) {
+
+        return this.silentEndpoints.some(
+
+            fragment => String(url).includes(fragment)
+
+        );
+
+    },
+
+    labelFor(url) {
+
+        const match = this.loadingLabels.find(
+
+            ([fragment]) => String(url).includes(fragment)
+
+        );
+
+        return match ? match[1] : 'Memuat data';
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Request
+    |--------------------------------------------------------------------------
+    |
+    | Overlay loading dipasang DI SINI - satu tempat - supaya setiap
+    | filter, refresh, playback, dan simpan geofence otomatis punya umpan
+    | balik, tanpa perlu mengulang kode yang sama di setiap pemanggil.
+    |
+    */
+
     async request(
+
+        url,
+
+        options = {}
+
+    ) {
+
+        const silent = options.silent ?? this.isSilent(url);
+
+        if (!silent) {
+
+            GPSLoading.show(
+
+                this.labelFor(url),
+
+                'Mengambil data dari server…'
+
+            );
+
+        }
+
+        try {
+
+            return await this.send(url, options);
+
+        }
+
+        finally {
+
+            if (!silent) {
+
+                GPSLoading.hide();
+
+            }
+
+        }
+
+    },
+
+    async send(
 
         url,
 
