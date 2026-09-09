@@ -450,7 +450,7 @@
                                 @if($isOnline)
                                     {{ isset($latestLocation['speed']) ? round($latestLocation['speed']) : 0 }} km/jam
                                 @else
-                                    {{ \Carbon\Carbon::parse($latestLocation['received_at'] ?? $device->updated_at)->timezone(config('app.timezone', 'Asia/Jakarta'))->format('d M Y H:i') }}
+                                    {{ \App\Helpers\AppTime::format(\Carbon\Carbon::parse($latestLocation['received_at'] ?? $device->updated_at), 'd M Y H:i') }}
                                 @endif
                             </p>
 
@@ -888,7 +888,7 @@
 
                 <button
 
-                    id="historyRefreshButton"
+                    id="refreshVehicleActivity"
 
                     type="button"
 

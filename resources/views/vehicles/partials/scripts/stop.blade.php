@@ -200,8 +200,72 @@ window.VehicleStop = {
 
     bindHistoryEvents() {
 
-        document.getElementById('refreshStopHistory')
-            ?.addEventListener('click', () => this.loadHistory());
+        const refreshButton = document.getElementById('refreshStopHistory');
+
+        refreshButton?.addEventListener('click', async () => {
+
+            /*
+            |--------------------------------------------------------------
+            | Tombol dikunci + ikon berputar selama request berlangsung,
+            | lalu ditutup toast. Tanpa umpan balik ini tombol terasa
+            | "tidak jalan" walau datanya sebenarnya sudah diperbarui.
+            |--------------------------------------------------------------
+            */
+
+            this.setRefreshLoading(refreshButton, true);
+
+            GPSLoading.show(
+                'Memuat riwayat berhenti',
+                'Mengambil data dari server…'
+            );
+
+            try {
+
+                await this.loadHistory();
+
+                GPSTracker.showToast(
+                    'success',
+                    'Diperbarui',
+                    'Riwayat kendaraan berhenti berhasil dimuat ulang.'
+                );
+
+            }
+
+            finally {
+
+                GPSLoading.hide();
+
+                this.setRefreshLoading(refreshButton, false);
+
+            }
+
+        });
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Refresh Loading State
+    |--------------------------------------------------------------------------
+    */
+
+    setRefreshLoading(button, isLoading) {
+
+        if (!button) {
+
+            return;
+
+        }
+
+        const icon = button.querySelector('i');
+
+        button.disabled = isLoading;
+
+        button.classList.toggle('opacity-60', isLoading);
+
+        button.classList.toggle('cursor-not-allowed', isLoading);
+
+        icon?.classList.toggle('fa-spin', isLoading);
 
     },
 

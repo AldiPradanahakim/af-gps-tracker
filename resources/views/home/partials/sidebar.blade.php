@@ -16,17 +16,17 @@
 
             <img
                 src="{{ asset('images/logo-gps.png') }}"
-                alt="GPS Tracker"
+                alt="AF GPS TRACKER"
                 class="h-12 w-12 object-contain">
 
             <div>
 
-                <h1 class="text-sm font-bold uppercase tracking-[0.35em] text-[#2563EB]">
-                    GPS TRACKER
+                <h1 class="text-[13px] font-bold uppercase tracking-[0.25em] text-[#2563EB]">
+                    AF GPS TRACKER
                 </h1>
 
                 <p class="mt-1 text-sm text-slate-500">
-                    Monitoring System
+                    Sistem Pemantauan Kendaraan
                 </p>
 
             </div>
@@ -227,7 +227,9 @@
                                 data-updated
                                 class="mt-1 text-sm font-medium text-slate-500">
 
-                                {{ !empty($vehicle['updated_at']) ? \Carbon\Carbon::parse($vehicle['updated_at'])->timezone(config('app.timezone', 'Asia/Jakarta'))->format('d/m/Y H:i:s') : (!empty($vehicle['received_at']) ? \Carbon\Carbon::parse($vehicle['received_at'])->timezone(config('app.timezone', 'Asia/Jakarta'))->format('d/m/Y H:i:s') : '-') }}
+                                @php($lastSeenAt = $vehicle['updated_at'] ?? $vehicle['received_at'] ?? null)
+                                {{-- Carbon::parse(null) mengembalikan "sekarang", jadi null harus dicegat lebih dulu. --}}
+                                {{ $lastSeenAt ? \App\Helpers\AppTime::format(\Carbon\Carbon::parse($lastSeenAt), 'd/m/Y H:i:s') : '-' }}
 
                             </p>
 
@@ -262,13 +264,48 @@
 
             @empty
 
+                {{--
+                    Empty state ini juga dilihat pengguna lama yang baru
+                    menghapus kendaraan terakhirnya. Akun & profilnya sudah
+                    ada, jadi yang dia butuhkan hanya jalan pintas kembali ke
+                    popup aktivasi/informasi kendaraan - bukan alur
+                    registrasi dari nol.
+                --}}
                 <div
                     id="vehicle-empty-state"
                     class="rounded-2xl border border-dashed border-slate-300 p-8 text-center">
 
-                    <p class="text-sm text-slate-500">
-                        Belum ada kendaraan.
+                    <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-slate-100">
+                        <i class="fa-solid fa-car-side text-lg text-slate-400"></i>
+                    </div>
+
+                    <p class="mt-4 text-sm font-semibold text-slate-700">
+                        Belum ada kendaraan
                     </p>
+
+                    <p class="mt-1 text-[12px] text-slate-500">
+                        @if(($onboardingStep ?? null) === 'vehicle')
+                            Perangkat Anda sudah aktif. Lengkapi informasi kendaraan untuk mulai memantau.
+                        @else
+                            Aktivasi perangkat GPS Anda untuk mulai memantau kendaraan.
+                        @endif
+                    </p>
+
+                    <button
+                        id="emptyStateAddVehicle"
+                        type="button"
+                        data-step="{{ $onboardingStep ?? 'device' }}"
+                        class="mt-4 inline-flex items-center gap-2 rounded-xl bg-[#2563EB] px-4 py-2.5 text-[13px] font-semibold text-white shadow transition hover:bg-blue-700">
+
+                        <i class="fa-solid fa-plus text-[11px]"></i>
+
+                        @if(($onboardingStep ?? null) === 'vehicle')
+                            Lengkapi Informasi Kendaraan
+                        @else
+                            Aktivasi Perangkat
+                        @endif
+
+                    </button>
 
                 </div>
 

@@ -100,17 +100,85 @@ window.VehicleInformation = {
 
                 'click',
 
-                () => {
+                async () => {
 
-                    this.loadSummary();
+                    /*
+                    |--------------------------------------------------
+                    | Tombol dikunci + ikon berputar selama request
+                    | berlangsung, lalu ditutup toast. Tanpa umpan balik
+                    | ini tombol terasa "tidak jalan" walau datanya
+                    | sebenarnya sudah diperbarui.
+                    |--------------------------------------------------
+                    */
 
-                    this.loadActivity();
+                    this.setRefreshLoading(refreshButton, true);
+
+                    GPSLoading.show(
+                        'Memuat informasi kendaraan',
+                        'Mengambil data terbaru dari server…'
+                    );
+
+                    try {
+
+                        await Promise.all([
+
+                            this.loadSummary(),
+
+                            this.loadActivity(),
+
+                        ]);
+
+                        GPSTracker.showToast(
+
+                            'success',
+
+                            'Diperbarui',
+
+                            'Informasi kendaraan berhasil dimuat ulang.'
+
+                        );
+
+                    }
+
+                    finally {
+
+                        GPSLoading.hide();
+
+                        this.setRefreshLoading(refreshButton, false);
+
+                    }
 
                 }
 
             );
 
         }
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Refresh Loading State
+    |--------------------------------------------------------------------------
+    */
+
+    setRefreshLoading(button, isLoading) {
+
+        if (!button) {
+
+            return;
+
+        }
+
+        const icon = button.querySelector('i');
+
+        button.disabled = isLoading;
+
+        button.classList.toggle('opacity-60', isLoading);
+
+        button.classList.toggle('cursor-not-allowed', isLoading);
+
+        icon?.classList.toggle('fa-spin', isLoading);
 
     },
 
@@ -974,7 +1042,7 @@ window.VehicleInformation = {
             activity => `
 
                 <div class="grid grid-cols-12 items-center px-6 py-3 text-[12px] text-slate-700">
-                    <div class="col-span-2 text-slate-500">${this.escapeHtml(activity.received_at ?? '-')}</div>
+                    <div class="col-span-2 text-slate-500">${this.escapeHtml(activity.received_at_label ?? activity.received_at ?? '-')}</div>
                     <div class="col-span-2">${activity.lat ?? '-'}</div>
                     <div class="col-span-2">${activity.lng ?? '-'}</div>
                     <div class="col-span-2">${activity.speed ?? 0} km/jam</div>

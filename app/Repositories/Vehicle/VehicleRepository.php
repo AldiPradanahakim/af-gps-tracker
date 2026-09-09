@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Vehicle;
 
+use App\Helpers\AppTime;
 use App\Models\Device;
 use App\Models\StopHistory;
 use App\Models\TravelHistory;
@@ -970,22 +971,20 @@ class VehicleRepository
 
         /*
         |--------------------------------------------------------------------------
-        | "Hari ini" mengikuti batas hari WIB (Asia/Jakarta), bukan UTC.
+        | "Hari ini" mengikuti batas hari zona tampilan (WIB), bukan UTC.
         |--------------------------------------------------------------------------
-        | Timestamp disimpan dalam UTC (app timezone = UTC), sehingga
-        | whereDate() polos akan salah menghitung batas hari untuk
-        | pengguna di Indonesia (selisih 7 jam bisa membuat data "hari
-        | ini" dianggap milik hari sebelumnya).
+        | AppTime menghitung batas hari di zona tampilan lalu
+        | mengonversinya ke zona PENYIMPANAN yang sedang aktif
+        | (APP_TIMEZONE). Sebelumnya batas hari dipaksa ->utc(), yang
+        | hanya benar kalau penyimpanan memang UTC - setelah
+        | APP_TIMEZONE diubah ke Asia/Jakarta, jendela query bergeser
+        | 7 jam dan data hari ini jadi tidak terambil.
         |--------------------------------------------------------------------------
         */
 
-        $startOfDay = now('Asia/Jakarta')
-            ->startOfDay()
-            ->utc();
+        $startOfDay = AppTime::startOfDay();
 
-        $endOfDay = now('Asia/Jakarta')
-            ->endOfDay()
-            ->utc();
+        $endOfDay = AppTime::endOfDay();
 
         $today = $device->travelHistories()
 
@@ -1163,21 +1162,24 @@ class VehicleRepository
 
         /*
         |--------------------------------------------------------------------------
-        | "Perjalanan Terakhir" pada kartu Informasi Kendaraan hanya untuk
-        | HARI INI (WIB) - riwayat lintas hari sudah punya tempatnya
-        | sendiri di tab "Riwayat Perjalanan".
+        | "Perjalanan Terakhir" pada kartu Informasi Kendaraan
         |--------------------------------------------------------------------------
+        |
+        | Diutamakan riwayat HARI INI (batas hari zona tampilan). Kalau
+        | kendaraan belum bergerak sama sekali hari ini, kartu ini
+        | sebelumnya tampil kosong dan terkesan "tidak mengambil data
+        | dari database" - jadi kita jatuhkan ke riwayat terakhir yang
+        | ada, sesuai judul kartunya ("Perjalanan Terakhir"). Riwayat
+        | lintas hari yang lengkap tetap punya tempatnya sendiri di tab
+        | "Riwayat Perjalanan".
+        |
         */
 
-        $startOfDay = now('Asia/Jakarta')
-            ->startOfDay()
-            ->utc();
+        $startOfDay = AppTime::startOfDay();
 
-        $endOfDay = now('Asia/Jakarta')
-            ->endOfDay()
-            ->utc();
+        $endOfDay = AppTime::endOfDay();
 
-        $activities = $device->travelHistories()
+        $histories = $device->travelHistories()
 
             ->select(self::TRAVEL_HISTORY_COLUMNS)
 
@@ -1190,7 +1192,22 @@ class VehicleRepository
 
             ->limit(100)
 
-            ->get()
+            ->get();
+
+        if ($histories->isEmpty()) {
+
+            $histories = $device->travelHistories()
+
+                ->select(self::TRAVEL_HISTORY_COLUMNS)
+
+                ->orderByDesc('received_at')
+
+                ->limit(100)
+
+                ->get();
+        }
+
+        $activities = $histories
 
             ->map(function (TravelHistory $history) {
 
@@ -1227,6 +1244,11 @@ class VehicleRepository
                     'address' => $data['address'],
 
                     'received_at' => $data['received_at'],
+
+                    'received_at_label' => AppTime::format(
+                        $history->received_at,
+                        'd/m/Y H:i'
+                    ),
 
                 ];
             })
