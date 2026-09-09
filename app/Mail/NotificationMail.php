@@ -36,9 +36,25 @@ class NotificationMail extends Mailable
 
     public function content(): Content
     {
-        $latitude = data_get($this->notification->data, 'location.lat');
+        /*
+        |--------------------------------------------------------------------------
+        | Alamat & Koordinat
+        |--------------------------------------------------------------------------
+        |
+        | Di-resolve di sini (queued job, boleh menunggu) supaya email
+        | tidak pernah lagi memuat placeholder "Memuat alamat..." atau
+        | menautkan peta kosong untuk notifikasi yang payload-nya tidak
+        | membawa koordinat (baterai lemah, perangkat offline/online).
+        |
+        */
 
-        $longitude = data_get($this->notification->data, 'location.lng');
+        $location = NotificationPresenter::resolveLocation($this->notification);
+
+        $searchAddress = NotificationPresenter::resolveAddress($this->notification);
+
+        $latitude = $location['lat'];
+
+        $longitude = $location['lng'];
 
         return new Content(
             markdown: 'emails.notification',
@@ -52,11 +68,25 @@ class NotificationMail extends Mailable
                     ?? $this->notification->device?->vehicle?->plate_number,
                 'geofenceName' => data_get($this->notification->data, 'geofence_name'),
                 'durationMinutes' => data_get($this->notification->data, 'duration_minutes'),
-                'searchAddress' => data_get($this->notification->data, 'search_address'),
+                'searchAddress' => $searchAddress,
                 'latitude' => $latitude,
                 'longitude' => $longitude,
-                'trackingLink' => NotificationPresenter::publicTrackingLink($this->notification),
-                'formattedTime' => NotificationPresenter::formatDateTime($this->notification->created_at),
+                'mapsLink' => NotificationPresenter::mapsLink($latitude, $longitude),
+
+                'trackingLink' => ($latitude !== null && $longitude !== null)
+                    ? NotificationPresenter::publicTrackingLink($this->notification)
+                    : null,
+                /*
+                |----------------------------------------------------------
+                | Jam di email mengikuti zona waktu PENERIMA (WIB/WITA/
+                | WIT sesuai pilihannya), bukan zona waktu server.
+                |----------------------------------------------------------
+                */
+
+                'formattedTime' => NotificationPresenter::formatDateTime(
+                    $this->notification->created_at,
+                    NotificationPresenter::recipient($this->notification)
+                ),
             ],
         );
     }

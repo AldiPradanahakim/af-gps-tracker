@@ -288,7 +288,9 @@ class NotificationService
                 'message' => sprintf(
                     'Perangkat GPS %s berhenti mengirim data. Terakhir terlihat %s.',
                     $device->device_id,
-                    optional($device->last_heartbeat)->diffForHumans() ?? 'tidak diketahui',
+                    optional($device->last_heartbeat)
+                        ?->locale('id')
+                        ?->diffForHumans() ?? 'tidak diketahui',
                 ),
 
                 'last_heartbeat' => optional(

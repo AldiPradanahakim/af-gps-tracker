@@ -228,6 +228,16 @@ class ReverseGeocodingService
 
                     'addressdetails' => 1,
 
+                    /*
+                    |----------------------------------------------------------
+                    | Tanpa ini provider mengembalikan nama wilayah berbahasa
+                    | Inggris ("Bandung City, West Java, Java") yang ikut
+                    | terkirim ke Email/WhatsApp pengguna Indonesia.
+                    |----------------------------------------------------------
+                    */
+
+                    'accept-language' => 'id',
+
                 ])
 
                 : Http::timeout(10)
@@ -249,6 +259,8 @@ class ReverseGeocodingService
                         'lon' => $longitude,
 
                         'addressdetails' => 1,
+
+                        'accept-language' => 'id',
 
                     ]);
 

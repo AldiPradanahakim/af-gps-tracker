@@ -96,9 +96,26 @@ class WhatsappService
             default => '🔔',
         };
 
-        $latitude = data_get($notification->data, 'location.lat');
+        /*
+        |--------------------------------------------------------------------------
+        | Alamat & Koordinat
+        |--------------------------------------------------------------------------
+        |
+        | Di-resolve di sini (queued job, boleh menunggu) supaya pesan
+        | WhatsApp tidak pernah lagi memuat placeholder "Memuat
+        | alamat..." atau menautkan peta kosong untuk notifikasi yang
+        | payload-nya tidak membawa koordinat (baterai lemah, perangkat
+        | offline/online).
+        |
+        */
 
-        $longitude = data_get($notification->data, 'location.lng');
+        $location = NotificationPresenter::resolveLocation($notification);
+
+        $address = NotificationPresenter::resolveAddress($notification);
+
+        $latitude = $location['lat'];
+
+        $longitude = $location['lng'];
 
         $lines = [
 
@@ -130,9 +147,17 @@ class WhatsappService
 
         $lines[] = '';
 
-        $lines[] = '🕐 Waktu: ' . NotificationPresenter::formatDateTime($notification->created_at);
+        /*
+        |--------------------------------------------------------------------------
+        | Jam mengikuti zona waktu PENERIMA (WIB/WITA/WIT sesuai
+        | pilihannya di profil), bukan zona waktu server.
+        |--------------------------------------------------------------------------
+        */
 
-        $address = data_get($notification->data, 'search_address');
+        $lines[] = '🕐 Waktu: ' . NotificationPresenter::formatDateTime(
+            $notification->created_at,
+            NotificationPresenter::recipient($notification)
+        );
 
         if ($address) {
 
@@ -142,9 +167,13 @@ class WhatsappService
         if ($latitude !== null && $longitude !== null) {
 
             $lines[] = "🌐 Koordinat: {$latitude}, {$longitude}";
-        }
 
-        $lines[] = '🔗 Lihat Lokasi: ' . NotificationPresenter::publicTrackingLink($notification);
+            $lines[] = '🗺️ Google Maps: '
+                . NotificationPresenter::mapsLink($latitude, $longitude);
+
+            $lines[] = '🔗 Lihat Lokasi di Peta: '
+                . NotificationPresenter::publicTrackingLink($notification);
+        }
 
         $lines[] = '';
 

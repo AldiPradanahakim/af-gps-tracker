@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', ($vehicle?->vehicle_name ?? 'Kendaraan') . ' - Lokasi Terakhir')
+@section('title', ($vehicle?->vehicle_name ?? 'Kendaraan') . ' - Lokasi Terakhir | ' . config('app.name'))
 
 @section('meta_description', 'Lokasi terakhir kendaraan.')
 
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var markerIcon = @json($vehicle?->marker_icon ?? 'car');
     var markerColor = @json($vehicle?->marker_color ?? 'green');
     var address = @json($address);
-    var updatedAt = @json($receivedAt ? \App\Services\Notification\NotificationPresenter::formatDateTime($receivedAt) : null);
+    var updatedAt = @json($updatedAtLabel);
     var detailUrl = @json(route('vehicles.show', $device) . '?event=' . $notification->id);
 
     if (latitude === null || longitude === null || typeof L === 'undefined') {

@@ -14,9 +14,7 @@
 @if($durationMinutes !== null)
 | **Durasi Berhenti** | {{ $durationMinutes }} menit |
 @endif
-@if($searchAddress)
-| **Lokasi** | {{ $searchAddress }} |
-@endif
+| **Alamat** | {{ $searchAddress ?: 'Alamat tidak tersedia' }} |
 @if($latitude !== null && $longitude !== null)
 | **Koordinat** | {{ $latitude }}, {{ $longitude }} |
 @endif
@@ -27,6 +25,10 @@
 @component('mail::button', ['url' => $trackingLink])
 Lihat Lokasi di Peta
 @endcomponent
+
+@if($mapsLink)
+Buka di Google Maps: [{{ $latitude }}, {{ $longitude }}]({{ $mapsLink }})
+@endif
 @endif
 
 Notifikasi ini dikirim otomatis oleh {{ config('app.name') }} berdasarkan aktivitas kendaraan Anda.
