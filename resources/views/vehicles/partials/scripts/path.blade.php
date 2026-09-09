@@ -16,6 +16,21 @@ window.VehiclePath = {
 
     /*
     |--------------------------------------------------------------------------
+    | Playback Active
+    |--------------------------------------------------------------------------
+    |
+    | Selama VehiclePlayback aktif (load() sampai stop()), polyline sudah
+    | diisi penuh lewat setPath() - addPoint() (dipicu event
+    | 'vehicle.location.updated' dari live tracking maupun dari tick
+    | playback sendiri) harus diabaikan supaya tidak menambah titik di
+    | atas rute yang sudah benar (lihat VehiclePlayback.load()/stop()).
+    |--------------------------------------------------------------------------
+    */
+
+    playbackActive: false,
+
+    /*
+    |--------------------------------------------------------------------------
     | Initialize
     |--------------------------------------------------------------------------
     */
@@ -113,6 +128,8 @@ window.VehiclePath = {
     addPoint(location) {
 
         if (
+
+            this.playbackActive ||
 
             !this.polyline ||
 

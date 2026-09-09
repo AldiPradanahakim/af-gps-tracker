@@ -106,6 +106,13 @@ window.VehiclePlayback = {
 
         this.stop();
 
+        // Cegah addPoint() (live tracking maupun tick playback sendiri)
+        // menambah titik di atas rute yang sudah di-set lewat setPath() -
+        // lihat VehiclePath.playbackActive.
+        if (window.VehiclePath) {
+            VehiclePath.playbackActive = true;
+        }
+
         this.histories = this.sliceRange(histories, range);
 
         this.currentIndex = 0;
@@ -113,6 +120,10 @@ window.VehiclePlayback = {
         if (
             !this.histories.length
         ) {
+
+            if (window.VehiclePath) {
+                VehiclePath.playbackActive = false;
+            }
 
             VehiclePath.clear();
 
@@ -321,6 +332,8 @@ window.VehiclePlayback = {
         this.currentIndex = 0;
 
         if (window.VehiclePath) {
+
+            VehiclePath.playbackActive = false;
 
             VehiclePath.clear();
 

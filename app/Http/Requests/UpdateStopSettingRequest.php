@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class UpdateStopSettingRequest extends FormRequest
 {
@@ -29,7 +28,9 @@ class UpdateStopSettingRequest extends FormRequest
 
             'stop_minutes' => [
                 'required',
-                Rule::in([1, 5, 10, 15]),
+                'integer',
+                'min:1',
+                'max:1440',
             ],
 
             'email_notification' => [
@@ -56,9 +57,13 @@ class UpdateStopSettingRequest extends FormRequest
 
             'enabled.boolean' => 'Status Stop Detection tidak valid.',
 
-            'stop_minutes.required' => 'Durasi kendaraan berhenti wajib dipilih.',
+            'stop_minutes.required' => 'Durasi kendaraan berhenti wajib diisi.',
 
-            'stop_minutes.in' => 'Durasi kendaraan berhenti harus 1, 5, 10, atau 15 menit.',
+            'stop_minutes.integer' => 'Durasi kendaraan berhenti harus berupa angka.',
+
+            'stop_minutes.min' => 'Durasi kendaraan berhenti minimal 1 menit.',
+
+            'stop_minutes.max' => 'Durasi kendaraan berhenti maksimal 1440 menit (24 jam).',
 
             'email_notification.required' => 'Status notifikasi email wajib dikirim.',
 

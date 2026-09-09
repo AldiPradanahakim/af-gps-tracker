@@ -31,7 +31,7 @@
                     <th scope="col" class="px-6 py-4 font-semibold">Nama Pengguna</th>
                     <th scope="col" class="px-6 py-4 font-semibold">Email & Kontak</th>
                     <th scope="col" class="px-6 py-4 font-semibold">Perangkat GPS yang Dimiliki</th>
-
+                    <th scope="col" class="px-6 py-4 font-semibold text-right">Aksi</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-200">
@@ -62,11 +62,19 @@
                                 <span class="text-slate-400 text-xs italic">Belum ada perangkat</span>
                             @endif
                         </td>
-
+                        <td class="px-6 py-4 text-right">
+                            <button
+                                type="button"
+                                onclick="openDeleteUserModal('{{ route('admin.users.destroy', $user->id) }}', '{{ $user->name }}');"
+                                class="text-red-500 hover:text-red-700 font-medium transition-colors"
+                            >
+                                Hapus
+                            </button>
+                        </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="3" class="px-6 py-8 text-center text-slate-500">
+                        <td colspan="4" class="px-6 py-8 text-center text-slate-500">
                             Belum ada pengguna terdaftar (selain admin).
                         </td>
                     </tr>
@@ -82,4 +90,71 @@
     @endif
 </div>
 
+{{-- Modal Hapus Pengguna --}}
+<div id="deleteUserModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm">
+    <div class="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
+
+        {{-- Icon --}}
+        <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-red-100">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+        </div>
+
+        {{-- Content --}}
+        <div class="mt-4 text-center">
+            <h3 class="text-lg font-bold text-slate-900">Hapus Pengguna?</h3>
+            <p class="mt-2 text-sm text-slate-500">
+                Anda akan menghapus pengguna
+                <span class="font-semibold text-slate-800" id="deleteUserName"></span>.
+                Perangkat GPS yang dimiliki akan otomatis terlepas dari akun ini. Tindakan ini tidak dapat dibatalkan.
+            </p>
+        </div>
+
+        {{-- Actions --}}
+        <div class="mt-6 flex gap-3">
+            <button
+                type="button"
+                onclick="closeDeleteUserModal()"
+                class="flex-1 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+            >
+                Batal
+            </button>
+
+            <form id="deleteUserForm" method="POST" class="flex-1">
+                @csrf
+                @method('DELETE')
+                <button
+                    type="submit"
+                    class="w-full rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700"
+                >
+                    Ya, Hapus
+                </button>
+            </form>
+        </div>
+
+    </div>
+</div>
+
 @endsection
+
+@push('scripts')
+<script>
+function openDeleteUserModal(actionUrl, userName) {
+    document.getElementById('deleteUserName').textContent = userName;
+    document.getElementById('deleteUserForm').action = actionUrl;
+    document.getElementById('deleteUserModal').classList.remove('hidden');
+    document.getElementById('deleteUserModal').classList.add('flex');
+}
+
+function closeDeleteUserModal() {
+    document.getElementById('deleteUserModal').classList.add('hidden');
+    document.getElementById('deleteUserModal').classList.remove('flex');
+}
+
+// Tutup modal jika klik area luar
+document.getElementById('deleteUserModal').addEventListener('click', function(e) {
+    if (e.target === this) closeDeleteUserModal();
+});
+</script>
+@endpush

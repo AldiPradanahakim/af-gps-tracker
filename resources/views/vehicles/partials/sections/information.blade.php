@@ -208,6 +208,10 @@
 
                                 maxlength="20"
 
+                                pattern="[A-Za-z]{1,2}\s\d{1,4}\s[A-Za-z]{1,3}"
+
+                                title="Format: Huruf-Angka-Huruf, contoh: D 1234 ABC"
+
                                 value="{{ $device->vehicle->plate_number }}"
 
                                 class="hidden h-10 w-full rounded-xl border border-slate-300 px-3 text-[13px] font-medium text-slate-900 outline-none transition focus:border-blue-500"

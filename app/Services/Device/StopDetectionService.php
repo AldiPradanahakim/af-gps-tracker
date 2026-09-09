@@ -12,12 +12,15 @@ use InvalidArgumentException;
 class StopDetectionService
 {
     /**
-     * Process stop detection.
+     * Process stop detection. StopHistory is recorded (created/updated)
+     * on every payload regardless of the "enabled" setting - that setting
+     * only gates whether a notification should be sent.
      *
      * Return:
-     * - StopHistory : jika durasi berhenti sudah mencapai batas
-     *                 dan notifikasi belum pernah dikirim.
-     * - null        : jika belum memenuhi syarat.
+     * - StopHistory : jika notifikasi "enabled", durasi berhenti sudah
+     *                 mencapai batas, dan notifikasi belum pernah dikirim.
+     * - null        : jika belum memenuhi syarat notifikasi (riwayat tetap
+     *                 tercatat).
      */
     public function process(
         Device $device,
@@ -28,16 +31,6 @@ class StopDetectionService
         $setting = $this->extractSetting(
             $device
         );
-
-        /*
-        |--------------------------------------------------------------------------
-        | Stop Detection Disabled
-        |--------------------------------------------------------------------------
-        */
-
-        if (! $setting['enabled']) {
-            return null;
-        }
 
         $receivedAt = $this->extractReceivedAt(
             $payload
@@ -86,7 +79,8 @@ class StopDetectionService
             | Stop baru dimulai (durasi 0 detik) belum memenuhi durasi
             | minimum - jangan langsung dianggap "siap notifikasi".
             | Notification baru dikirim setelah durasi minimum
-            | terpenuhi lewat updateStopHistory() pada payload berikutnya.
+            | terpenuhi lewat updateStopHistoryDuration() pada payload
+            | berikutnya.
             |--------------------------------------------------------------------------
             */
 
@@ -104,13 +98,32 @@ class StopDetectionService
         |--------------------------------------------------------------------------
         | Continue Existing Stop
         |--------------------------------------------------------------------------
+        |
+        | Durasi riwayat berhenti selalu diperbarui di sini terlepas dari
+        | status "enabled" - supaya Riwayat Kendaraan Berhenti tetap
+        | tercatat walau notifikasi berhenti belum diaktifkan pengguna.
+        | Status "enabled" hanya menentukan apakah notifikasi dikirim.
+        |--------------------------------------------------------------------------
         */
 
-        return $this->updateStopHistory(
+        $duration = $this->updateStopHistoryDuration(
             stopHistory: $stopHistory,
-            receivedAt: $receivedAt,
-            minimumMinutes: $setting['minutes']
+            receivedAt: $receivedAt
         );
+
+        if (! $setting['enabled']) {
+            return null;
+        }
+
+        if ($stopHistory->notification_sent) {
+            return null;
+        }
+
+        if ($duration < ($setting['minutes'] * 60)) {
+            return null;
+        }
+
+        return $stopHistory;
     }
 
     /**
@@ -185,18 +198,18 @@ class StopDetectionService
         });
     }
     /**
-     * Update active stop history.
+     * Update active stop history's duration. Always runs regardless of the
+     * "enabled" (notification) setting - recording history and deciding
+     * whether to notify are separate concerns.
      */
-    protected function updateStopHistory(
+    protected function updateStopHistoryDuration(
         StopHistory $stopHistory,
-        Carbon $receivedAt,
-        int $minimumMinutes
-    ): ?StopHistory {
+        Carbon $receivedAt
+    ): int {
 
         return DB::transaction(function () use (
             $stopHistory,
-            $receivedAt,
-            $minimumMinutes
+            $receivedAt
         ) {
 
             $duration = (int) $stopHistory
@@ -212,38 +225,7 @@ class StopDetectionService
 
             ]);
 
-            /*
-            |--------------------------------------------------------------------------
-            | Notification Already Sent
-            |--------------------------------------------------------------------------
-            */
-
-            if ($stopHistory->notification_sent) {
-
-                return null;
-            }
-
-            /*
-            |--------------------------------------------------------------------------
-            | Minimum Duration Not Reached
-            |--------------------------------------------------------------------------
-            */
-
-            if (
-                $duration <
-                ($minimumMinutes * 60)
-            ) {
-
-                return null;
-            }
-
-            /*
-            |--------------------------------------------------------------------------
-            | Ready To Notify
-            |--------------------------------------------------------------------------
-            */
-
-            return $stopHistory;
+            return $duration;
         });
     }
 

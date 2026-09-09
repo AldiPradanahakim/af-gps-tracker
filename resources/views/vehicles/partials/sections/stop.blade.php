@@ -557,28 +557,27 @@
                         class="flex items-center gap-3"
                     >
 
-                        <select
+                        <input
+
+                            type="number"
 
                             id="stopMinutes"
 
                             name="stop_minutes"
 
+                            min="1"
+
+                            max="1440"
+
+                            step="1"
+
+                            value="{{ $stopDetection?->stop_minutes ?? 5 }}"
+
                             class="h-11 w-40 rounded-xl border border-slate-300 px-4 text-center text-[14px] font-semibold outline-none transition focus:border-blue-500"
 
                         >
 
-                            @foreach([1, 5, 10, 15] as $minuteOption)
-
-                                <option
-                                    value="{{ $minuteOption }}"
-                                    @selected(($stopDetection?->stop_minutes ?? 5) == $minuteOption)
-                                >
-                                    {{ $minuteOption }} Menit
-                                </option>
-
-                            @endforeach
-
-                        </select>
+                        <span class="text-[13px] font-medium text-slate-500">Menit</span>
 
                     </div>
 

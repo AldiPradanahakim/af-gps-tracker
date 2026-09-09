@@ -82,6 +82,24 @@ window.VehicleMarker = {
 
     /*
     |--------------------------------------------------------------------------
+    | Refresh Icon (dipanggil setelah data marker_icon/marker_color berubah,
+    | mis. setelah menyimpan Informasi Kendaraan, supaya marker di peta
+    | langsung sesuai tanpa perlu reload halaman).
+    |--------------------------------------------------------------------------
+    */
+
+    refreshIcon() {
+
+        if (!this.marker) {
+            return;
+        }
+
+        this.marker.setIcon(this.createIcon());
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
     | Marker Color
     |--------------------------------------------------------------------------
     */

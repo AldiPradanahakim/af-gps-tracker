@@ -80,6 +80,9 @@
                     name="plate_number"
                     value="{{ old('plate_number') }}"
                     placeholder="Contoh : D 1234 ABC"
+                    pattern="[A-Za-z]{1,2}\s\d{1,4}\s[A-Za-z]{1,3}"
+                    title="Format: Huruf-Angka-Huruf, contoh: D 1234 ABC"
+                    maxlength="20"
                     class="h-full w-full border-0 bg-transparent pl-[44px] pr-4 uppercase text-sm text-slate-700 placeholder:text-slate-400 outline-none focus:outline-none focus:ring-0">
             </div>
 

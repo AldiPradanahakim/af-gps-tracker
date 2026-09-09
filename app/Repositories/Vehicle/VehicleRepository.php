@@ -798,6 +798,10 @@ class VehicleRepository
                 trim($data['vehicle_type'])
             ),
 
+            'marker_icon' => $data['marker_icon'],
+
+            'marker_color' => $data['marker_color'],
+
         ]);
 
         /*
@@ -821,6 +825,10 @@ class VehicleRepository
             'plate_number' => $device->vehicle->plate_number,
 
             'vehicle_type' => $device->vehicle->vehicle_type,
+
+            'marker_icon' => $device->vehicle->marker_icon,
+
+            'marker_color' => $device->vehicle->marker_color,
 
         ];
     }

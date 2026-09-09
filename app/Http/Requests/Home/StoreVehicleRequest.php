@@ -60,6 +60,8 @@ class StoreVehicleRequest extends FormRequest
 
                 'max:20',
 
+                'regex:/^[A-Z]{1,2}\s\d{1,4}\s[A-Z]{1,3}$/i',
+
             ],
 
             /*
@@ -125,6 +127,8 @@ class StoreVehicleRequest extends FormRequest
             'vehicle_type.in' => 'Jenis kendaraan tidak valid.',
 
             'plate_number.required' => 'Plat nomor wajib diisi.',
+
+            'plate_number.regex' => 'Format nomor polisi tidak sesuai. Gunakan format Huruf-Angka-Huruf, contoh: D 1234 ABC.',
 
             'marker_icon.required' => 'Icon marker wajib dipilih.',
 

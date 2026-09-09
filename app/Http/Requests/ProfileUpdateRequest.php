@@ -30,7 +30,7 @@ class ProfileUpdateRequest extends FormRequest
 
                 'email' => [
                     'required',
-                    'email',
+                    'email:rfc,dns',
                     'max:255',
                     'unique:users,email',
                 ],
@@ -39,6 +39,7 @@ class ProfileUpdateRequest extends FormRequest
                     'required',
                     'string',
                     'max:20',
+                    'regex:/^(\+62|62|0)8[1-9][0-9]{6,10}$/',
                 ],
 
                 'password' => [
@@ -67,7 +68,7 @@ class ProfileUpdateRequest extends FormRequest
 
             'email' => [
                 'required',
-                'email',
+                'email:rfc,dns',
                 'max:255',
                 Rule::unique(User::class)->ignore($user->id),
             ],
@@ -76,6 +77,7 @@ class ProfileUpdateRequest extends FormRequest
                 'required',
                 'string',
                 'max:20',
+                'regex:/^(\+62|62|0)8[1-9][0-9]{6,10}$/',
             ],
 
             /*
@@ -116,6 +118,15 @@ class ProfileUpdateRequest extends FormRequest
     public function messages(): array
     {
         return [
+
+            'name.required' => 'Nama wajib diisi.',
+
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid atau domain email tidak dapat ditemukan.',
+            'email.unique' => 'Email ini sudah terdaftar. Gunakan email lain.',
+
+            'phone.required' => 'Nomor WhatsApp wajib diisi.',
+            'phone.regex' => 'Format nomor WhatsApp tidak valid. Gunakan format 08xxxxxxxxxx atau +628xxxxxxxxxx.',
 
             'password.min' => 'Kata sandi minimal 8 karakter.',
 

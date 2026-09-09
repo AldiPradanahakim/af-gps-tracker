@@ -16,6 +16,29 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
 
+        /*
+        |--------------------------------------------------------------------------
+        | Trust Proxies
+        |--------------------------------------------------------------------------
+        |
+        | Hosting produksi berjalan di belakang reverse proxy panel hosting
+        | (Nginx/panel-managed). Tanpa ini, Laravel tidak tahu request
+        | asli HTTPS, sehingga Request::isSecure(), asset()/url() (bisa
+        | menghasilkan http:// pada aset -> mixed content setelah reload),
+        | serta cookie sesi "secure" bisa salah deteksi khusus di hosting
+        | (lihat SESSION_SECURE_COOKIE di .env). IP proxy panel hosting
+        | tidak diketahui/bisa berubah, jadi percayai semua proxy ('*').
+        |--------------------------------------------------------------------------
+        */
+
+        $middleware->trustProxies(
+            at: '*',
+            headers: Request::HEADER_X_FORWARDED_FOR
+                | Request::HEADER_X_FORWARDED_HOST
+                | Request::HEADER_X_FORWARDED_PORT
+                | Request::HEADER_X_FORWARDED_PROTO,
+        );
+
         $middleware->web(
             append: [
                 PreventBackHistoryCache::class,

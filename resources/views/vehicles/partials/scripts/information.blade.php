@@ -719,6 +719,27 @@ window.VehicleInformation = {
         ).value =
             vehicle.marker_color;
 
+        /*
+        |--------------------------------------------------------------------------
+        | Refresh Marker di Peta
+        |--------------------------------------------------------------------------
+        |
+        | state.device dipakai bersama oleh VehicleInformation dan
+        | VehicleMarker (referensi objek yang sama), jadi cukup perbarui
+        | marker_icon/marker_color di sini lalu minta VehicleMarker
+        | menggambar ulang ikonnya - tanpa perlu reload halaman.
+        |
+        */
+
+        if (this.state?.device?.vehicle) {
+            this.state.device.vehicle.marker_icon = vehicle.marker_icon;
+            this.state.device.vehicle.marker_color = vehicle.marker_color;
+        }
+
+        if (window.VehicleMarker) {
+            window.VehicleMarker.refreshIcon();
+        }
+
     },
 
     /*

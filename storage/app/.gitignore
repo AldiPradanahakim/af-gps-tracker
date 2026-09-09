@@ -2,3 +2,12 @@
 !private/
 !public/
 !.gitignore
+
+# Data GeoJSON wilayah administratif (provinsi/kabupaten/kecamatan/desa)
+# untuk fitur geofence administratif (AdministrativeAreaService). Data ini
+# statis, tidak reproducible lewat seeder/command apa pun, dan wajib ikut
+# ter-deploy - kalau tetap di-ignore, geofence administratif akan selalu
+# gagal ("data gagal diambil") di hosting karena foldernya tidak ada sama
+# sekali di server produksi.
+!administrative/
+!administrative/**
