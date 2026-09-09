@@ -1,0 +1,276 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-label="Ilustrasi AF GPS TRACKER: pelacakan kendaraan real-time di atas peta">
+  <title>AF GPS TRACKER</title>
+
+  <defs>
+    <linearGradient id="afSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F5F8FF"/>
+      <stop offset="1" stop-color="#E6EDFB"/>
+    </linearGradient>
+
+    <linearGradient id="afRoute" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#60A5FA"/>
+      <stop offset="1" stop-color="#2563EB"/>
+    </linearGradient>
+
+    <linearGradient id="afPin" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3B82F6"/>
+      <stop offset="1" stop-color="#1D4ED8"/>
+    </linearGradient>
+
+    <linearGradient id="afPinMuted" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#CBD5E1"/>
+      <stop offset="1" stop-color="#94A3B8"/>
+    </linearGradient>
+
+    <radialGradient id="afGlow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#2563EB" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#2563EB" stop-opacity="0"/>
+    </radialGradient>
+
+    <filter id="afShadow" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#1E3A8A" flood-opacity="0.16"/>
+    </filter>
+
+    <filter id="afSoft" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#1E3A8A" flood-opacity="0.13"/>
+    </filter>
+  </defs>
+
+  <!-- ============================================================= -->
+  <!-- Latar: peta kota                                              -->
+  <!-- ============================================================= -->
+
+  <rect width="1200" height="800" fill="url(#afSky)"/>
+
+  <!-- Blok bangunan -->
+  <g fill="#DDE7F8" opacity="0.55">
+    <rect x="96" y="150" width="180" height="132" rx="14"/>
+    <rect x="312" y="112" width="152" height="112" rx="14"/>
+    <rect x="978" y="188" width="140" height="108" rx="14"/>
+    <rect x="120" y="596" width="176" height="128" rx="14"/>
+    <rect x="360" y="644" width="150" height="104" rx="14"/>
+    <rect x="836" y="612" width="188" height="126" rx="14"/>
+  </g>
+
+  <!-- Taman -->
+  <g fill="#D4EBDC" opacity="0.7">
+    <rect x="520" y="120" width="176" height="104" rx="18"/>
+    <rect x="576" y="656" width="196" height="96" rx="18"/>
+  </g>
+
+  <!-- Jaringan jalan -->
+  <g stroke="#FFFFFF" stroke-width="30" stroke-linecap="round" opacity="0.95">
+    <path d="M0 316 H1200"/>
+    <path d="M0 560 H1200"/>
+    <path d="M296 0 V800"/>
+    <path d="M722 0 V800"/>
+    <path d="M1000 316 V800"/>
+  </g>
+
+  <g stroke="#C9DAF4" stroke-width="2" stroke-dasharray="14 14" opacity="0.85">
+    <path d="M0 316 H1200"/>
+    <path d="M0 560 H1200"/>
+    <path d="M296 0 V800"/>
+    <path d="M722 0 V800"/>
+  </g>
+
+  <!-- ============================================================= -->
+  <!-- Rute yang dilalui                                             -->
+  <!-- ============================================================= -->
+
+  <path d="M296 656 V560 H722 V316 H1000"
+        fill="none" stroke="#BFD5F5" stroke-width="22"
+        stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>
+
+  <path d="M296 656 V560 H722 V316 H1000"
+        fill="none" stroke="url(#afRoute)" stroke-width="8"
+        stroke-linecap="round" stroke-linejoin="round"/>
+
+  <path d="M296 656 V560 H722 V316 H1000"
+        fill="none" stroke="#FFFFFF" stroke-width="3"
+        stroke-linecap="round" stroke-linejoin="round"
+        stroke-dasharray="2 22" opacity="0.9"/>
+
+  <!-- Titik awal -->
+  <g filter="url(#afSoft)">
+    <circle cx="296" cy="656" r="17" fill="#FFFFFF"/>
+    <circle cx="296" cy="656" r="9" fill="#2563EB"/>
+  </g>
+
+  <!-- Titik singgah -->
+  <g filter="url(#afSoft)">
+    <circle cx="722" cy="560" r="13" fill="#FFFFFF"/>
+    <circle cx="722" cy="560" r="6" fill="#93C5FD"/>
+  </g>
+
+  <!-- ============================================================= -->
+  <!-- Satelit                                                       -->
+  <!-- ============================================================= -->
+
+  <g transform="translate(178 172) rotate(-14)" filter="url(#afSoft)">
+    <rect x="-30" y="-5" width="60" height="10" rx="5" fill="#94A3B8"/>
+
+    <rect x="-100" y="-26" width="72" height="52" rx="6" fill="#3B82F6"/>
+    <rect x="-100" y="-26" width="72" height="52" rx="6" fill="none" stroke="#1D4ED8" stroke-width="2"/>
+    <path d="M-100 -9 H-28 M-100 9 H-28 M-76 -26 V26 M-52 -26 V26" stroke="#1D4ED8" stroke-width="1.6" opacity="0.85"/>
+
+    <rect x="28" y="-26" width="72" height="52" rx="6" fill="#3B82F6"/>
+    <rect x="28" y="-26" width="72" height="52" rx="6" fill="none" stroke="#1D4ED8" stroke-width="2"/>
+    <path d="M28 -9 H100 M28 9 H100 M52 -26 V26 M76 -26 V26" stroke="#1D4ED8" stroke-width="1.6" opacity="0.85"/>
+
+    <rect x="-24" y="-30" width="48" height="60" rx="14" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="2.5"/>
+    <circle cx="0" cy="0" r="11" fill="#2563EB"/>
+    <path d="M0 30 l -16 22 h 32 z" fill="#E2E8F0" stroke="#CBD5E1" stroke-width="2" stroke-linejoin="round"/>
+  </g>
+
+  <g fill="none" stroke="#60A5FA" stroke-width="4" stroke-linecap="round" opacity="0.55">
+    <path d="M252 240 a 44 44 0 0 1 30 30"/>
+    <path d="M236 264 a 70 70 0 0 1 48 48"/>
+  </g>
+
+  <!-- ============================================================= -->
+  <!-- Geofence                                                      -->
+  <!-- ============================================================= -->
+
+  <circle cx="296" cy="656" r="124" fill="#2563EB" opacity="0.07"/>
+  <circle cx="296" cy="656" r="124" fill="none" stroke="#2563EB"
+          stroke-width="2.5" stroke-dasharray="12 10" opacity="0.45"/>
+
+  <!-- ============================================================= -->
+  <!-- Pin lokasi utama (kendaraan aktif)                            -->
+  <!-- ============================================================= -->
+
+  <circle cx="1000" cy="316" r="118" fill="url(#afGlow)"/>
+
+  <ellipse cx="1000" cy="326" rx="46" ry="13" fill="#1E3A8A" opacity="0.16"/>
+
+  <g filter="url(#afShadow)">
+    <path d="M1000 128 c -50 0 -90 40 -90 90 c 0 62 90 118 90 118 s 90 -56 90 -118 c 0 -50 -40 -90 -90 -90 z"
+          fill="url(#afPin)"/>
+    <circle cx="1000" cy="216" r="42" fill="#FFFFFF"/>
+
+    <!-- Ikon kendaraan di dalam pin -->
+    <g transform="translate(1000 216)" fill="#2563EB">
+      <path d="M-24 6 v -8 c 0 -4 3 -8 7 -9 l 5 -1 l 6 -9 c 2 -3 5 -4 8 -4 h 12
+               c 5 0 9 3 11 8 l 2 6 l 4 2 c 3 1 5 4 5 7 v 8 z"/>
+      <circle cx="-14" cy="8" r="6"/>
+      <circle cx="14" cy="8" r="6"/>
+    </g>
+  </g>
+
+  <!-- Pin sekunder (kendaraan kedua) -->
+  <ellipse cx="470" cy="424" rx="30" ry="9" fill="#1E3A8A" opacity="0.12"/>
+  <g filter="url(#afSoft)">
+    <path d="M470 300 c -33 0 -60 27 -60 60 c 0 42 60 78 60 78 s 60 -36 60 -78 c 0 -33 -27 -60 -60 -60 z"
+          fill="url(#afPinMuted)"/>
+    <circle cx="470" cy="360" r="26" fill="#FFFFFF"/>
+    <circle cx="470" cy="360" r="11" fill="#94A3B8"/>
+  </g>
+
+  <!-- ============================================================= -->
+  <!-- Perangkat GPS fisik                                           -->
+  <!-- ============================================================= -->
+
+  <ellipse cx="742" cy="252" rx="52" ry="13" fill="#1E3A8A" opacity="0.14"/>
+  <g filter="url(#afSoft)">
+    <rect x="700" y="106" width="84" height="142" rx="18" fill="#1E293B"/>
+    <rect x="711" y="117" width="62" height="120" rx="12" fill="#334155"/>
+    <circle cx="742" cy="137" r="6" fill="#22C55E"/>
+    <text x="742" y="186" text-anchor="middle" font-family="Segoe UI, Inter, Helvetica, Arial, sans-serif"
+          font-size="17" font-weight="800" fill="#F8FAFC">AF</text>
+    <text x="742" y="208" text-anchor="middle" font-family="Segoe UI, Inter, Helvetica, Arial, sans-serif"
+          font-size="10" font-weight="600" letter-spacing="1" fill="#94A3B8">TRACKER</text>
+  </g>
+
+  <g fill="none" stroke="#60A5FA" stroke-width="4" stroke-linecap="round" opacity="0.7">
+    <path d="M804 128 a 38 38 0 0 1 0 42"/>
+    <path d="M826 112 a 68 68 0 0 1 0 74"/>
+  </g>
+
+  <!-- ============================================================= -->
+  <!-- Kartu informasi                                               -->
+  <!-- ============================================================= -->
+
+  <!-- Judul aplikasi -->
+  <g filter="url(#afShadow)">
+    <rect x="60" y="336" width="330" height="94" rx="24" fill="#FFFFFF"/>
+
+    <g transform="translate(108 383)">
+      <circle r="24" fill="#2563EB"/>
+      <path d="M0 -12 c -6.6 0 -12 5.4 -12 12 c 0 8.4 12 19 12 19 s 12 -10.6 12 -19 c 0 -6.6 -5.4 -12 -12 -12 z"
+            fill="#FFFFFF"/>
+      <circle cy="-1" r="4.2" fill="#2563EB"/>
+    </g>
+
+    <text x="146" y="378" font-family="Segoe UI, Inter, Helvetica, Arial, sans-serif"
+          font-size="19" font-weight="800" letter-spacing="0.6" fill="#0F172A">AF GPS TRACKER</text>
+    <text x="146" y="400" font-family="Segoe UI, Inter, Helvetica, Arial, sans-serif"
+          font-size="12.5" fill="#64748B">Pelacakan kendaraan real-time</text>
+  </g>
+
+  <!-- Kartu kendaraan aktif -->
+  <g filter="url(#afSoft)">
+    <rect x="836" y="428" width="304" height="112" rx="22" fill="#FFFFFF"/>
+
+    <circle cx="884" cy="470" r="8" fill="#22C55E"/>
+    <text x="900" y="475" font-family="Segoe UI, Inter, Helvetica, Arial, sans-serif"
+          font-size="13" font-weight="700" fill="#16A34A">Online</text>
+
+    <text x="1116" y="475" text-anchor="end" font-family="Segoe UI, Inter, Helvetica, Arial, sans-serif"
+          font-size="12" fill="#94A3B8">10:30 WIB</text>
+
+    <text x="868" y="503" font-family="Segoe UI, Inter, Helvetica, Arial, sans-serif"
+          font-size="15" font-weight="800" fill="#0F172A">Honda Beat</text>
+    <text x="989" y="503" font-family="Segoe UI, Inter, Helvetica, Arial, sans-serif"
+          font-size="13" fill="#64748B">&#183; D 1234 AF</text>
+
+    <text x="868" y="524" font-family="Segoe UI, Inter, Helvetica, Arial, sans-serif"
+          font-size="12" fill="#64748B">Jl. Merdeka No. 10, Bandung</text>
+  </g>
+
+  <!-- Kartu kecepatan -->
+  <g filter="url(#afSoft)">
+    <rect x="60" y="456" width="164" height="96" rx="22" fill="#FFFFFF"/>
+    <text x="88" y="486" font-family="Segoe UI, Inter, Helvetica, Arial, sans-serif"
+          font-size="10.5" font-weight="700" letter-spacing="1.3" fill="#94A3B8">KECEPATAN</text>
+    <text x="88" y="524" font-family="Segoe UI, Inter, Helvetica, Arial, sans-serif"
+          font-size="30" font-weight="800" fill="#0F172A">72</text>
+    <text x="140" y="524" font-family="Segoe UI, Inter, Helvetica, Arial, sans-serif"
+          font-size="13" fill="#64748B">km/jam</text>
+  </g>
+
+  <!-- Kartu jarak -->
+  <g filter="url(#afSoft)">
+    <rect x="240" y="456" width="150" height="96" rx="22" fill="#FFFFFF"/>
+    <text x="268" y="486" font-family="Segoe UI, Inter, Helvetica, Arial, sans-serif"
+          font-size="10.5" font-weight="700" letter-spacing="1.3" fill="#94A3B8">HARI INI</text>
+    <text x="268" y="524" font-family="Segoe UI, Inter, Helvetica, Arial, sans-serif"
+          font-size="30" font-weight="800" fill="#0F172A">18</text>
+    <text x="310" y="524" font-family="Segoe UI, Inter, Helvetica, Arial, sans-serif"
+          font-size="13" fill="#64748B">km</text>
+  </g>
+
+  <!-- Label geofence: sengaja di bawah titik awal supaya tidak menutupinya -->
+  <g filter="url(#afSoft)">
+    <rect x="64" y="704" width="238" height="60" rx="18" fill="#FFFFFF"/>
+    <circle cx="100" cy="734" r="15" fill="#DCFCE7"/>
+    <path d="M94 734 l 5 5 l 10 -11" fill="none" stroke="#16A34A" stroke-width="3"
+          stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="128" y="729" font-family="Segoe UI, Inter, Helvetica, Arial, sans-serif"
+          font-size="13.5" font-weight="700" fill="#0F172A">Geofence Aktif</text>
+    <text x="128" y="749" font-family="Segoe UI, Inter, Helvetica, Arial, sans-serif"
+          font-size="11.5" fill="#64748B">Notifikasi Email &amp; WhatsApp</text>
+  </g>
+
+  <!-- Label real-time -->
+  <g filter="url(#afSoft)">
+    <rect x="812" y="620" width="228" height="60" rx="18" fill="#FFFFFF"/>
+    <circle cx="848" cy="650" r="15" fill="#DBEAFE"/>
+    <circle cx="848" cy="650" r="6" fill="#2563EB"/>
+    <text x="876" y="645" font-family="Segoe UI, Inter, Helvetica, Arial, sans-serif"
+          font-size="13.5" font-weight="700" fill="#0F172A">Lacak Real-Time</text>
+    <text x="876" y="665" font-family="Segoe UI, Inter, Helvetica, Arial, sans-serif"
+          font-size="11.5" fill="#64748B">Pembaruan tiap detik</text>
+  </g>
+
+</svg>

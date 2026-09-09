@@ -39,13 +39,13 @@
                 <h1
                     class="text-[13px] font-bold tracking-wide text-slate-900"
                 >
-                    HI-HOME
+                    AF GPS TRACKER
                 </h1>
 
                 <p
                     class="mt-0.5 text-[9px] font-semibold uppercase tracking-[0.22em] text-slate-400"
                 >
-                    GPS TRACKER
+                    Sistem Pemantauan Kendaraan
                 </p>
 
             </div>

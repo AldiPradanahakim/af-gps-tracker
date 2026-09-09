@@ -1,7 +1,7 @@
 <div class="mx-auto flex w-full max-w-[430px] h-fit self-center justify-self-center flex-col gap-[12px] rounded-[24px] bg-white p-6 sm:p-[clamp(24px,2vw,32px)] shadow-xl border border-[#E5E7EB]">
     <div class="space-y-3 text-center">
         <div class="mx-auto flex h-[72px] w-[72px] items-center justify-center rounded-full bg-[#EFF6FF] text-[#2563EB] shadow-sm">
-            <img src="{{ asset('images/logo-gps.png') }}" alt="Logo kecil Trackio" class="h-[42px] w-[42px] object-contain" />
+            <img src="{{ asset('images/logo-gps.png') }}" alt="Logo kecil AF GPS TRACKER" class="h-[42px] w-[42px] object-contain" />
         </div>
         <div>
             <h2 class="text-[28px] sm:text-[36px] font-semibold tracking-[-0.03em]"><span class="text-[#2563EB]">Selamat</span> Datang</h2>

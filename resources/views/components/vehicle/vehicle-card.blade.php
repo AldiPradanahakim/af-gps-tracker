@@ -5,7 +5,7 @@
         <div class="mx-auto mb-4 flex h-[72px] w-[72px] items-center justify-center rounded-full bg-[#EFF6FF] shadow-sm">
             <img
                 src="{{ asset('images/logo-gps.png') }}"
-                alt="Trackio"
+                alt="AF GPS TRACKER"
                 class="h-[42px] w-[42px] object-contain">
         </div>
 
@@ -15,7 +15,7 @@
 
         <p class="mt-3 text-[15px] leading-7 text-slate-500">
             Lengkapi data kendaraan yang akan dihubungkan
-            dengan perangkat GPS Tracker Anda.
+            dengan perangkat {{ config('app.name') }} Anda.
         </p>
 
     </div>

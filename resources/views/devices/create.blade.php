@@ -1,5 +1,5 @@
 <x-guest-layout>
-    <x-auth.onboarding-shell :subtext="'Masukkan ID dan kata sandi perangkat untuk menghubungkan GPS tracker ke akun Trackio Anda.'">
+    <x-auth.onboarding-shell :subtext="'Masukkan ID dan kata sandi perangkat untuk menghubungkan GPS tracker ke akun AF GPS TRACKER Anda.'">
         <x-slot:heading>
             Aktivasi Perangkat <span class="text-[#2563EB]">GPS Anda</span>
         </x-slot:heading>
@@ -7,7 +7,7 @@
         <div class="w-full max-w-[520px] rounded-[24px] bg-white p-8 shadow-xl border border-[#E5E7EB]">
             <div class="text-center">
                 <div class="mx-auto mb-4 flex h-[72px] w-[72px] items-center justify-center rounded-full bg-[#EFF6FF] shadow-sm">
-                    <img src="{{ asset('images/logo-gps.png') }}" alt="Trackio" class="h-[42px] w-[42px] object-contain" />
+                    <img src="{{ asset('images/logo-gps.png') }}" alt="AF GPS TRACKER" class="h-[42px] w-[42px] object-contain" />
                 </div>
                 <h2 class="text-[28px] font-semibold tracking-[-0.03em] text-slate-950">Aktivasi Perangkat</h2>
                 <p class="mt-3 text-sm leading-6 text-slate-500">

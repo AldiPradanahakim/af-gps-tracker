@@ -17,9 +17,9 @@
 
         {{-- Mobile-only top branding --}}
         <div class="flex lg:hidden items-center gap-3 px-5 pt-5 pb-4 border-b border-slate-100 bg-white">
-            <img src="{{ asset('images/logo-gps.png') }}" alt="Trackio" class="h-9 w-9 object-contain" />
+            <img src="{{ asset('images/logo-gps.png') }}" alt="AF GPS TRACKER" class="h-9 w-9 object-contain" />
             <div>
-                <div class="text-xs font-semibold uppercase tracking-widest text-[#2563EB]">Trackio</div>
+                <div class="text-xs font-semibold uppercase tracking-widest text-[#2563EB]">AF GPS TRACKER</div>
                 <div class="text-[11px] text-slate-500">Platform Pelacakan Kendaraan</div>
             </div>
         </div>
@@ -43,7 +43,7 @@
 
         {{-- Mobile footer --}}
         <div class="lg:hidden text-center pb-5 text-xs text-slate-400">
-            &copy; {{ date('Y') }} Trackio. Seluruh hak cipta dilindungi.
+            &copy; {{ date('Y') }} AF GPS TRACKER. Seluruh hak cipta dilindungi.
         </div>
     </div>
 </div>

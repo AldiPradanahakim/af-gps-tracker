@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
-@section('title', $device->vehicle->vehicle_name ?? 'Detail Kendaraan')
+@section('title', ($device->vehicle->vehicle_name ?? 'Detail Kendaraan') . ' - ' . config('app.name'))
 
-@section('meta_description', 'Detail lokasi, riwayat perjalanan, dan pengaturan geofence untuk kendaraan Anda di Trackio.')
+@section('meta_description', 'Detail lokasi, riwayat perjalanan, dan pengaturan geofence untuk kendaraan Anda di AF GPS TRACKER.')
 
 @section('content')
 

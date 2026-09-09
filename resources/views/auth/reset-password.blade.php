@@ -1,6 +1,6 @@
 <x-guest-layout>
     <x-auth.onboarding-shell
-        :subtext="'Buat kata sandi baru yang kuat untuk menjaga keamanan akun Trackio Anda.'">
+        :subtext="'Buat kata sandi baru yang kuat untuk menjaga keamanan akun AF GPS TRACKER Anda.'">
         <x-slot:heading>
             Amankan Kembali <span class="text-[#2563EB]">Akun Anda</span>
         </x-slot:heading>
