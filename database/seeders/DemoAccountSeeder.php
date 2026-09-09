@@ -14,17 +14,53 @@ use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class DemoAccountSeeder extends Seeder
 {
     /**
-     * Device credentials used for the activation step.
-     * Reported back to the user so they can log in / re-run the
-     * activation flow through the UI if they want to see it live.
+     * --------------------------------------------------------------------------
+     * Kredensial Akun Demo
+     * --------------------------------------------------------------------------
+     *
+     * JANGAN menuliskan kata sandi asli di file ini. Repositori ini
+     * publik, sehingga apa pun yang ditulis di sini bisa dibaca siapa
+     * saja - dan kalau seeder-nya pernah dijalankan di server produksi,
+     * kata sandi itu benar-benar bisa dipakai untuk masuk.
+     *
+     * Nilainya diambil dari .env (yang tidak ikut ke git). Kalau tidak
+     * diisi, seeder memakai kata sandi acak dan mencetaknya sekali ke
+     * layar - aman secara bawaan, dan tetap praktis untuk demo lokal.
+     *
+     *   DEMO_USER_EMAIL=...
+     *   DEMO_USER_PASSWORD=...
+     *   DEMO_DEVICE_ID=...
+     *   DEMO_DEVICE_PASSWORD=...
      */
-    protected string $deviceId = 'GPS-AF-0001';
+    protected string $deviceId;
 
-    protected string $devicePassword = 'device1234';
+    protected string $devicePassword;
+
+    protected string $userEmail;
+
+    protected string $userPassword;
+
+    public function __construct()
+    {
+        $this->deviceId = (string) env('DEMO_DEVICE_ID', 'GPS-DEMO-0001');
+
+        $this->devicePassword = (string) env(
+            'DEMO_DEVICE_PASSWORD',
+            Str::password(16, symbols: false)
+        );
+
+        $this->userEmail = (string) env('DEMO_USER_EMAIL', 'demo@af-gps-tracker.test');
+
+        $this->userPassword = (string) env(
+            'DEMO_USER_PASSWORD',
+            Str::password(16)
+        );
+    }
 
     protected string $homeDisplayName = 'Jl. MH Thamrin, Jakarta Pusat, DKI Jakarta';
 
@@ -61,11 +97,11 @@ class DemoAccountSeeder extends Seeder
             */
 
             $user = User::updateOrCreate(
-                ['email' => 'aldipradanahakim329@gmail.com'],
+                ['email' => $this->userEmail],
                 [
-                    'name' => 'Aldi Pradana Hakim',
+                    'name' => 'Pengguna Demo',
                     'phone' => '081234567890',
-                    'password' => Hash::make('Aldi#1234'),
+                    'password' => Hash::make($this->userPassword),
                 ]
             );
 
@@ -264,5 +300,20 @@ class DemoAccountSeeder extends Seeder
                 'sent_at' => $startedAt,
             ]);
         });
+
+        /*
+        |--------------------------------------------------------------------------
+        | Kredensial dicetak SEKALI di sini, bukan disimpan di dalam kode.
+        |--------------------------------------------------------------------------
+        */
+
+        $this->command?->newLine();
+        $this->command?->info('Akun demo siap:');
+        $this->command?->line('  Email          : ' . $this->userEmail);
+        $this->command?->line('  Kata sandi     : ' . $this->userPassword);
+        $this->command?->line('  Device ID      : ' . $this->deviceId);
+        $this->command?->line('  Sandi perangkat: ' . $this->devicePassword);
+        $this->command?->newLine();
+        $this->command?->warn('Catat sekarang - nilainya tidak disimpan di mana pun.');
     }
 }

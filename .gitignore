@@ -31,3 +31,12 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Firmware - kredensial perangkat, jangan di-commit
+/firmware/**/secrets.h
+/firmware/*.bin
+
+# Arsip firmware hasil bundling - isinya duplikat /firmware (termasuk
+# secrets.h), jadi jangan sampai ikut masuk repo.
+/firmware.zip
+/firmware*.zip
