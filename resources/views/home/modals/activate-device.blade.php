@@ -16,7 +16,7 @@
 
                 <p class="mt-1 text-sm text-slate-500">
 
-                    Masukkan Device ID dan Password perangkat GPS.
+                    Masukkan ID Perangkat dan Kata Sandi perangkat GPS.
 
                 </p>
 
@@ -41,7 +41,7 @@
 
                 <label class="mb-2 block text-sm font-semibold">
 
-                    Device ID
+                    ID Perangkat
 
                 </label>
 
@@ -57,7 +57,7 @@
 
                 <label class="mb-2 block text-sm font-semibold">
 
-                    Password Device
+                    Kata Sandi Perangkat
 
                 </label>
 

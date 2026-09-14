@@ -625,8 +625,8 @@ document.addEventListener('gpstracker:map-ready', () => {
             : 'bg-red-100 text-red-600';
 
         const statusText = online
-            ? 'Online'
-            : 'Offline';
+            ? 'Terhubung'
+            : 'Terputus';
 
         const hasCoordinate =
             vehicle.latitude !== null &&
@@ -758,7 +758,7 @@ document.addEventListener('gpstracker:map-ready', () => {
 
                     <p class="text-xs uppercase tracking-wide text-slate-400">
 
-                        Update
+                        Diperbarui
 
                     </p>
 
@@ -971,7 +971,7 @@ document.addEventListener('gpstracker:map-ready', () => {
 
         badge.textContent =
 
-            online ? 'Online' : 'Offline';
+            online ? 'Terhubung' : 'Terputus';
 
         badge.classList.remove(
 

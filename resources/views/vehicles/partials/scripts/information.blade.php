@@ -1371,7 +1371,7 @@ window.VehicleInformation = {
 
         if (!isOnline) {
 
-            element.textContent = 'Offline';
+            element.textContent = 'Terputus';
 
             element.className =
                 'text-[13px] font-semibold text-slate-500';
@@ -1386,7 +1386,7 @@ window.VehicleInformation = {
 
         }
 
-        element.textContent = 'Online';
+        element.textContent = 'Terhubung';
 
         element.className =
             'text-[13px] font-semibold text-emerald-600';
@@ -1419,7 +1419,7 @@ window.VehicleInformation = {
         const isOnline = device && device.is_active && (now - heartbeat <= 5 * 60 * 1000);
 
         if (!isOnline) {
-            labelElement.textContent = 'Terakhir Update';
+            labelElement.textContent = 'Terakhir Diperbarui';
             
             let lastTime = '-';
             if (device && device.last_heartbeat) {

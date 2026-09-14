@@ -111,14 +111,86 @@ class NotificationService
     }
 
     /**
+     * Create geofence "masih di luar area" reminder.
+     *
+     * Memakai tipe geofence_exit yang sama supaya pengingat ikut
+     * tersaring bersama notifikasi keluar area (dan mengikuti toggle
+     * Email/WhatsApp yang sama), tetapi ditandai data.repeat = true
+     * supaya bisa dibedakan di tampilan.
+     */
+    public function createGeofenceStillOutsideNotification(
+        Device $device,
+        Geofence $geofence,
+        array $payload,
+        int $minutesOutside
+    ): Notification {
+
+        return $this->createGeofenceNotification(
+            $device,
+            $geofence,
+            $payload,
+            exited: true,
+            repeat: true,
+            minutesOutside: $minutesOutside
+        );
+    }
+
+    /**
      * Create geofence notification (enter/exit).
      */
     protected function createGeofenceNotification(
         Device $device,
         Geofence $geofence,
         array $payload,
-        bool $exited
+        bool $exited,
+        bool $repeat = false,
+        int $minutesOutside = 0
     ): Notification {
+
+        /*
+        |--------------------------------------------------------------------------
+        | Tipe area ikut disebut supaya pengguna langsung tahu geofence
+        | MANA yang dilewati - satu kendaraan bisa punya Radius,
+        | Administratif, dan Polygon sekaligus, masing-masing dengan
+        | notifikasinya sendiri.
+        |--------------------------------------------------------------------------
+        */
+
+        $area = sprintf(
+            '"%s" (%s)',
+            $geofence->name,
+            $geofence->type_label
+        );
+
+        if ($repeat) {
+
+            $title = 'Masih di Luar Geofence';
+
+            $message = $minutesOutside > 0
+                ? sprintf(
+                    'Kendaraan masih berada di luar area %s sejak %s lalu.',
+                    $area,
+                    $this->humanMinutes($minutesOutside)
+                )
+                : sprintf(
+                    'Kendaraan masih berada di luar area %s.',
+                    $area
+                );
+
+        } else {
+
+            $title = $exited ? 'Keluar Geofence' : 'Masuk Geofence';
+
+            $message = sprintf(
+
+                $exited
+                    ? 'Kendaraan keluar dari area %s.'
+                    : 'Kendaraan masuk ke area %s.',
+
+                $area
+
+            );
+        }
 
         $notification = $this->notificationRepository->create([
 
@@ -130,19 +202,19 @@ class NotificationService
 
             'data' => [
 
-                'title' => $exited ? 'Keluar Geofence' : 'Masuk Geofence',
+                'title' => $title,
 
-                'message' => sprintf(
-
-                    $exited
-                        ? 'Kendaraan keluar dari area "%s".'
-                        : 'Kendaraan masuk ke area "%s".',
-
-                    $geofence->name
-
-                ),
+                'message' => $message,
 
                 'geofence_name' => $geofence->name,
+
+                'geofence_type' => $geofence->type,
+
+                'geofence_type_label' => $geofence->type_label,
+
+                'repeat' => $repeat,
+
+                'minutes_outside' => $repeat ? $minutesOutside : null,
 
                 'location' => [
 
@@ -167,6 +239,25 @@ class NotificationService
         );
 
         return $notification;
+    }
+
+    /**
+     * "95" -> "1 jam 35 menit", "40" -> "40 menit".
+     */
+    protected function humanMinutes(int $minutes): string
+    {
+        if ($minutes < 60) {
+
+            return $minutes . ' menit';
+        }
+
+        $hours = intdiv($minutes, 60);
+
+        $rest = $minutes % 60;
+
+        return $rest > 0
+            ? sprintf('%d jam %d menit', $hours, $rest)
+            : sprintf('%d jam', $hours);
     }
 
     /**
@@ -283,7 +374,7 @@ class NotificationService
 
             'data' => [
 
-                'title' => 'Perangkat Offline',
+                'title' => 'Perangkat Terputus',
 
                 'message' => sprintf(
                     'Perangkat GPS %s berhenti mengirim data. Terakhir terlihat %s.',
@@ -327,7 +418,7 @@ class NotificationService
 
             'data' => [
 
-                'title' => 'Perangkat Online Kembali',
+                'title' => 'Perangkat Terhubung Kembali',
 
                 'message' => sprintf(
                     'Perangkat GPS %s kembali mengirim data.',

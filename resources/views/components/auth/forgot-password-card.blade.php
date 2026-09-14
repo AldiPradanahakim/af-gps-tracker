@@ -20,7 +20,7 @@
         </div>
 
         <button type="submit" class="flex h-[46px] w-full items-center justify-center rounded-xl bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-[14px] font-bold text-white shadow-xl transition duration-200 hover:brightness-95">
-            Kirim Tautan Reset
+            Kirim Tautan Atur Ulang
         </button>
 
         <p class="pt-2 text-center text-[14px] text-slate-500">

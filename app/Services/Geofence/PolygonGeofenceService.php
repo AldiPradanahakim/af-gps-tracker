@@ -28,7 +28,7 @@ class PolygonGeofenceService
         )) {
 
             throw new InvalidArgumentException(
-                'Geofence must be administrative or custom type.'
+                'Tipe geofence harus administratif atau poligon kustom.'
             );
         }
 
@@ -161,7 +161,7 @@ class PolygonGeofenceService
         ) {
 
             throw new InvalidArgumentException(
-                'Only Polygon/MultiPolygon is supported.'
+                'Hanya bentuk Polygon/MultiPolygon yang didukung.'
             );
         }
 
@@ -174,7 +174,7 @@ class PolygonGeofenceService
             ) {
 
                 throw new InvalidArgumentException(
-                    'Polygon coordinates are required.'
+                    'Koordinat poligon wajib diisi.'
                 );
             }
 
@@ -186,7 +186,7 @@ class PolygonGeofenceService
         ) {
 
             throw new InvalidArgumentException(
-                'Polygon coordinates are required.'
+                'Koordinat poligon wajib diisi.'
             );
         }
 

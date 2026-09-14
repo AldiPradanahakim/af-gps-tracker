@@ -281,19 +281,19 @@
 
                                 <li>
 
-                                    • Menghapus <b>Radius</b> tidak akan menghapus Administrative maupun Custom.
+                                    • Menghapus <b>Radius</b> tidak akan menghapus Administratif maupun Kustom.
 
                                 </li>
 
                                 <li>
 
-                                    • Menghapus <b>Administrative</b> tidak akan menghapus Radius maupun Custom.
+                                    • Menghapus <b>Administratif</b> tidak akan menghapus Radius maupun Kustom.
 
                                 </li>
 
                                 <li>
 
-                                    • Menghapus <b>Custom Polygon</b> tidak akan mempengaruhi geofence lainnya.
+                                    • Menghapus <b>Poligon Kustom</b> tidak akan mempengaruhi geofence lainnya.
 
                                 </li>
 
@@ -967,7 +967,7 @@ document.addEventListener(
 
                 case 'administrative':
 
-                    title = 'Administrative';
+                    title = 'Administratif';
 
                     description =
 
@@ -981,11 +981,11 @@ document.addEventListener(
 
                 case 'custom':
 
-                    title = 'Custom Polygon';
+                    title = 'Poligon Kustom';
 
                     description =
 
-                        'Polygon';
+                        'Poligon';
 
                     badge =
 

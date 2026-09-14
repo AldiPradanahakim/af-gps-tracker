@@ -37,7 +37,7 @@ class DeviceService
 
                 throw ValidationException::withMessages([
 
-                    'device_id' => 'Device ID tidak ditemukan.',
+                    'device_id' => 'ID Perangkat tidak ditemukan.',
 
                 ]);
             }
@@ -52,7 +52,7 @@ class DeviceService
 
                 throw ValidationException::withMessages([
 
-                    'device_password' => 'Password device salah.',
+                    'device_password' => 'Kata sandi perangkat salah.',
 
                 ]);
             }

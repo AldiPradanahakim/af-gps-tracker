@@ -67,7 +67,7 @@
                 id="homeLocationButton"
                 type="button"
                 @if(!$hasAvailableDevice) disabled @endif
-                title="{{ $hasAvailableDevice ? 'Tambah Home Location' : 'Semua kendaraan sudah memiliki Home Location' }}"
+                title="{{ $hasAvailableDevice ? 'Tambah Lokasi Rumah' : 'Semua kendaraan sudah memiliki Lokasi Rumah' }}"
                 class="flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50 {{ !$hasAvailableDevice ? 'opacity-50 cursor-not-allowed' : '' }}">
 
                 <svg
@@ -242,7 +242,7 @@
 
                                 <span class="text-sm text-slate-700">
 
-                                    Custom
+                                    Kustom
 
                                 </span>
 

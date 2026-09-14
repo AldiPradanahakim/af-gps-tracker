@@ -32,6 +32,8 @@ window.VehicleNavigation = {
 
     lazyActivators: {
 
+        geofence: () => window.Vehicle?.geofence?.activate?.(),
+
         history: () => window.Vehicle?.history?.activate?.(),
 
         stop: () => window.Vehicle?.stop?.activate?.(),

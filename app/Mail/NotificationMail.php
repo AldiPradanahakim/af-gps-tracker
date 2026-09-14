@@ -67,6 +67,8 @@ class NotificationMail extends Mailable
                 'plateNumber' => data_get($this->notification->data, 'plate_number')
                     ?? $this->notification->device?->vehicle?->plate_number,
                 'geofenceName' => data_get($this->notification->data, 'geofence_name'),
+                'geofenceTypeLabel' => data_get($this->notification->data, 'geofence_type_label'),
+                'minutesOutside' => data_get($this->notification->data, 'minutes_outside'),
                 'durationMinutes' => data_get($this->notification->data, 'duration_minutes'),
                 'searchAddress' => $searchAddress,
                 'latitude' => $latitude,
@@ -96,6 +98,15 @@ class NotificationMail extends Mailable
      */
     protected function headerEmoji(): string
     {
+        /*
+        | Pengingat "masih di luar area" memakai emoji berbeda supaya
+        | tidak tertukar dengan pesan keluar area yang pertama.
+        */
+
+        if (data_get($this->notification->data, 'repeat')) {
+            return '⏰';
+        }
+
         return match ($this->notification->type) {
             'geofence_exit' => '🚨',
             'geofence_enter' => '🟢',

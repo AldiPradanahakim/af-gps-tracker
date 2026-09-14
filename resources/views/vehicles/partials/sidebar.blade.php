@@ -235,7 +235,7 @@
                         <span
                             class="text-[12px] font-semibold text-slate-700 transition group-hover:text-blue-600"
                         >
-                            Home Location
+                            Lokasi Rumah
                         </span>
 
                     </button>

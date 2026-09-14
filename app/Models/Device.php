@@ -33,6 +33,8 @@ class Device extends Model
 
         'speed_setting',
 
+        'geofence_setting',
+
         'notification_setting',
 
         'is_active',
@@ -74,6 +76,8 @@ class Device extends Model
         'stop_setting' => 'array',
 
         'speed_setting' => 'array',
+
+        'geofence_setting' => 'array',
 
         'notification_setting' => 'array',
 
@@ -156,6 +160,11 @@ class Device extends Model
     public function notifications()
     {
         return $this->hasMany(Notification::class);
+    }
+
+    public function geofenceHistories()
+    {
+        return $this->hasMany(GeofenceHistory::class);
     }
 
     public function stopHistories()

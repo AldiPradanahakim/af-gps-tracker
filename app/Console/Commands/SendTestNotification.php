@@ -82,39 +82,54 @@ class SendTestNotification extends Command
 
         if (in_array($type, ['geofence_enter', 'geofence_exit', 'all'], true)) {
 
-            $geofence = $device->geofences->firstWhere('status', true)
-                ?? $device->geofences->first();
+            /*
+            |--------------------------------------------------------------------------
+            | Notifikasi geofence sekarang dikirim PER AREA, jadi perintah uji
+            | ini pun mengirim satu pesan untuk tiap geofence aktif - supaya
+            | hasilnya mencerminkan perilaku sebenarnya di lapangan.
+            |--------------------------------------------------------------------------
+            */
 
-            if (! $geofence) {
+            $geofences = $device->geofences->where('status', true)->values();
+
+            if ($geofences->isEmpty()) {
+
+                $geofences = $device->geofences->take(1)->values();
+            }
+
+            if ($geofences->isEmpty()) {
 
                 $this->warn('Device belum punya geofence, tipe geofence_enter/geofence_exit dilewati. Buat geofence dulu di halaman Detail Kendaraan.');
 
             } else {
 
-                if (in_array($type, ['geofence_enter', 'all'], true)) {
+                foreach ($geofences as $geofence) {
 
-                    $created[] = $notificationService->createGeofenceEnterNotification($device, $geofence, [
+                    if (in_array($type, ['geofence_enter', 'all'], true)) {
 
-                        'lat' => $insideLatitude,
+                        $created[] = $notificationService->createGeofenceEnterNotification($device, $geofence, [
 
-                        'lng' => $insideLongitude,
+                            'lat' => $insideLatitude,
 
-                        'search_address' => $insideAddress,
+                            'lng' => $insideLongitude,
 
-                    ]);
-                }
+                            'search_address' => $insideAddress,
 
-                if (in_array($type, ['geofence_exit', 'all'], true)) {
+                        ]);
+                    }
 
-                    $created[] = $notificationService->createGeofenceExitNotification($device, $geofence, [
+                    if (in_array($type, ['geofence_exit', 'all'], true)) {
 
-                        'lat' => $outsideLatitude,
+                        $created[] = $notificationService->createGeofenceExitNotification($device, $geofence, [
 
-                        'lng' => $outsideLongitude,
+                            'lat' => $outsideLatitude,
 
-                        'search_address' => $outsideAddress,
+                            'lng' => $outsideLongitude,
 
-                    ]);
+                            'search_address' => $outsideAddress,
+
+                        ]);
+                    }
                 }
             }
         }

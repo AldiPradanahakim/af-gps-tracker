@@ -4,7 +4,7 @@
 
 {{--
     editingProfile  : modal dibuka dalam mode BACA. Data hanya bisa diubah
-                      setelah tombol "Edit Profil" ditekan, supaya isian
+                      setelah tombol "Ubah Profil" ditekan, supaya isian
                       tidak terubah tanpa sengaja.
     changingPassword: bagian ganti kata sandi terpisah dan opsional -
                       admin boleh mengubah nama SAJA, email SAJA, atau
@@ -44,7 +44,7 @@
                 <img src="{{ asset('images/logo-gps.png') }}" alt="AF GPS TRACKER" class="h-12 w-12 object-contain">
                 <div>
                     <h1 class="text-[12px] font-bold uppercase tracking-[0.22em] text-[#2563EB]">AF GPS TRACKER</h1>
-                    <p class="mt-1 text-sm text-slate-500">Dashboard Admin</p>
+                    <p class="mt-1 text-sm text-slate-500">Dasbor Admin</p>
                 </div>
             </div>
             <!-- Close Mobile Menu -->
@@ -97,7 +97,7 @@
                     </svg>
                 </button>
                 <div>
-                    <h2 class="text-xl lg:text-2xl font-bold text-slate-900 tracking-tight">@yield('page_title', 'Dashboard Admin')</h2>
+                    <h2 class="text-xl lg:text-2xl font-bold text-slate-900 tracking-tight">@yield('page_title', 'Dasbor Admin')</h2>
                     <p class="text-xs lg:text-sm font-medium text-slate-500 mt-1 hidden sm:block">@yield('page_description', 'Kendali penuh atas sistem ini.')</p>
                 </div>
             </div>
@@ -224,7 +224,7 @@
                         </div>
 
                         <div>
-                            <label for="email" class="block text-sm font-medium text-slate-700">Email Login</label>
+                            <label for="email" class="block text-sm font-medium text-slate-700">Email Akun</label>
                             <input type="email" name="email" id="email"
                                    value="{{ old('email', auth()->user()->email) }}"
                                    required
@@ -301,7 +301,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
-                            Edit Profil
+                            Ubah Profil
                         </button>
                     </div>
 

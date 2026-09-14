@@ -27,7 +27,7 @@ class RadiusGeofenceService
         if ($geofence->type !== 'radius') {
 
             throw new InvalidArgumentException(
-                'Geofence must be radius type.'
+                'Tipe geofence harus radius.'
             );
         }
 

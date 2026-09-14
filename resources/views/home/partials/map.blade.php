@@ -67,7 +67,7 @@
             class="layer-option flex w-full items-center gap-3 border-t px-4 py-3 hover:bg-slate-50"
             data-layer="satellite">
 
-            🛰️ Satellite
+            🛰️ Satelit
 
         </button>
 
@@ -128,7 +128,7 @@
 
                 <span class="text-sm text-slate-700">
 
-                    Kendaraan Online
+                    Kendaraan Terhubung
 
                 </span>
 
@@ -140,7 +140,7 @@
 
                 <span class="text-sm text-slate-700">
 
-                    Kendaraan Offline
+                    Kendaraan Terputus
 
                 </span>
 

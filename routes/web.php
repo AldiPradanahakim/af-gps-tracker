@@ -166,6 +166,16 @@ Route::middleware(['auth', 'verified', 'is_user'])->group(function () {
         'updateNotificationSetting'
     ])->name('vehicles.notification-setting.update');
 
+    Route::patch('/vehicles/{device}/geofence-setting', [
+        VehicleController::class,
+        'updateGeofenceSetting'
+    ])->name('vehicles.geofence-setting.update');
+
+    Route::get('/vehicles/{device}/geofence-history', [
+        VehicleController::class,
+        'geofenceHistory'
+    ])->name('vehicles.geofence-history');
+
     Route::get('/geofences', [
         GeofenceController::class,
         'all'

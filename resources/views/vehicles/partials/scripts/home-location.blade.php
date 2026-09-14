@@ -50,8 +50,8 @@ window.VehicleHomeLocation = {
                 const home = this.state.device.home_location;
                 if (home) {
                     this.select({
-                        lat: home.latitude || home.lat,
-                        lng: home.longitude || home.lng,
+                        lat: home.lat ?? home.latitude,
+                        lng: home.lng ?? home.longitude,
                         address: home.display_name
                     });
                 }
@@ -150,15 +150,15 @@ window.VehicleHomeLocation = {
                 dot.classList.add('bg-emerald-500');
             }
             
-            const lat = home.latitude || home.lat;
-            const lng = home.longitude || home.lng;
+            const lat = home.lat ?? home.latitude;
+            const lng = home.lng ?? home.longitude;
             
             this.setText('homeLocationReadAddress', home.display_name);
             this.setText('homeLocationReadLatitude', Number(lat).toFixed(6));
             this.setText('homeLocationReadLongitude', Number(lng).toFixed(6));
             
             this.setText('homeLocationMarkerStatus', 'Aktif');
-            this.setText('homeLocationDragStatus', 'Aktif Saat Edit');
+            this.setText('homeLocationDragStatus', 'Aktif Saat Ubah');
             
             this.setMarker({
                 lat: lat,
@@ -214,7 +214,7 @@ window.VehicleHomeLocation = {
             const btn = this.els.confirmDeleteBtn;
             if (btn) {
                 btn.disabled = false;
-                btn.innerHTML = 'Ya, Hapus Home Location';
+                btn.innerHTML = 'Ya, Hapus Lokasi Rumah';
             }
         }
     },
@@ -242,14 +242,27 @@ window.VehicleHomeLocation = {
             const response = await VehicleApi.saveHomeLocation(payload);
             
             if (response.success) {
-                this.state.device.home_location = {
-                    latitude: this.selectedLocation.lat,
-                    longitude: this.selectedLocation.lng,
+
+                /*
+                | Bentuk data Lokasi Rumah harus sama persis dengan yang
+                | dipakai server ({ lat, lng, display_name }). Sebelumnya di
+                | sini ditulis { latitude, longitude }, sehingga bagian lain
+                | (mis. edit Geofence Radius) membaca .lat sebagai undefined
+                | dan mengira Lokasi Rumah belum diatur.
+                */
+
+                const saved = (response.devices ?? [])
+                    .find(device => String(device.id) === String(this.state.device.id));
+
+                this.state.device.home_location = saved?.home_location ?? {
+                    lat: Number(this.selectedLocation.lat),
+                    lng: Number(this.selectedLocation.lng),
                     display_name: this.selectedLocation.address
                 };
-                
+
                 window.Vehicle.updateHomeLocation(this.state.device.home_location);
                 this.switchMode('read');
+
                 if (window.GPSTracker) GPSTracker.showToast('success', 'Berhasil', response.message || 'Berhasil menyimpan');
             } else {
                 if (window.GPSTracker) GPSTracker.showToast('error', 'Gagal', response.message);
@@ -261,7 +274,7 @@ window.VehicleHomeLocation = {
             const btn = this.els.saveBtn;
             if (btn) {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-floppy-disk mr-2"></i> Simpan Home Location';
+                btn.innerHTML = '<i class="fa-solid fa-floppy-disk mr-2"></i> Simpan Lokasi Rumah';
             }
         }
     },
@@ -391,7 +404,7 @@ window.VehicleHomeLocation = {
             });
             this.marker.bindPopup('<div class="p-2 text-sm font-semibold text-slate-800">Geser marker untuk menyesuaikan</div>').openPopup();
         } else {
-            this.marker.bindPopup(`<div class="p-2 min-w-[150px]"><div class="font-bold text-slate-800 mb-1 border-b pb-1">Home Location</div><div class="text-xs text-slate-500">${location.address || ''}</div></div>`);
+            this.marker.bindPopup(`<div class="p-2 min-w-[150px]"><div class="font-bold text-slate-800 mb-1 border-b pb-1">Lokasi Rumah</div><div class="text-xs text-slate-500">${location.address || ''}</div></div>`);
         }
         
         VehicleMap.addOverlay('home-location', this.marker);

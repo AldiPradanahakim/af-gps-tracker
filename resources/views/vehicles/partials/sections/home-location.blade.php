@@ -25,7 +25,7 @@
             <h2
                 class="mt-2 text-[20px] font-bold text-slate-900"
             >
-                Home Location Kendaraan
+                Lokasi Rumah Kendaraan
             </h2>
 
             <p
@@ -61,7 +61,7 @@
 
                 <i class="fa-solid fa-plus"></i>
 
-                Tambah Home Location
+                Tambah Lokasi Rumah
 
             </button>
 
@@ -79,7 +79,7 @@
 
                 <i class="fa-solid fa-pen"></i>
 
-                Edit
+                Ubah
 
             </button>
 
@@ -128,7 +128,7 @@
             <div
                 class="text-slate-500"
             >
-                Status Home Location
+                Status Lokasi Rumah
             </div>
 
             <div
@@ -227,7 +227,7 @@
             <div
                 class="text-slate-500"
             >
-                Latitude
+                Lintang
             </div>
 
             <div
@@ -255,7 +255,7 @@
             <div
                 class="text-slate-500"
             >
-                Longitude
+                Bujur
             </div>
 
             <div
@@ -309,14 +309,14 @@
             <h3
                 class="mt-6 text-[22px] font-bold text-slate-900"
             >
-                Home Location Belum Ditentukan
+                Lokasi Rumah Belum Ditentukan
             </h3>
 
             <p
                 class="mx-auto mt-3 max-w-xl text-[14px] leading-7 text-slate-500"
             >
-                Kendaraan ini belum memiliki Home Location.
-                Tambahkan Home Location terlebih dahulu untuk
+                Kendaraan ini belum memiliki Lokasi Rumah.
+                Tambahkan Lokasi Rumah terlebih dahulu untuk
                 menentukan titik acuan kendaraan.
             </p>
 
@@ -334,7 +334,7 @@
                     class="fa-solid fa-location-dot"
                 ></i>
 
-                Tambah Home Location
+                Tambah Lokasi Rumah
 
             </button>
 
@@ -425,7 +425,7 @@
                     <label
                         class="mb-2 block text-[12px] font-semibold text-slate-700"
                     >
-                        Latitude
+                        Lintang
                     </label>
 
                     <input
@@ -453,7 +453,7 @@
                     <label
                         class="mb-2 block text-[12px] font-semibold text-slate-700"
                     >
-                        Longitude
+                        Bujur
                     </label>
 
                     <input
@@ -531,10 +531,10 @@
                         <p
                             class="mt-2 text-[12px] leading-6 text-blue-700"
                         >
-                            Marker Home Location pada peta dapat digeser
+                            Penanda Lokasi Rumah pada peta dapat digeser
                             menggunakan <strong>Drag & Drop</strong>.
-                            Ketika marker dipindahkan, Latitude,
-                            Longitude dan Alamat akan diperbarui secara
+                            Ketika penanda dipindahkan, Lintang,
+                            Bujur dan Alamat akan diperbarui secara
                             otomatis.
                         </p>
 
@@ -578,7 +578,7 @@
 
                     <i class="fa-solid fa-floppy-disk mr-2"></i>
 
-                    Simpan Home Location
+                    Simpan Lokasi Rumah
 
                 </button>
 
@@ -633,7 +633,7 @@
                     <h3
                         class="text-[18px] font-bold text-slate-900"
                     >
-                        Hapus Home Location
+                        Hapus Lokasi Rumah
                     </h3>
 
                     <p
@@ -661,7 +661,7 @@
             >
 
                 Apakah Anda yakin ingin menghapus
-                <strong>Home Location</strong>
+                <strong>Lokasi Rumah</strong>
                 kendaraan ini?
 
             </p>
@@ -682,7 +682,7 @@
                         class="text-[13px] leading-6 text-red-700"
                     >
 
-                        Setelah Home Location dihapus,
+                        Setelah Lokasi Rumah dihapus,
                         sistem tidak lagi memiliki titik
                         acuan Home untuk kendaraan ini
                         sampai pengguna membuat Home

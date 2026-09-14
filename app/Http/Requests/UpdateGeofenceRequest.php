@@ -44,6 +44,12 @@ class UpdateGeofenceRequest extends FormRequest
             |--------------------------------------------------------------------------
             */
 
+            'radius_source' => [
+                'nullable',
+                'string',
+                'in:keep_current,home_location,current_location,manual',
+            ],
+
             'latitude' => [
                 'nullable',
                 'numeric',
@@ -111,9 +117,11 @@ class UpdateGeofenceRequest extends FormRequest
 
             'status.boolean' => 'Status geofence tidak valid.',
 
-            'latitude.numeric' => 'Latitude tidak valid.',
+            'radius_source.in' => 'Sumber titik pusat tidak dikenali.',
 
-            'longitude.numeric' => 'Longitude tidak valid.',
+            'latitude.numeric' => 'Lintang tidak valid.',
+
+            'longitude.numeric' => 'Bujur tidak valid.',
 
             'radius.min' => 'Radius minimal 50 meter.',
 

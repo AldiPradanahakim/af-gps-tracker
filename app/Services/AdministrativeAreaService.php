@@ -298,7 +298,7 @@ class AdministrativeAreaService
 
         if (!$feature) {
             throw new ModelNotFoundException(
-                'Polygon Kota Bandung tidak ditemukan.'
+                'Poligon Kota Bandung tidak ditemukan.'
             );
         }
 

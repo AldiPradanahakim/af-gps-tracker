@@ -194,7 +194,7 @@ window.VehicleMap = {
         });
 
         const key = layer === 'satellite'
-            ? 'Satellite'
+            ? 'Satelit'
             : 'Default';
 
         this.baseLayers[key].addTo(this.map);
@@ -243,7 +243,7 @@ window.VehicleMap = {
 
             "Default": osm,
 
-            "Satellite": satellite,
+            "Satelit": satellite,
 
         };
 

@@ -89,7 +89,7 @@ class ProfileService
                 throw ValidationException::withMessages([
 
                     'current_password' => [
-                        'Password lama tidak sesuai.'
+                        'Kata sandi lama tidak sesuai.'
                     ],
 
                 ]);

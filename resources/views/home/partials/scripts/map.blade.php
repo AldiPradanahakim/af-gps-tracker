@@ -1222,7 +1222,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     <div class="font-bold">
 
-                        Home Location
+                        Lokasi Rumah
 
                     </div>
 
@@ -1244,12 +1244,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             <div class="text-xs text-slate-500">
 
-                Latitude :
+                Lintang :
                 ${Number(home.lat).toFixed(6)}
 
                 <br>
 
-                Longitude :
+                Bujur :
                 ${Number(home.lng).toFixed(6)}
 
             </div>

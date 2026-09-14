@@ -53,9 +53,9 @@ class UpdateStopSettingRequest extends FormRequest
     {
         return [
 
-            'enabled.required' => 'Status Stop Detection wajib dikirim.',
+            'enabled.required' => 'Status Deteksi Berhenti wajib dikirim.',
 
-            'enabled.boolean' => 'Status Stop Detection tidak valid.',
+            'enabled.boolean' => 'Status Deteksi Berhenti tidak valid.',
 
             'stop_minutes.required' => 'Durasi kendaraan berhenti wajib diisi.',
 

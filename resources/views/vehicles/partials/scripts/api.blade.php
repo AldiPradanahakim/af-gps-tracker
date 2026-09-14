@@ -42,6 +42,7 @@ window.VehicleApi = {
     silentEndpoints: [
         '/latest',
         '/administrative',
+        '/geofence/device/',
     ],
 
     /**
@@ -56,6 +57,8 @@ window.VehicleApi = {
         ['/activity', 'Memuat aktivitas kendaraan'],
         ['/playback', 'Menyiapkan playback'],
         ['/route', 'Menyesuaikan rute ke jalan'],
+        ['/geofence-history', 'Memuat riwayat geofence'],
+        ['/geofence-setting', 'Menyimpan pengaturan geofence'],
         ['/geofences', 'Menyimpan geofence'],
     ],
 
@@ -306,7 +309,7 @@ window.VehicleApi = {
 
     /*
     |--------------------------------------------------------------------------
-    | Save Home Location
+    | Save Lokasi Rumah
     |--------------------------------------------------------------------------
     */
 
@@ -330,7 +333,7 @@ window.VehicleApi = {
 
     /*
     |--------------------------------------------------------------------------
-    | Delete Home Location
+    | Delete Lokasi Rumah
     |--------------------------------------------------------------------------
     */
 
@@ -395,6 +398,60 @@ window.VehicleApi = {
         return this.request(
 
             `/geofence/device/${this.deviceId}`
+
+        );
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Riwayat Masuk/Keluar Geofence
+    |--------------------------------------------------------------------------
+    */
+
+    geofenceHistory(params = {}) {
+
+        const query = new URLSearchParams();
+
+        Object.entries(params).forEach(([key, value]) => {
+
+            if (value !== null && value !== undefined && value !== '') {
+
+                query.append(key, value);
+
+            }
+
+        });
+
+        const suffix = query.toString() ? `?${query.toString()}` : '';
+
+        return this.request(
+
+            `/vehicles/${this.deviceId}/geofence-history${suffix}`
+
+        );
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Pengaturan Pengingat Geofence
+    |--------------------------------------------------------------------------
+    */
+
+    updateGeofenceSetting(payload) {
+
+        return this.request(
+
+            `/vehicles/${this.deviceId}/geofence-setting`,
+
+            {
+
+                method: 'PATCH',
+
+                body: payload,
+
+            }
 
         );
 

@@ -668,7 +668,7 @@ document.addEventListener('gpstracker:map-ready', () => {
                             ? 'bg-green-100 text-green-700'
                             : 'bg-red-100 text-red-600'}">
 
-                        ${online ? 'Online' : 'Offline'}
+                        ${online ? 'Terhubung' : 'Terputus'}
 
                     </span>
 
@@ -732,7 +732,7 @@ document.addEventListener('gpstracker:map-ready', () => {
 
                         <p class="text-xs uppercase tracking-wide text-slate-400">
 
-                            Update
+                            Diperbarui
 
                         </p>
 

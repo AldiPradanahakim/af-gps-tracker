@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
-        <meta name="description" content="AF GPS TRACKER membantu Anda masuk atau mengaktivasi perangkat GPS untuk memantau lokasi kendaraan secara real-time, riwayat perjalanan, dan notifikasi keamanan.">
+        <meta name="description" content="AF GPS TRACKER membantu Anda masuk atau mengaktivasi perangkat GPS untuk memantau lokasi kendaraan secara langsung, riwayat perjalanan, dan notifikasi keamanan.">
 
         <title>{{ config('app.name', 'AF GPS TRACKER') }}</title>
 

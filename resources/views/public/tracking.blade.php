@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function () {
         + '<div style="font-weight:700;font-size:13px;margin-bottom:2px;">' + escapeHtml(vehicleName) + '</div>'
         + '<div style="font-size:12px;color:#64748b;margin-bottom:6px;">' + escapeHtml(plateNumber) + '</div>'
         + (address ? '<div style="font-size:12px;color:#334155;margin-bottom:8px;">' + escapeHtml(address) + '</div>' : '')
-        + (updatedAt ? '<div style="font-size:11px;color:#94a3b8;margin-bottom:10px;">Update: ' + escapeHtml(updatedAt) + '</div>' : '')
+        + (updatedAt ? '<div style="font-size:11px;color:#94a3b8;margin-bottom:10px;">Diperbarui: ' + escapeHtml(updatedAt) + '</div>' : '')
         + '<div style="display:flex;gap:6px;">'
         + '<a href="https://maps.google.com/?q=' + latitude + ',' + longitude + '" target="_blank" rel="noopener" style="flex:1;text-align:center;padding:6px 8px;border:1px solid #e2e8f0;border-radius:8px;font-size:11px;font-weight:600;color:#334155;text-decoration:none;">Google Maps</a>'
         + '<a href="' + detailUrl + '" style="flex:1;text-align:center;padding:6px 8px;background:#2563EB;border-radius:8px;font-size:11px;font-weight:600;color:#fff;text-decoration:none;">Detail Lengkap</a>'

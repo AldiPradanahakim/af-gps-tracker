@@ -11,7 +11,7 @@
                 </div>
                 <h2 class="text-[28px] font-semibold tracking-[-0.03em] text-slate-950">Aktivasi Perangkat</h2>
                 <p class="mt-3 text-sm leading-6 text-slate-500">
-                    Masukkan Device ID dan Password Device yang terdapat pada perangkat GPS Anda.
+                    Masukkan ID Perangkat dan Kata Sandi Perangkat yang terdapat pada perangkat GPS Anda.
                 </p>
             </div>
 
@@ -68,7 +68,7 @@
                         Aktivasi
                     </button>
                     <a href="{{ route('login') }}" class="inline-flex h-[52px] w-full items-center justify-center rounded-xl border border-[#2563EB] text-sm font-semibold text-[#2563EB] transition duration-200 hover:bg-[#EFF6FF]">
-                        Kembali ke Login
+                        Kembali ke Halaman Masuk
                     </a>
                 </div>
             </form>

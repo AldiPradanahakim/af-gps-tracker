@@ -216,16 +216,16 @@ class StoreGeofenceRequest extends FormRequest
             'Satuan radius tidak valid.',
 
             'latitude.required_if' =>
-            'Latitude wajib diisi.',
+            'Lintang wajib diisi.',
 
             'longitude.required_if' =>
-            'Longitude wajib diisi.',
+            'Bujur wajib diisi.',
 
             'latitude.numeric' =>
-            'Latitude tidak valid.',
+            'Lintang tidak valid.',
 
             'longitude.numeric' =>
-            'Longitude tidak valid.',
+            'Bujur tidak valid.',
 
             /*
             |--------------------------------------------------------------------------

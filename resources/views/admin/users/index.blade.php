@@ -18,7 +18,7 @@
         <button type="submit" class="rounded-xl bg-slate-800 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700">Cari</button>
         
         @if(request('search'))
-            <a href="{{ route('admin.users.index') }}" class="text-sm font-medium text-red-500 hover:text-red-700">Reset</a>
+            <a href="{{ route('admin.users.index') }}" class="text-sm font-medium text-red-500 hover:text-red-700">Atur Ulang</a>
         @endif
     </form>
 </div>

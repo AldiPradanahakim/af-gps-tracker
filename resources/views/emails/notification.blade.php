@@ -9,7 +9,10 @@
 | **Kendaraan** | {{ $vehicleName ?? '-' }} |
 | **Plat Nomor** | {{ $plateNumber ?? '-' }} |
 @if($geofenceName)
-| **Geofence** | {{ $geofenceName }} |
+| **Geofence** | {{ $geofenceName }}{{ $geofenceTypeLabel ? ' (' . $geofenceTypeLabel . ')' : '' }} |
+@endif
+@if($minutesOutside)
+| **Sudah di Luar Area** | {{ $minutesOutside }} menit |
 @endif
 @if($durationMinutes !== null)
 | **Durasi Berhenti** | {{ $durationMinutes }} menit |

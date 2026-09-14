@@ -25,7 +25,7 @@ class DashboardController extends Controller
 
         // Chart Data (Device Status)
         $chartData = [
-            'labels' => ['Online', 'Offline', 'Tersedia'],
+            'labels' => ['Terhubung', 'Terputus', 'Tersedia'],
             'data' => [$onlineDevicesCount, $offlineDevicesCount, $availableDevices],
             'colors' => ['#10B981', '#EF4444', '#94A3B8'], // Green, Red, Slate
         ];

@@ -178,8 +178,8 @@ class GeofenceService
     {
         return match ($type) {
             'radius' => 'Radius',
-            'administrative' => 'Administrative',
-            'custom' => 'Polygon',
+            'administrative' => 'Administratif',
+            'custom' => 'Poligon',
             default => $type,
         };
     }
@@ -213,14 +213,46 @@ class GeofenceService
 
         $source = $data['radius_source'];
 
-        $latitude = null;
-        $longitude = null;
+        $center = $this->resolveRadiusCenter(
+            $device,
+            $source,
+            $data
+        );
+
+        return [
+
+            'center' => $center,
+
+            'radius' => $radius,
+
+            'unit' => $data['radius_unit'] ?? 'meter',
+
+            'source' => $source,
+
+        ];
+    }
+
+    /**
+     * Resolve titik pusat radius dari sumber yang dipilih.
+     *
+     * Dipakai bersama oleh create dan update supaya titik pusat SELALU
+     * diambil dari sumber data terbaru di server, bukan dari snapshot
+     * koordinat yang dikirim frontend (snapshot itu bisa basi, misalnya
+     * ketika Home Location baru saja diubah di halaman yang sama).
+     *
+     * @return array{lat: float, lng: float}
+     */
+    protected function resolveRadiusCenter(
+        $device,
+        string $source,
+        array $data
+    ): array {
 
         switch ($source) {
 
             case 'home_location':
 
-                $home = $device->home_location;
+                $home = $device?->home_location;
 
                 if (
                     empty($home) ||
@@ -229,18 +261,18 @@ class GeofenceService
                 ) {
 
                     throw ValidationException::withMessages([
-                        'radius_source' => 'Home location belum tersedia.',
+                        'radius_source' => 'Lokasi Rumah belum tersedia. Atur Lokasi Rumah kendaraan ini terlebih dahulu.',
                     ]);
                 }
 
-                $latitude = (float) $home['lat'];
-                $longitude = (float) $home['lng'];
-
-                break;
+                return [
+                    'lat' => (float) $home['lat'],
+                    'lng' => (float) $home['lng'],
+                ];
 
             case 'current_location':
 
-                $history = $device->travelHistories()
+                $history = $device?->travelHistories()
                     ->latest('received_at')
                     ->first();
 
@@ -264,16 +296,18 @@ class GeofenceService
                     ]);
                 }
 
-                $latitude = (float) $location['lat'];
-                $longitude = (float) $location['lng'];
-
-                break;
+                return [
+                    'lat' => (float) $location['lat'],
+                    'lng' => (float) $location['lng'],
+                ];
 
             case 'manual':
 
                 if (
                     ! isset($data['latitude']) ||
-                    ! isset($data['longitude'])
+                    ! isset($data['longitude']) ||
+                    $data['latitude'] === '' ||
+                    $data['longitude'] === ''
                 ) {
 
                     throw ValidationException::withMessages([
@@ -281,10 +315,10 @@ class GeofenceService
                     ]);
                 }
 
-                $latitude = (float) $data['latitude'];
-                $longitude = (float) $data['longitude'];
-
-                break;
+                return [
+                    'lat' => (float) $data['latitude'],
+                    'lng' => (float) $data['longitude'],
+                ];
 
             default:
 
@@ -292,25 +326,8 @@ class GeofenceService
                     'radius_source' => 'Sumber titik pusat tidak dikenali.',
                 ]);
         }
-
-        return [
-
-            'center' => [
-
-                'lat' => $latitude,
-
-                'lng' => $longitude,
-
-            ],
-
-            'radius' => $radius,
-
-            'unit' => $data['radius_unit'] ?? 'meter',
-
-            'source' => $source,
-
-        ];
     }
+
     /**
      * Bangun konfigurasi geofence administratif.
      */
@@ -388,7 +405,7 @@ class GeofenceService
         if (empty($data['geojson'])) {
 
             throw ValidationException::withMessages([
-                'geojson' => 'Polygon belum dibuat.',
+                'geojson' => 'Poligon belum dibuat.',
             ]);
         }
 
@@ -448,7 +465,7 @@ class GeofenceService
 
             throw ValidationException::withMessages([
 
-                'geojson' => 'Polygon tidak valid.',
+                'geojson' => 'Poligon tidak valid.',
 
             ]);
         }
@@ -489,7 +506,8 @@ class GeofenceService
 
                 'radius' => $this->mergeRadiusConfig(
                     $geofence->config ?? [],
-                    $data
+                    $data,
+                    $geofence->device
                 ),
 
                 'administrative' => $this->mergeGeometryConfig(
@@ -505,38 +523,121 @@ class GeofenceService
                 default => $geofence->config ?? [],
             };
 
-            return $this->repository->update($geofence, [
+            $status = filter_var(
+                $data['status'],
+                FILTER_VALIDATE_BOOLEAN
+            );
+
+            $attributes = [
 
                 'name' => $data['name'],
 
                 'description' => $data['description'] ?? null,
 
-                'status' => filter_var(
-                    $data['status'],
-                    FILTER_VALIDATE_BOOLEAN
-                ),
+                'status' => $status,
 
                 'config' => $config,
 
-            ]);
+            ];
+
+            /*
+            |--------------------------------------------------------------------------
+            | Kalau area berubah bentuk (titik pusat / radius / polygon), atau
+            | geofence baru diaktifkan kembali, status masuk/keluar yang lama
+            | sudah tidak sahih. Dikembalikan ke NULL supaya payload GPS
+            | berikutnya menetapkan baseline tanpa mengirim notifikasi palsu -
+            | mis. "masuk area" padahal kendaraan tidak bergerak sama sekali,
+            | hanya radiusnya yang diperbesar.
+            |--------------------------------------------------------------------------
+            */
+
+            $areaChanged = ($geofence->config ?? []) != $config;
+
+            $reactivated = $status && ! $geofence->status;
+
+            if ($areaChanged || $reactivated) {
+
+                $attributes['is_inside'] = null;
+
+                $attributes['state_changed_at'] = null;
+
+                /*
+                | last_exit_notified_at SENGAJA tidak ikut dikosongkan.
+                |
+                | Kalau dikosongkan, mengedit geofence saat kendaraan sedang
+                | berada di luar area akan menghentikan pengingat "masih di
+                | luar" secara diam-diam - dan pengingat itu baru hidup lagi
+                | setelah kendaraan masuk lalu keluar sekali penuh, yang bisa
+                | saja tidak pernah terjadi.
+                |
+                | Penanda ini tetap dibersihkan secara otomatis begitu
+                | baseline berikutnya menyimpulkan kendaraan ada di dalam
+                | area (lihat GeofenceCheckerService::evaluate()).
+                */
+            }
+
+            return $this->repository->update($geofence, $attributes);
         });
     }
 
     /**
      * Merge perubahan titik/radius ke config radius yang sudah ada.
      * Field yang tidak dikirim tetap memakai nilai lama.
+     *
+     * radius_source menentukan dari mana titik pusat baru diambil:
+     *
+     *   keep_current      -> pertahankan titik yang tersimpan
+     *   home_location     -> ambil ulang dari Home Location device
+     *   current_location  -> ambil ulang dari lokasi GPS terakhir
+     *   manual            -> pakai latitude/longitude yang dikirim
+     *
+     * Titik pusat selalu di-resolve ulang di server supaya tidak ikut
+     * basi kalau Home Location baru saja diubah tanpa reload halaman.
      */
     protected function mergeRadiusConfig(
         array $config,
-        array $data
+        array $data,
+        $device = null
     ): array {
 
+        $source = $data['radius_source'] ?? null;
+
         if (
+            $source !== null &&
+            $source !== '' &&
+            $source !== 'keep_current'
+        ) {
+
+            $config['center'] = $this->resolveRadiusCenter(
+                $device,
+                $source,
+                $data
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | Sumber ikut disimpan supaya halaman Ubah Radius bisa memberi
+            | tahu pengguna titik pusatnya diambil dari mana. Titik itu
+            | sendiri TIDAK pernah berpindah sendiri - memindahkan Lokasi
+            | Rumah tidak menggeser geofence yang sudah dibuat.
+            |--------------------------------------------------------------------------
+            */
+
+            $config['source'] = $source;
+
+        } elseif (
             isset($data['latitude']) &&
             isset($data['longitude']) &&
             $data['latitude'] !== '' &&
             $data['longitude'] !== ''
         ) {
+
+            /*
+            |--------------------------------------------------------------------------
+            | Kompatibilitas: request lama yang hanya mengirim latitude /
+            | longitude tanpa radius_source tetap bisa menggeser titik.
+            |--------------------------------------------------------------------------
+            */
 
             $config['center'] = [
 
@@ -661,7 +762,7 @@ class GeofenceService
         if (intdiv($numbers, 2) > 5000) {
 
             throw ValidationException::withMessages([
-                'geojson' => 'Polygon terlalu kompleks (maksimal 5000 titik koordinat).',
+                'geojson' => 'Poligon terlalu kompleks (maksimal 5000 titik koordinat).',
             ]);
         }
     }
@@ -690,6 +791,28 @@ class GeofenceService
             $geofence,
             $status
         ) {
+
+            /*
+            |--------------------------------------------------------------------------
+            | Geofence yang dinonaktifkan berhenti dievaluasi, jadi statusnya
+            | membeku di nilai terakhir. Saat diaktifkan lagi, status itu bisa
+            | sudah tidak sesuai kenyataan - reset ke NULL supaya dievaluasi
+            | ulang dari nol tanpa notifikasi palsu.
+            |--------------------------------------------------------------------------
+            */
+
+            if ($status && ! $geofence->status) {
+
+                /*
+                | last_exit_notified_at dipertahankan dengan alasan yang sama
+                | seperti pada update() - lihat catatan di sana.
+                */
+
+                $geofence->forceFill([
+                    'is_inside' => null,
+                    'state_changed_at' => null,
+                ])->save();
+            }
 
             return $this->repository->updateStatus(
                 $geofence,

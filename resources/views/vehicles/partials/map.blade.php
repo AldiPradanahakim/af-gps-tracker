@@ -69,7 +69,7 @@
                 <p
                     class="text-xs font-semibold text-slate-800"
                 >
-                    Update terakhir
+                    Terakhir diperbarui
                 </p>
 
                 <p
@@ -200,7 +200,7 @@
                 class="vehicle-layer-option flex w-full items-center gap-3 border-t px-4 py-3 text-left text-sm hover:bg-slate-50"
                 data-layer="satellite"
             >
-                🛰️ Satellite
+                🛰️ Satelit
             </button>
 
         </div>

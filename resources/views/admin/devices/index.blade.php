@@ -34,7 +34,7 @@
         <table class="w-full text-left text-sm text-slate-600">
             <thead class="bg-slate-50 border-b border-slate-200">
                 <tr>
-                    <th class="px-4 py-3 font-semibold">Device ID</th>
+                    <th class="px-4 py-3 font-semibold">ID Perangkat</th>
                     <th class="px-4 py-3 font-semibold">Kata Sandi</th>
                 </tr>
             </thead>
@@ -54,7 +54,7 @@
 <div class="mt-8 mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
     <form action="{{ route('admin.devices.index') }}" method="GET" class="flex flex-1 items-center gap-3">
         <div class="relative w-full max-w-sm">
-            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari Device ID..." class="w-full rounded-xl border border-slate-300 pl-10 pr-4 py-2 text-sm text-slate-700 focus:border-blue-500 focus:ring-blue-500">
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari ID Perangkat..." class="w-full rounded-xl border border-slate-300 pl-10 pr-4 py-2 text-sm text-slate-700 focus:border-blue-500 focus:ring-blue-500">
             <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-2.5 h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
@@ -66,10 +66,10 @@
             <option value="used" {{ request('status') === 'used' ? 'selected' : '' }}>Digunakan</option>
         </select>
         
-        <button type="submit" class="rounded-xl bg-slate-800 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700">Filter</button>
+        <button type="submit" class="rounded-xl bg-slate-800 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700">Saring</button>
         
         @if(request()->hasAny(['search', 'status']))
-            <a href="{{ route('admin.devices.index') }}" class="text-sm font-medium text-red-500 hover:text-red-700">Reset</a>
+            <a href="{{ route('admin.devices.index') }}" class="text-sm font-medium text-red-500 hover:text-red-700">Atur Ulang</a>
         @endif
     </form>
 </div>
@@ -79,8 +79,8 @@
         <table class="w-full text-left text-sm text-slate-500">
             <thead class="bg-slate-50 text-xs uppercase text-slate-700 border-b border-slate-200">
                 <tr>
-                    <th scope="col" class="px-6 py-4 font-semibold">Device ID</th>
-                    <th scope="col" class="px-6 py-4 font-semibold">Password</th>
+                    <th scope="col" class="px-6 py-4 font-semibold">ID Perangkat</th>
+                    <th scope="col" class="px-6 py-4 font-semibold">Kata Sandi</th>
                     <th scope="col" class="px-6 py-4 font-semibold">Status Kepemilikan</th>
                     <th scope="col" class="px-6 py-4 font-semibold">Status Jaringan</th>
                     <th scope="col" class="px-6 py-4 font-semibold text-right">Aksi</th>
@@ -102,7 +102,7 @@
                                 menampilkan hash yang terlihat seperti kata
                                 sandi asli tapi tidak bisa dipakai login.
                             --}}
-                            <span class="text-slate-400 italic text-sm" title="Kata sandi hanya ditampilkan sekali saat perangkat dibuat (lewat Export PDF) dan tidak bisa dilihat lagi setelahnya.">
+                            <span class="text-slate-400 italic text-sm" title="Kata sandi hanya ditampilkan sekali saat perangkat dibuat (lewat Unduh PDF) dan tidak bisa dilihat lagi setelahnya.">
                                 Hanya tampil sekali saat dibuat
                             </span>
                         </td>
@@ -122,9 +122,9 @@
                         <td class="px-6 py-4">
                             @if($device->user_id)
                                 @if($device->is_online)
-                                    <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">Online</span>
+                                    <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">Terhubung</span>
                                 @else
-                                    <span class="rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-600">Offline</span>
+                                    <span class="rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-600">Terputus</span>
                                 @endif
                             @else
                                 <span class="text-slate-400">-</span>
@@ -180,7 +180,7 @@
                 <div>
                     <label for="jumlah_perangkat" class="block text-sm font-medium text-slate-700">Jumlah Perangkat yang Ingin Dibuat</label>
                     <input type="number" name="jumlah_perangkat" id="jumlah_perangkat" required min="1" max="100" value="1" class="mt-1 block w-full rounded-xl border border-slate-300 px-4 py-2 text-slate-900 focus:border-blue-500 focus:ring-blue-500" placeholder="Misal: 5">
-                    <p class="mt-1 text-xs text-slate-500">Device ID dan password akan di-generate secara otomatis secara berurutan dan acak.</p>
+                    <p class="mt-1 text-xs text-slate-500">ID Perangkat dan password akan di-generate secara otomatis secara berurutan dan acak.</p>
                 </div>
             </div>
             

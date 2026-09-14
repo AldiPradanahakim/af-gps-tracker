@@ -89,12 +89,21 @@ class WhatsappService
 
         $statusLabel = data_get($notification->data, 'title', 'Notifikasi Kendaraan');
 
-        $headerEmoji = match ($notification->type) {
-            'geofence_exit' => '🚨',
-            'geofence_enter' => '🟢',
-            'stop' => '🛑',
-            default => '🔔',
-        };
+        $isRepeatReminder = (bool) data_get($notification->data, 'repeat');
+
+        /*
+        | Pengingat "masih di luar area" memakai emoji berbeda supaya
+        | tidak tertukar dengan pesan keluar area yang pertama.
+        */
+
+        $headerEmoji = $isRepeatReminder
+            ? '⏰'
+            : match ($notification->type) {
+                'geofence_exit' => '🚨',
+                'geofence_enter' => '🟢',
+                'stop' => '🛑',
+                default => '🔔',
+            };
 
         /*
         |--------------------------------------------------------------------------
@@ -135,7 +144,17 @@ class WhatsappService
 
         if ($geofenceName) {
 
-            $lines[] = "🛡️ Geofence: {$geofenceName}";
+            $geofenceTypeLabel = data_get($notification->data, 'geofence_type_label');
+
+            $lines[] = "🛡️ Geofence: {$geofenceName}"
+                . ($geofenceTypeLabel ? " ({$geofenceTypeLabel})" : '');
+        }
+
+        $minutesOutside = data_get($notification->data, 'minutes_outside');
+
+        if ($minutesOutside) {
+
+            $lines[] = "⏱️ Sudah di Luar Area: {$minutesOutside} menit";
         }
 
         $durationMinutes = data_get($notification->data, 'duration_minutes');

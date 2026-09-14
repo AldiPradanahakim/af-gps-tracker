@@ -23,7 +23,7 @@ class DeviceLookupService
         if ($deviceId === '') {
 
             throw new InvalidArgumentException(
-                'Device ID is required.'
+                'ID Perangkat wajib diisi.'
             );
         }
 

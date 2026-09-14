@@ -172,6 +172,49 @@ class VehicleService
     }
 
     /**
+     * Update Pengaturan Geofence (pengingat "masih di luar area").
+     */
+    public function updateGeofenceSetting(
+        Device $device,
+        array $data
+    ): object {
+
+        return $this->vehicleRepository->updateGeofenceSetting(
+
+            $device,
+
+            $data
+
+        );
+    }
+
+    /**
+     * Riwayat Masuk/Keluar Geofence.
+     */
+    public function geofenceHistory(
+        Device $device,
+        ?string $startDate = null,
+        ?string $endDate = null,
+        ?string $event = null
+    ): array {
+
+        return [
+
+            'items' => $this->vehicleRepository->geofenceHistory(
+                $device,
+                $startDate,
+                $endDate,
+                $event
+            ),
+
+            'summary' => $this->vehicleRepository->geofenceHistorySummary(
+                $device
+            ),
+
+        ];
+    }
+
+    /**
      * Latest Location.
      */
     public function latest(

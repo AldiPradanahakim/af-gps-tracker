@@ -8,7 +8,7 @@
         <div>
             <h2 class="text-[32px] font-semibold tracking-[-0.03em]">Cek <span class="text-[#2563EB]">Email Anda</span></h2>
             <p class="mt-2 text-[14px] text-slate-500">
-                Kami telah mengirimkan tautan reset kata sandi
+                Kami telah mengirimkan tautan atur ulang kata sandi
                 @if($email)
                     ke <span class="font-medium text-slate-700">{{ $email }}</span>.
                 @else

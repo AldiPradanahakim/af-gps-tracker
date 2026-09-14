@@ -5,7 +5,7 @@
             <div>
                 <p class="text-xs uppercase tracking-[0.3em] text-slate-400">Riwayat Perjalanan</p>
                 <h2 class="mt-2 text-xl font-semibold text-slate-900">Lihat Histori Perjalanan</h2>
-                <p class="mt-1 text-sm text-slate-500">Filter perjalanan berdasarkan rentang tanggal atau langsung mainkan kembali perjalanan hari ini.</p>
+                <p class="mt-1 text-sm text-slate-500">Saring perjalanan berdasarkan rentang tanggal atau langsung mainkan kembali perjalanan hari ini.</p>
             </div>
 
             <button
@@ -14,7 +14,7 @@
                 class="inline-flex h-10 items-center gap-2 rounded-[16px] border border-slate-300 bg-white px-4 text-[13px] font-semibold text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
             >
                 <i class="fa-solid fa-rotate-right text-[12px]"></i>
-                Refresh
+                Muat Ulang
             </button>
         </div>
         <div class="grid gap-4 p-6 lg:grid-cols-6">
@@ -35,13 +35,13 @@
             <div class="flex items-end">
                 <button id="historyPlaybackButton" type="button" class="w-full rounded-[20px] bg-emerald-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700">
                     <i class="fa-solid fa-play mr-1"></i>
-                    Playback
+                    Pemutaran
                 </button>
             </div>
             <div class="flex items-end">
                 <a id="historyExportPdfLink" href="{{ route('vehicles.export.travel', $device) }}" target="_blank" rel="noopener" class="w-full rounded-[20px] border border-slate-300 bg-white px-5 py-3 text-center text-sm font-semibold text-slate-700 transition hover:bg-slate-100">
                     <i class="fa-solid fa-file-pdf mr-1"></i>
-                    Export PDF
+                    Unduh PDF
                 </a>
             </div>
         </div>
@@ -63,7 +63,7 @@
             </div>
 
             <button id="historyPlaybackRangeReset" type="button" class="rounded-[14px] border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-100">
-                Reset Rentang
+                Atur Ulang Rentang
             </button>
 
         </div>
@@ -74,7 +74,7 @@
 
         <div class="flex flex-wrap items-center gap-3 border-t border-slate-100 px-6 py-4">
 
-            <span class="text-[13px] font-medium text-slate-700">Kecepatan Playback</span>
+            <span class="text-[13px] font-medium text-slate-700">Kecepatan Pemutaran</span>
 
             <div class="ml-auto grid grid-cols-4 gap-2">
                 <button type="button" data-speed="2000" class="playback-speed rounded-[14px] border border-slate-300 px-4 py-2 text-sm font-semibold transition hover:bg-slate-100">0.5x</button>

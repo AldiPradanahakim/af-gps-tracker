@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                     
                     const title = device.vehicle_name || device.device_id;
-                    const address = device.home_location.display_name || 'Home Location';
+                    const address = device.home_location.display_name || 'Lokasi Rumah';
 
                     /*
                     | Halaman Home hanya bisa menambah Home Location.
@@ -164,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 'opacity-50', 'cursor-not-allowed'
             );
 
-            button.title = 'Tambah Home Location';
+            button.title = 'Tambah Lokasi Rumah';
 
         } else {
 
@@ -174,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 'opacity-50', 'cursor-not-allowed'
             );
 
-            button.title = 'Semua kendaraan sudah memiliki Home Location';
+            button.title = 'Semua kendaraan sudah memiliki Lokasi Rumah';
 
         }
 
@@ -393,7 +393,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             GPSTracker.showToast(
                 'info',
-                'Home Location',
+                'Lokasi Rumah',
                 'Geser marker pada peta jika ingin menyesuaikan posisi.'
             );
 
@@ -455,7 +455,7 @@ document.addEventListener('DOMContentLoaded', () => {
             GPSTracker.showToast(
                 'warning',
                 'Peringatan',
-                'Tidak ada kendaraan yang tersedia untuk ditambahkan Home Location.'
+                'Tidak ada kendaraan yang tersedia untuk ditambahkan Lokasi Rumah.'
             );
 
             return;
@@ -509,7 +509,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!response.ok) {
 
-                let msg = data.message ?? 'Home Location gagal disimpan.';
+                let msg = data.message ?? 'Lokasi Rumah gagal disimpan.';
 
                 if (data.errors) {
                     msg = Object.values(data.errors).flat().join('\n');
@@ -578,7 +578,7 @@ document.addEventListener('DOMContentLoaded', () => {
             GPSTracker.showToast(
                 'success',
                 'Berhasil',
-                data.message ?? 'Home Location berhasil disimpan.'
+                data.message ?? 'Lokasi Rumah berhasil disimpan.'
             );
 
             closeModal();

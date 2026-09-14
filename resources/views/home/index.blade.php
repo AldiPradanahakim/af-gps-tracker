@@ -2,7 +2,7 @@
 
 @section('title', 'Halaman Utama - ' . config('app.name'))
 
-@section('meta_description', 'Dashboard pemantauan lokasi kendaraan secara real-time, status perangkat GPS, dan geofence dalam satu peta interaktif.')
+@section('meta_description', 'Dasbor pemantauan lokasi kendaraan secara langsung, status perangkat GPS, dan geofence dalam satu peta interaktif.')
 
 @section('content')
 

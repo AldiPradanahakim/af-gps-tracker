@@ -139,7 +139,7 @@
                                 data-online="1"
                                 class="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
 
-                                Online
+                                Terhubung
 
                             </span>
 
@@ -151,7 +151,7 @@
                                 data-online="0"
                                 class="rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-600">
 
-                                Offline
+                                Terputus
 
                             </span>
 
@@ -219,7 +219,7 @@
                         <div>
 
                             <p class="text-xs uppercase tracking-wide text-slate-400">
-                                Update
+                                Diperbarui
                             </p>
 
                             <p

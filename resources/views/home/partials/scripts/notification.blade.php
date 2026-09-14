@@ -313,11 +313,11 @@ document.addEventListener('gpstracker:map-ready', () => {
 
             case 'device_online':
 
-                return 'Perangkat Online';
+                return 'Perangkat Terhubung';
 
             case 'device_offline':
 
-                return 'Perangkat Offline';
+                return 'Perangkat Terputus';
 
             case 'geofence_enter':
 
@@ -342,7 +342,7 @@ document.addEventListener('gpstracker:map-ready', () => {
 
             case 'home_location':
 
-                return 'Home Location';
+                return 'Lokasi Rumah';
 
             default:
 

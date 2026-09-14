@@ -132,7 +132,7 @@ class LocationController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Home Location berhasil disimpan.',
+            'message' => 'Lokasi Rumah berhasil disimpan.',
             'devices' => $devices->map(fn(Device $device) => [
                 'id'            => $device->id,
                 'device_id'     => $device->device_id,
@@ -169,7 +169,7 @@ class LocationController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Home Location berhasil dihapus.',
+            'message' => 'Lokasi Rumah berhasil dihapus.',
             'device'  => [
                 'id'            => $device->id,
                 'device_id'     => $device->device_id,

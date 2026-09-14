@@ -13,6 +13,7 @@ use App\Services\Device\TravelHistoryService;
 use App\Services\Device\StopDetectionService;
 use App\Services\Device\OverspeedDetectionService;
 use App\Services\Geofence\GeofenceCheckerService;
+use App\Services\Geofence\GeofenceEventService;
 use App\Services\Geofence\ReverseGeocodingService;
 use App\Services\Notification\NotificationService;
 use Illuminate\Support\Carbon;
@@ -41,6 +42,8 @@ class GPSProcessingService
         protected ReverseGeocodingService $reverseGeocodingService,
 
         protected GeofenceCheckerService $geofenceCheckerService,
+
+        protected GeofenceEventService $geofenceEventService,
 
         protected NotificationService $notificationService,
 
@@ -468,69 +471,27 @@ class GPSProcessingService
 
         /*
         |--------------------------------------------------------------------------
-        | 16. Geofence Exit Notification
+        | 16. Geofence: Riwayat + Notifikasi (per geofence)
         |--------------------------------------------------------------------------
+        |
+        | Setiap geofence aktif punya statusnya sendiri, jadi keluar dari
+        | dua area menghasilkan dua notifikasi terpisah - lengkap dengan
+        | nama dan tipe areanya. Di sini juga pengingat "masih di luar
+        | area" dikirim kalau fiturnya dinyalakan.
+        |
         */
 
-        if (
-            $geofenceResult['exited']
-            ?? false
-        ) {
+        $this->geofenceEventService
+            ->handle(
 
-            $this->notificationService
-                ->createGeofenceExitNotification(
+                device: $device,
 
-                    device: $device,
+                geofenceResult: $geofenceResult,
 
-                    geofence:
-                        $geofenceResult['geofence'],
+                payload: $payload,
 
-                    payload: [
-
-                        'lat' =>
-                            $payload['lat'],
-
-                        'lng' =>
-                            $payload['lng'],
-
-                        'search_address' =>
-                            $searchAddress,
-                    ]
-                );
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | 17. Geofence Enter Notification
-        |--------------------------------------------------------------------------
-        */
-
-        if (
-            $geofenceResult['entered']
-            ?? false
-        ) {
-
-            $this->notificationService
-                ->createGeofenceEnterNotification(
-
-                    device: $device,
-
-                    geofence:
-                        $geofenceResult['geofence'],
-
-                    payload: [
-
-                        'lat' =>
-                            $payload['lat'],
-
-                        'lng' =>
-                            $payload['lng'],
-
-                        'search_address' =>
-                            $searchAddress,
-                    ]
-                );
-        }
+                searchAddress: $searchAddress
+            );
     }
 
     /**

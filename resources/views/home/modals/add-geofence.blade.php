@@ -276,7 +276,7 @@
                                 <div
                                     class="font-semibold text-slate-900">
 
-                                    Administrative
+                                    Administratif
 
                                 </div>
 
@@ -309,7 +309,7 @@
                                 <div
                                     class="font-semibold text-slate-900">
 
-                                    Custom Polygon
+                                    Poligon Kustom
 
                                 </div>
 
@@ -373,14 +373,14 @@
                                 <div
                                     class="font-medium text-slate-900">
 
-                                    Home Location
+                                    Lokasi Rumah
 
                                 </div>
 
                                 <div
                                     class="mt-1 text-sm text-slate-500">
 
-                                    Menggunakan koordinat Home Location kendaraan.
+                                    Menggunakan koordinat Lokasi Rumah kendaraan.
 
                                 </div>
 
@@ -506,7 +506,7 @@
                             <label
                                 class="mb-2 block text-sm font-semibold text-slate-700">
 
-                                Latitude
+                                Lintang
 
                             </label>
 
@@ -524,7 +524,7 @@
                             <label
                                 class="mb-2 block text-sm font-semibold text-slate-700">
 
-                                Longitude
+                                Bujur
 
                             </label>
 
@@ -567,7 +567,7 @@
                                 </div>
 
                                 <div class="mt-1 text-sm text-amber-700">
-                                    Radius akan menggunakan koordinat <b>Home Location</b> atau
+                                    Radius akan menggunakan koordinat <b>Lokasi Rumah</b> atau
                                     <b>Lokasi GPS Terakhir</b> sesuai pilihan Anda.
                                 </div>
 
@@ -765,15 +765,15 @@
                         <h3
                             class="text-base font-semibold text-slate-900">
 
-                            Custom Polygon
+                            Poligon Kustom
 
                         </h3>
 
                         <p
                             class="mt-1 text-sm text-slate-500">
 
-                            Klik pada peta untuk membuat titik polygon.
-                            Double click untuk menyelesaikan polygon.
+                            Klik pada peta untuk membuat titik poligon.
+                            Klik dua kali untuk menyelesaikan poligon.
 
                         </p>
 
@@ -798,7 +798,7 @@
 
                             <li>Minimal 3 titik.</li>
 
-                            <li>Double click untuk menyelesaikan polygon.</li>
+                            <li>Klik dua kali untuk menyelesaikan poligon.</li>
 
                         </ol>
 
@@ -845,7 +845,7 @@
                         id="customPolygonStatus"
                         class="rounded-xl border border-dashed border-slate-300 bg-white px-5 py-6 text-center text-sm text-slate-500">
 
-                        Belum ada polygon dibuat.
+                        Belum ada poligon dibuat.
 
                     </div>
 
@@ -1437,7 +1437,7 @@
                 `
                 <div class="font-semibold text-emerald-700">
 
-                    ✓ Polygon berhasil dibuat
+                    ✓ Poligon berhasil dibuat
 
                 </div>
 
@@ -1485,7 +1485,7 @@
                 'Belum ada titik dipilih.';
 
             customPolygonStatus.textContent =
-                'Belum ada polygon dibuat.';
+                'Belum ada poligon dibuat.';
 
             administrativeSearch.value = '';
 
@@ -1734,7 +1734,7 @@
                 hideModal();
 
                 window.Toast?.info(
-                    'Klik pada peta untuk membuat titik. Double click untuk selesai.'
+                    'Klik pada peta untuk membuat titik. Klik dua kali untuk selesai.'
                 );
 
             }
@@ -1774,7 +1774,7 @@
                 );
 
                 customPolygonStatus.textContent =
-                    'Belum ada polygon dibuat.';
+                    'Belum ada poligon dibuat.';
 
             }
 
@@ -1886,7 +1886,7 @@
                     radiusCoordinate.innerHTML =
 
                         'Setiap kendaraan akan menggunakan titik '
-                        + (radiusHome.checked ? 'Home Location' : 'GPS terakhir')
+                        + (radiusHome.checked ? 'Lokasi Rumah' : 'GPS terakhir')
                         + ' miliknya masing-masing.';
 
                     GPSTracker.removePreviewLayer?.();
@@ -2123,12 +2123,12 @@
             radiusCoordinate.innerHTML =
 
                 `
-                Latitude :
+                Lintang :
                 <b>${Number(latitude).toFixed(6)}</b>
 
                 <br>
 
-                Longitude :
+                Bujur :
                 <b>${Number(longitude).toFixed(6)}</b>
                 `;
 
@@ -2146,7 +2146,7 @@
 
                 <div class="font-semibold text-blue-700">
 
-                    Sedang menggambar polygon...
+                    Sedang menggambar poligon...
 
                 </div>
 
@@ -2154,7 +2154,7 @@
 
                     Klik pada peta untuk membuat titik.<br>
 
-                    Double click untuk menyelesaikan polygon.
+                    Klik dua kali untuk menyelesaikan poligon.
 
                 </div>
 
@@ -2623,7 +2623,7 @@
             if (!response.ok) {
 
                 throw new Error(
-                    'Failed loading administrative polygon.'
+                    'Gagal memuat wilayah administratif.'
                 );
 
             }
@@ -2634,7 +2634,7 @@
 
                 throw new Error(
                     result.message ??
-                    'Failed loading administrative polygon.'
+                    'Gagal memuat wilayah administratif.'
                 );
 
             }
@@ -2899,7 +2899,7 @@
 
                         'error',
 
-                        'Silakan tentukan titik Administrative.'
+                        'Silakan pilih wilayah administratif terlebih dahulu.'
 
                     );
 
@@ -2917,7 +2917,7 @@
 
                         'error',
 
-                        'Silakan gambar polygon terlebih dahulu.'
+                        'Silakan gambar poligon terlebih dahulu.'
 
                     );
 

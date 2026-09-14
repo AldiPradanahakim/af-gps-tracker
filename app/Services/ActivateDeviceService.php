@@ -14,13 +14,13 @@ class ActivateDeviceService
 
         if (! $device) {
             throw ValidationException::withMessages([
-                'device_id' => 'Device ID tidak ditemukan.',
+                'device_id' => 'ID Perangkat tidak ditemukan.',
             ]);
         }
 
         if (! Hash::check($data['device_password'], $device->device_password)) {
             throw ValidationException::withMessages([
-                'device_password' => 'Password device salah.',
+                'device_password' => 'Kata sandi perangkat salah.',
             ]);
         }
 

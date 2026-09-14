@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Vehicle;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ExportHistoryRequest;
+use App\Http\Requests\UpdateGeofenceSettingRequest;
 use App\Http\Requests\UpdateNotificationSettingRequest;
 use App\Http\Requests\UpdateSpeedSettingRequest;
 use App\Http\Requests\UpdateStopSettingRequest;
@@ -171,7 +172,7 @@ class VehicleController extends Controller
 
             'success' => true,
 
-            'message' => 'Pengaturan Stop Detection berhasil diperbarui.',
+            'message' => 'Pengaturan Deteksi Berhenti berhasil diperbarui.',
 
             'data' => $setting,
 
@@ -236,6 +237,92 @@ class VehicleController extends Controller
             'message' => 'Pengaturan notifikasi Geofence berhasil diperbarui.',
 
             'data' => $setting,
+
+        ]);
+    }
+
+    /**
+     * --------------------------------------------------------------------------
+     * Update Pengaturan Geofence (pengingat "masih di luar area")
+     * --------------------------------------------------------------------------
+     */
+    public function updateGeofenceSetting(
+        UpdateGeofenceSettingRequest $request,
+        Device $device
+    ): JsonResponse {
+
+        $this->authorizeDevice($device);
+
+        $setting = $this->vehicleService->updateGeofenceSetting(
+
+            $device,
+
+            $request->validated()
+
+        );
+
+        return response()->json([
+
+            'success' => true,
+
+            'message' => 'Pengaturan pengingat Geofence berhasil diperbarui.',
+
+            'data' => $setting,
+
+        ]);
+    }
+
+    /**
+     * --------------------------------------------------------------------------
+     * Riwayat Masuk/Keluar Geofence
+     * --------------------------------------------------------------------------
+     */
+    public function geofenceHistory(
+        Request $request,
+        Device $device
+    ): JsonResponse {
+
+        $this->authorizeDevice($device);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Tanggal divalidasi di sini supaya masukan yang tidak masuk akal
+        | (mis. ?start_date=xyz atau ?start_date[]=1) dibalas 422 yang jelas,
+        | bukan error 500 dari pengurai tanggal di lapisan bawah.
+        |--------------------------------------------------------------------------
+        */
+
+        $filter = $request->validate([
+
+            'start_date' => ['nullable', 'date'],
+
+            'end_date' => ['nullable', 'date'],
+
+            'event' => ['nullable', 'in:enter,exit'],
+
+        ]);
+
+        $result = $this->vehicleService->geofenceHistory(
+
+            $device,
+
+            $filter['start_date'] ?? null,
+
+            $filter['end_date'] ?? null,
+
+            $filter['event'] ?? null
+
+        );
+
+        return response()->json([
+
+            'success' => true,
+
+            'message' => 'Riwayat geofence berhasil diambil.',
+
+            'data' => $result['items'],
+
+            'summary' => $result['summary'],
 
         ]);
     }

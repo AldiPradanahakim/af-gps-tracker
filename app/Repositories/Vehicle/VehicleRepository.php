@@ -3,7 +3,9 @@
 namespace App\Repositories\Vehicle;
 
 use App\Helpers\AppTime;
+use App\Services\Geofence\GeofenceEventService;
 use App\Models\Device;
+use App\Models\GeofenceHistory;
 use App\Models\StopHistory;
 use App\Models\TravelHistory;
 use Illuminate\Support\Collection;
@@ -44,6 +46,21 @@ class VehicleRepository
         'search_address',
         'start_time',
         'end_time',
+        'duration_seconds',
+    ];
+
+    /**
+     * Kolom geofence_histories yang dipakai oleh response.
+     */
+    private const GEOFENCE_HISTORY_COLUMNS = [
+        'id',
+        'geofence_id',
+        'geofence_name',
+        'geofence_type',
+        'event',
+        'location',
+        'search_address',
+        'occurred_at',
         'duration_seconds',
     ];
 
@@ -504,6 +521,8 @@ class VehicleRepository
 
             'notificationSetting' => $this->buildNotificationSetting($device),
 
+            'geofenceSetting' => $this->buildGeofenceSetting($device),
+
         ];
     }
 
@@ -522,6 +541,33 @@ class VehicleRepository
             'email_notification' => (bool) ($setting['email'] ?? false),
 
             'whatsapp_notification' => (bool) ($setting['whatsapp'] ?? false),
+
+        ];
+    }
+
+    /**
+     * --------------------------------------------------------------------------
+     * Bangun objek pengaturan Geofence dari device.geofence_setting (JSON).
+     * --------------------------------------------------------------------------
+     * Saat ini berisi pengingat "masih di luar area". Kanal email/WhatsApp
+     * tidak diduplikasi di sini - pengingat mengikuti notification_setting
+     * yang sudah dipakai notifikasi geofence biasa.
+     * --------------------------------------------------------------------------
+     */
+    protected function buildGeofenceSetting(Device $device): object
+    {
+        $setting = app(GeofenceEventService::class)
+            ->repeatSetting($device);
+
+        return (object) [
+
+            'repeat_enabled' => $setting['enabled'],
+
+            'repeat_minutes' => $setting['minutes'],
+
+            'min_minutes' => GeofenceEventService::MIN_REPEAT_MINUTES,
+
+            'max_minutes' => GeofenceEventService::MAX_REPEAT_MINUTES,
 
         ];
     }
@@ -671,13 +717,19 @@ class VehicleRepository
         array $data
     ): object {
 
-        $device->update([
+        $previous = $device->speed_setting ?? [];
+
+        $enabled = (bool) $data['enabled'];
+
+        $limit = (int) $data['limit_kmh'];
+
+        $attributes = [
 
             'speed_setting' => [
 
-                'enabled' => (bool) $data['enabled'],
+                'enabled' => $enabled,
 
-                'limit_kmh' => (int) $data['limit_kmh'],
+                'limit_kmh' => $limit,
 
                 'email_notification' => (bool) $data['email_notification'],
 
@@ -685,7 +737,34 @@ class VehicleRepository
 
             ],
 
-        ]);
+        ];
+
+        /*
+        |--------------------------------------------------------------------------
+        | overspeed_active menandai "sudah dinotifikasi untuk episode melaju
+        | berlebih yang sedang berjalan". Saat fitur dimatikan, penanda itu
+        | membeku di nilai terakhir - kalau dinyalakan lagi dalam keadaan
+        | membeku "true", kendaraan yang melaju berlebih tidak akan
+        | menghasilkan notifikasi sampai kecepatannya sempat turun dulu.
+        |
+        | Mengubah batas kecepatan juga membuat penanda lama tidak sahih:
+        | episode yang dinilai dengan batas lama bukan episode yang sama.
+        |
+        | Karena itu penanda direset saat fitur dinyalakan kembali atau
+        | batasnya berubah, supaya penilaian dimulai dari nol.
+        |--------------------------------------------------------------------------
+        */
+
+        $reactivated = $enabled && ! ($previous['enabled'] ?? false);
+
+        $limitChanged = $limit !== (int) ($previous['limit_kmh'] ?? $limit);
+
+        if ($reactivated || $limitChanged) {
+
+            $attributes['overspeed_active'] = false;
+        }
+
+        $device->update($attributes);
 
         return $this->buildSpeedSetting(
             $device->fresh()
@@ -721,6 +800,33 @@ class VehicleRepository
 
     /**
      * --------------------------------------------------------------------------
+     * Update Pengaturan Geofence (pengingat "masih di luar area")
+     * --------------------------------------------------------------------------
+     */
+    public function updateGeofenceSetting(
+        Device $device,
+        array $data
+    ): object {
+
+        $device->update([
+
+            'geofence_setting' => [
+
+                'repeat_enabled' => (bool) $data['repeat_enabled'],
+
+                'repeat_minutes' => (int) $data['repeat_minutes'],
+
+            ],
+
+        ]);
+
+        return $this->buildGeofenceSetting(
+            $device->fresh()
+        );
+    }
+
+    /**
+     * --------------------------------------------------------------------------
      * Hapus Kendaraan (Device)
      * --------------------------------------------------------------------------
      * Vehicle, DeviceLog, TravelHistory, StopHistory, Geofence, dan
@@ -742,6 +848,7 @@ class VehicleRepository
         $device->notifications()->delete();
         $device->travelHistories()->delete();
         $device->stopHistories()->delete();
+        $device->geofenceHistories()->delete();
         $device->deviceLogs()->delete();
 
         // 4. Putuskan hubungan device dari akun pengguna dan kembalikan ke status semula
@@ -751,6 +858,7 @@ class VehicleRepository
             'stop_setting' => null,
             'speed_setting' => null,
             'notification_setting' => null,
+            'geofence_setting' => null,
             'is_active' => false,
             'last_heartbeat' => null,
             'last_battery' => null,
@@ -1412,6 +1520,163 @@ class VehicleRepository
             ->values()
 
             ->toArray();
+    }
+
+    /**
+     * --------------------------------------------------------------------------
+     * Riwayat Masuk/Keluar Geofence
+     * --------------------------------------------------------------------------
+     * Dibatasi MAX_HISTORY_ROWS dan kolom terbatas, mengikuti pola
+     * history()/stop() supaya tidak pernah menarik data tanpa batas.
+     *
+     * $event: null (semua), 'enter', atau 'exit'.
+     * --------------------------------------------------------------------------
+     */
+    public function geofenceHistory(
+        Device $device,
+        ?string $startDate = null,
+        ?string $endDate = null,
+        ?string $event = null
+    ): array {
+
+        $query = $device->geofenceHistories()
+
+            ->select(self::GEOFENCE_HISTORY_COLUMNS)
+
+            ->orderByDesc('occurred_at');
+
+        if (in_array($event, ['enter', 'exit'], true)) {
+
+            $query->where('event', $event);
+        }
+
+        if ($startDate) {
+
+            $query->where(
+                'occurred_at',
+                '>=',
+                AppTime::parseInput($startDate)
+            );
+        }
+
+        if ($endDate) {
+
+            $query->where(
+                'occurred_at',
+                '<=',
+                AppTime::parseInput($endDate, endOfDay: true)
+            );
+        }
+
+        return $query
+
+            ->limit(self::MAX_HISTORY_ROWS)
+
+            ->get()
+
+            ->map(fn (GeofenceHistory $history) => $this->transformGeofenceHistory($history))
+
+            ->values()
+
+            ->toArray();
+    }
+
+    /**
+     * --------------------------------------------------------------------------
+     * Ringkasan Riwayat Geofence (total, hari ini, per kejadian)
+     * --------------------------------------------------------------------------
+     */
+    public function geofenceHistorySummary(Device $device): array
+    {
+        $base = $device->geofenceHistories();
+
+        $today = $device->geofenceHistories()
+            ->whereBetween(
+                'occurred_at',
+                [AppTime::startOfDay(), AppTime::endOfDay()]
+            );
+
+        $lastOccurredAt = (clone $base)->max('occurred_at');
+
+        return [
+
+            'total' => (clone $base)->count(),
+
+            'total_exit' => (clone $base)->where('event', 'exit')->count(),
+
+            'total_enter' => (clone $base)->where('event', 'enter')->count(),
+
+            'today' => (clone $today)->count(),
+
+            /*
+            | max() mengembalikan string tanggal mentah dari database (atau
+            | null kalau belum ada riwayat), jadi cukup dinormalkan ke
+            | string - dibungkus optional() tanpa callback justru membuat
+            | nilainya ter-serialize sebagai objek kosong.
+            */
+
+            'last_occurred_at' => $lastOccurredAt !== null
+                ? (string) $lastOccurredAt
+                : null,
+
+        ];
+    }
+
+    /**
+     * --------------------------------------------------------------------------
+     * Transform Riwayat Geofence
+     * --------------------------------------------------------------------------
+     */
+    private function transformGeofenceHistory(
+        GeofenceHistory $history
+    ): array {
+
+        $location = $history->location ?? [];
+
+        return [
+
+            'id' => $history->id,
+
+            'geofence_id' => $history->geofence_id,
+
+            'geofence_name' => $history->geofence_name,
+
+            'geofence_type' => $history->geofence_type,
+
+            'geofence_type_label' => $history->type_label,
+
+            'event' => $history->event,
+
+            'event_label' => $history->event === 'exit'
+                ? 'Keluar'
+                : 'Masuk',
+
+            'lat' => isset($location['lat'])
+                ? (float) $location['lat']
+                : null,
+
+            'lng' => isset($location['lng'])
+                ? (float) $location['lng']
+                : null,
+
+            'address' => $history->search_address,
+
+            'occurred_at' => optional(
+                $history->occurred_at
+            )?->toDateTimeString(),
+
+            'duration_seconds' => $history->duration_seconds,
+
+            /*
+            | Durasi pada baris "Keluar" = lama kendaraan berada DI DALAM
+            | area sebelum keluar; pada baris "Masuk" = lama di LUAR area.
+            */
+
+            'duration_label' => $history->duration_seconds !== null
+                ? $this->formatDuration((int) $history->duration_seconds)
+                : '-',
+
+        ];
     }
 
     /**

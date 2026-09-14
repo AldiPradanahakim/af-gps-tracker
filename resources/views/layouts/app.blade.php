@@ -9,7 +9,7 @@
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <meta name="description" content="@yield('meta_description', 'AF GPS TRACKER: pantau lokasi kendaraan Anda secara real-time, lihat riwayat perjalanan, dan kelola geofence dalam satu platform.')">
+    <meta name="description" content="@yield('meta_description', 'AF GPS TRACKER: pantau lokasi kendaraan Anda secara langsung, lihat riwayat perjalanan, dan kelola geofence dalam satu platform.')">
 
     <title>
         @yield('title', config('app.name'))

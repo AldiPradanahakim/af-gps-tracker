@@ -25,7 +25,7 @@
             <h2
                 class="mt-2 text-[20px] font-bold text-slate-900"
             >
-                Pengaturan Stop Detection
+                Pengaturan Deteksi Berhenti
             </h2>
 
             <p
@@ -33,7 +33,7 @@
             >
                 Atur kapan kendaraan dianggap berhenti berdasarkan durasi
                 kendaraan berada pada kecepatan 0 km/jam serta tentukan media
-                notifikasi yang akan digunakan ketika Stop Detection terjadi.
+                notifikasi yang akan digunakan ketika Deteksi Berhenti terjadi.
             </p>
 
         </div>
@@ -52,7 +52,7 @@
                 class="fa-solid fa-pen-to-square"
             ></i>
 
-            Edit Pengaturan
+            Ubah Pengaturan
 
         </button>
 
@@ -83,7 +83,7 @@
                 <div
                     class="text-slate-500"
                 >
-                    Status Stop Detection
+                    Status Deteksi Berhenti
                 </div>
 
                 <div
@@ -303,7 +303,7 @@
                             <p
                                 class="text-[11px] font-medium text-slate-500"
                             >
-                                Stop Detection
+                                Deteksi Berhenti
                             </p>
 
                             <h4
@@ -345,7 +345,7 @@
                             <p
                                 class="text-[11px] font-medium text-slate-500"
                             >
-                                Stop Timer
+                                Waktu Berhenti
                             </p>
 
                             <h4
@@ -504,7 +504,7 @@
                             <h3
                                 class="text-[14px] font-semibold text-slate-900"
                             >
-                                Stop Detection
+                                Deteksi Berhenti
                             </h3>
 
                             <p
@@ -617,7 +617,7 @@
                             <p
                                 class="mt-1 text-[12px] text-slate-500"
                             >
-                                Menampilkan notifikasi pada dashboard aplikasi.
+                                Menampilkan notifikasi pada dasbor aplikasi.
                                 Selalu aktif dan tidak dapat dinonaktifkan.
                             </p>
 
@@ -651,7 +651,7 @@
                             <p
                                 class="mt-1 text-[12px] text-slate-500"
                             >
-                                Mengirim email ketika Stop Detection terjadi.
+                                Mengirim email ketika Deteksi Berhenti terjadi.
                             </p>
 
                         </div>
@@ -699,7 +699,7 @@
                             <p
                                 class="mt-1 text-[12px] text-slate-500"
                             >
-                                Mengirim WhatsApp ketika Stop Detection terjadi.
+                                Mengirim WhatsApp ketika Deteksi Berhenti terjadi.
                             </p>
 
                         </div>
@@ -812,13 +812,13 @@
             <h2
                 class="mt-2 text-[20px] font-bold text-slate-900"
             >
-                Ringkasan Stop Detection
+                Ringkasan Deteksi Berhenti
             </h2>
 
             <p
                 class="mt-2 text-[13px] leading-6 text-slate-500"
             >
-                Statistik kendaraan berhenti berdasarkan hasil Stop Detection.
+                Statistik kendaraan berhenti berdasarkan hasil Deteksi Berhenti.
             </p>
 
         </div>
@@ -846,7 +846,7 @@
                     <p
                         class="text-[12px] font-medium text-slate-500"
                     >
-                        Total Stop
+                        Total Berhenti
                     </p>
 
                     <div
@@ -960,7 +960,7 @@
                     <p
                         class="text-[12px] font-medium text-slate-500"
                     >
-                        Total Waktu Stop
+                        Total Waktu Berhenti
                     </p>
 
                     <div
@@ -1034,7 +1034,7 @@
                     class="mt-2 text-[13px] leading-6 text-slate-500"
                 >
                     Seluruh riwayat kendaraan berhenti yang berhasil dideteksi
-                    berdasarkan pengaturan Stop Detection.
+                    berdasarkan pengaturan Deteksi Berhenti.
                 </p>
 
             </div>
@@ -1057,7 +1057,7 @@
 
                     <i class="fa-solid fa-file-pdf"></i>
 
-                    Export PDF
+                    Unduh PDF
 
                 </a>
 
@@ -1073,7 +1073,7 @@
 
                     <i class="fa-solid fa-rotate"></i>
 
-                    Refresh
+                    Muat Ulang
 
                 </button>
 
@@ -1177,14 +1177,14 @@
             <h3
                 class="mt-6 text-[18px] font-semibold text-slate-900"
             >
-                Belum Ada Riwayat Stop
+                Belum Ada Riwayat Berhenti
             </h3>
 
             <p
                 class="mt-2 text-[13px] leading-6 text-slate-500"
             >
                 Riwayat akan muncul secara otomatis ketika kendaraan
-                berhenti sesuai durasi Stop Detection yang telah ditentukan.
+                berhenti sesuai durasi Deteksi Berhenti yang telah ditentukan.
             </p>
 
         </div>

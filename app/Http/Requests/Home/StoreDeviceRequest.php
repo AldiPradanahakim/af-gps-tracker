@@ -51,9 +51,9 @@ class StoreDeviceRequest extends FormRequest
     {
         return [
 
-            'device_id.required' => 'Device ID wajib diisi.',
+            'device_id.required' => 'ID Perangkat wajib diisi.',
 
-            'device_password.required' => 'Password perangkat wajib diisi.',
+            'device_password.required' => 'Kata sandi perangkat wajib diisi.',
 
         ];
     }

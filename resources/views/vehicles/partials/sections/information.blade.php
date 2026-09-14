@@ -43,7 +43,7 @@
 
                         <i class="fa-solid fa-pen text-[10px]"></i>
 
-                        Edit
+                        Ubah
 
                     </button>
 
@@ -296,7 +296,7 @@
                         <span
                             class="text-[13px] text-slate-500"
                         >
-                            Icon Marker
+                            Ikon Penanda
                         </span>
 
                         <span
@@ -336,7 +336,7 @@
                         <span
                             class="text-[13px] text-slate-500"
                         >
-                            Warna Marker
+                            Warna Penanda
                         </span>
 
                         <span
@@ -419,7 +419,7 @@
                                     id="vehicleStatus"
                                     class="text-[13px] font-semibold {{ $isOnline ? 'text-emerald-600' : 'text-slate-500' }}"
                                 >
-                                    {{ $isOnline ? 'Online' : 'Offline' }}
+                                    {{ $isOnline ? 'Terhubung' : 'Terputus' }}
                                 </span>
 
                             </div>
@@ -435,7 +435,7 @@
                                 id="vehicleSpeedLabel"
                                 class="text-[10px] text-slate-500"
                             >
-                                {{ $isOnline ? 'Kecepatan' : 'Terakhir Update' }}
+                                {{ $isOnline ? 'Kecepatan' : 'Terakhir Diperbarui' }}
                             </p>
 
                             <p
@@ -580,7 +580,7 @@
                         <span
                             class="text-[13px] text-slate-500"
                         >
-                            Latitude
+                            Lintang
                         </span>
 
                         <span
@@ -600,7 +600,7 @@
                         <span
                             class="text-[13px] text-slate-500"
                         >
-                            Longitude
+                            Bujur
                         </span>
 
                         <span
@@ -893,7 +893,7 @@
 
                     <i class="fa-solid fa-rotate-right text-[11px]"></i>
 
-                    Refresh
+                    Muat Ulang
 
                 </button>
 
@@ -912,15 +912,15 @@
                 </div>
 
                 <div class="col-span-2">
-                    Latitude
+                    Lintang
                 </div>
 
                 <div class="col-span-2">
-                    Longitude
+                    Bujur
                 </div>
 
                 <div class="col-span-2">
-                    Speed
+                    Kecepatan
                 </div>
 
                 <div class="col-span-4">

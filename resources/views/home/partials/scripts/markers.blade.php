@@ -937,7 +937,7 @@ document.addEventListener(
 
                 alert(
 
-                    'Marker kendaraan belum tersedia.'
+                    'Penanda kendaraan belum tersedia.'
 
                 );
 
@@ -1471,7 +1471,7 @@ document.addEventListener(
 
             this.markerLog(
 
-                'Marker initialized.'
+                'Penanda siap.'
 
             );
 

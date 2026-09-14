@@ -176,7 +176,7 @@
             </td>
             <td class="header-right">
                 Dicetak: {{ \App\Helpers\AppTime::format($generatedAt, 'd/m/Y H:i') }}<br>
-                Total Stop: {{ count($stops) }}
+                Total Berhenti: {{ count($stops) }}
             </td>
         </tr>
     </table>

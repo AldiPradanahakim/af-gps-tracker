@@ -52,7 +52,7 @@
                 class="fa-solid fa-pen-to-square"
             ></i>
 
-            Edit Pengaturan
+            Ubah Pengaturan
 
         </button>
 

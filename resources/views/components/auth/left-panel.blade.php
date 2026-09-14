@@ -20,7 +20,7 @@
                     @endisset
                 </h1>
                 <p class="max-w-lg text-[15px] leading-6 text-slate-600">
-                    {{ $subtext ?? 'AF GPS TRACKER menghadirkan pelacakan lokasi real-time, riwayat perjalanan, dan notifikasi keamanan dalam satu platform yang mudah digunakan.' }}
+                    {{ $subtext ?? 'AF GPS TRACKER menghadirkan pelacakan lokasi secara langsung, riwayat perjalanan, dan notifikasi keamanan dalam satu platform yang mudah digunakan.' }}
                 </p>
             </div>
         </div>
@@ -34,7 +34,7 @@
                 --}}
                 <img
                     src="{{ asset('images/illustrator-auth.svg') }}"
-                    alt="Ilustrasi {{ config('app.name') }}: pelacakan kendaraan real-time"
+                    alt="Ilustrasi {{ config('app.name') }}: pelacakan kendaraan secara langsung"
                     width="1200"
                     height="800"
                     loading="eager"

@@ -68,10 +68,10 @@ class AppServiceProvider extends ServiceProvider
             ], false));
 
             return (new MailMessage)
-                ->subject('Reset Kata Sandi - ' . config('app.name'))
+                ->subject('Atur Ulang Kata Sandi - ' . config('app.name'))
                 ->greeting('Halo, ' . ($notifiable->name ?? 'Pengguna') . '!')
                 ->line('Kami menerima permintaan untuk mereset kata sandi akun ' . config('app.name') . ' Anda.')
-                ->action('Reset Kata Sandi', $url)
+                ->action('Atur Ulang Kata Sandi', $url)
                 ->line('Tautan ini akan kedaluwarsa dalam ' . config('auth.passwords.users.expire') . ' menit.')
                 ->line('Jika Anda tidak meminta reset kata sandi, abaikan email ini, tidak ada perubahan yang dilakukan pada akun Anda.')
                 ->salutation('Salam, ' . config('app.name'));

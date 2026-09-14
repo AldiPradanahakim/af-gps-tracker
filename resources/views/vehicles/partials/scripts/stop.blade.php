@@ -178,7 +178,7 @@ window.VehicleStop = {
             GPSTracker.showToast(
                 'success',
                 'Berhasil',
-                json.message ?? 'Pengaturan Stop Detection berhasil disimpan.'
+                json.message ?? 'Pengaturan Deteksi Berhenti berhasil disimpan.'
             );
 
             /*
@@ -371,7 +371,7 @@ window.VehicleStop = {
 
             notice.classList.toggle('hidden', this.stops.length <= visible.length);
 
-            notice.textContent = `Menampilkan ${visible.length} dari ${this.stops.length} riwayat berhenti terbaru. Gunakan Export PDF untuk data lengkap.`;
+            notice.textContent = `Menampilkan ${visible.length} dari ${this.stops.length} riwayat berhenti terbaru. Gunakan Unduh PDF untuk data lengkap.`;
 
         }
 

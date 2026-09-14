@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Dashboard Admin - ' . config('app.name'))
+@section('title', 'Dasbor Admin - ' . config('app.name'))
 @section('page_title', 'Statistik Sistem')
 @section('page_description', 'Ringkasan penggunaan perangkat dan akun.')
 
@@ -14,7 +14,7 @@
             <h2 class="text-sm font-bold text-slate-400 uppercase tracking-[0.2em] mb-2">Selamat Datang Kembali</h2>
             <h1 class="text-3xl font-black text-blue-600 tracking-tight mb-4">{{ auth()->user()->name }}!</h1>
             <p class="text-sm text-slate-600 leading-relaxed max-w-md">
-                Ini adalah dashboard admin {{ config('app.name') }} untuk mengelola perangkat pelacak GPS. Anda dapat memantau aktivitas perangkat, mendaftarkan perangkat baru, serta mengelola pengguna yang terdaftar di dalam sistem secara real-time.
+                Ini adalah dasbor admin {{ config('app.name') }} untuk mengelola perangkat pelacak GPS. Anda dapat memantau aktivitas perangkat, mendaftarkan perangkat baru, serta mengelola pengguna yang terdaftar di dalam sistem secara langsung.
             </p>
         </div>
         <div class="hidden md:block w-72 h-auto absolute right-0 top-0 bottom-0 pointer-events-none opacity-90">
@@ -122,7 +122,7 @@
                 <canvas id="deviceNetworkChart"></canvas>
                 <div class="absolute flex flex-col items-center" style="top: 60%">
                     <span class="text-3xl font-black text-slate-800">{{ $onlineDevicesCount }}</span>
-                    <span class="text-xs font-semibold text-slate-500 mt-1">Perangkat Online</span>
+                    <span class="text-xs font-semibold text-slate-500 mt-1">Perangkat Terhubung</span>
                 </div>
             </div>
         </div>
@@ -180,7 +180,7 @@
         new Chart(ctxNetwork, {
             type: 'doughnut',
             data: {
-                labels: ['Online', 'Offline'],
+                labels: ['Terhubung', 'Terputus'],
                 datasets: [{
                     data: [{{ $onlineDevicesCount }}, {{ $offlineDevicesCount }}],
                     backgroundColor: ['#10B981', '#F1F5F9'],

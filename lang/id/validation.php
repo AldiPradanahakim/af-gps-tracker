@@ -197,7 +197,7 @@ return [
         'password' => 'kata sandi',
         'password_confirmation' => 'konfirmasi kata sandi',
         'current_password' => 'kata sandi saat ini',
-        'device_id' => 'Device ID',
+        'device_id' => 'ID Perangkat',
         'device_password' => 'password perangkat',
         'vehicle_name' => 'nama kendaraan',
         'vehicle_type' => 'jenis kendaraan',

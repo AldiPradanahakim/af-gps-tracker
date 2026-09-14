@@ -13,14 +13,14 @@
                 <h2
                     class="text-2xl font-bold">
 
-                    Home Location
+                    Lokasi Rumah
 
                 </h2>
 
                 <p
                     class="mt-2 text-sm text-slate-500">
 
-                    Atur Home Location kendaraan.
+                    Atur Lokasi Rumah kendaraan.
 
                 </p>
 
@@ -56,8 +56,8 @@
                 @if($devicesWithoutHome->isEmpty())
 
                     <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
-                        <strong>Semua kendaraan</strong> sudah memiliki Home Location.
-                        Hapus Home Location pada salah satu kendaraan terlebih dahulu untuk menambahkan yang baru.
+                        <strong>Semua kendaraan</strong> sudah memiliki Lokasi Rumah.
+                        Hapus Lokasi Rumah pada salah satu kendaraan terlebih dahulu untuk menambahkan yang baru.
                     </div>
 
                 @else
@@ -171,7 +171,7 @@
                     <label
                         class="mb-2 block text-sm font-semibold">
 
-                        Latitude
+                        Lintang
 
                     </label>
 
@@ -187,7 +187,7 @@
                     <label
                         class="mb-2 block text-sm font-semibold">
 
-                        Longitude
+                        Bujur
 
                     </label>
 
@@ -219,7 +219,7 @@
                 class="mt-2 text-sm text-amber-700">
 
                 Cari alamat kemudian pilih lokasi.
-                Marker Home akan langsung muncul di peta.
+                Penanda Rumah akan langsung muncul di peta.
 
             </div>
 

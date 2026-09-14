@@ -132,7 +132,7 @@ class SmokeRenderTest extends TestCase
 
             // Mode baca: input terkunci sampai "Edit Profil" ditekan.
             ->assertSee(':disabled="!editingProfile"', escape: false)
-            ->assertSee('Edit Profil')
+            ->assertSee('Ubah Profil')
 
             // Ganti kata sandi terpisah & opsional.
             ->assertSee('Ubah Kata Sandi')
@@ -194,6 +194,6 @@ class SmokeRenderTest extends TestCase
             // kartu profil di badan dashboard, dan tidak ada menu di
             // sidebar.
             ->assertSee('Profil Admin')
-            ->assertSee('Edit Profil');
+            ->assertSee('Ubah Profil');
     }
 }

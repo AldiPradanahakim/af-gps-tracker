@@ -175,7 +175,7 @@
                     <div>
 
                         <label class="mb-2 block text-sm font-medium text-slate-700">
-                            Password Lama
+                            Kata Sandi Lama
                         </label>
 
                         <input
@@ -190,7 +190,7 @@
                     <div>
 
                         <label class="mb-2 block text-sm font-medium text-slate-700">
-                            Password Baru
+                            Kata Sandi Baru
                         </label>
 
                         <input
@@ -251,7 +251,7 @@
 
                 </svg>
 
-                Edit Profil
+                Ubah Profil
 
             </button>
 

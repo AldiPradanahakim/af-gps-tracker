@@ -122,7 +122,7 @@
 
             <label class="mb-2 block text-sm font-semibold text-slate-700">
 
-                Icon Marker
+                Ikon Penanda
 
             </label>
 
@@ -139,7 +139,7 @@
 
             <label class="mb-2 block text-sm font-semibold text-slate-700">
 
-                Warna Marker
+                Warna Penanda
 
             </label>
 

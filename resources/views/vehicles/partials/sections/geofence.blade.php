@@ -29,13 +29,13 @@
             <p
                 class="mt-2 max-w-3xl text-[13px] leading-6 text-slate-500"
             >
-                Setiap kendaraan hanya dapat memiliki satu Radius Geofence,
-                satu Administrative Geofence, dan satu Polygon Geofence.
+                Setiap kendaraan hanya dapat memiliki satu Geofence Radius,
+                satu Geofence Administratif, dan satu Geofence Poligon.
                 Seluruh pengaturan dilakukan langsung pada halaman ini.
             </p>
 
             {{-- ========================================================= --}}
-            {{-- Filter Tampilan Peta --}}
+            {{-- Saring Tampilan Peta --}}
             {{-- ========================================================= --}}
 
             <div
@@ -58,12 +58,12 @@
 
                 <label class="flex cursor-pointer items-center gap-2 text-[13px] text-slate-700">
                     <input id="toggleAdministrativeMap" type="checkbox" checked class="h-4 w-4 rounded border-slate-300 text-emerald-600">
-                    Administrative
+                    Administratif
                 </label>
 
                 <label class="flex cursor-pointer items-center gap-2 text-[13px] text-slate-700">
                     <input id="togglePolygonMap" type="checkbox" checked class="h-4 w-4 rounded border-slate-300 text-violet-600">
-                    Polygon
+                    Poligon
                 </label>
 
             </div>
@@ -96,7 +96,7 @@
                 <div>
                     <h4 class="text-[13px] font-semibold text-slate-900">Notifikasi Sistem</h4>
                     <p class="mt-1 text-[12px] text-slate-500">
-                        Menampilkan notifikasi pada dashboard aplikasi.
+                        Menampilkan notifikasi pada dasbor aplikasi.
                         Selalu aktif dan tidak dapat dinonaktifkan.
                     </p>
                 </div>
@@ -150,6 +150,69 @@
                 </label>
             </div>
 
+            {{-- ============================== --}}
+            {{-- Pengingat "Masih di Luar Area" --}}
+            {{-- ============================== --}}
+
+            <div class="rounded-2xl border border-slate-200 p-4">
+
+                <div class="flex items-start justify-between gap-4">
+
+                    <div>
+                        <h4 class="text-[13px] font-semibold text-slate-900">Pengingat Keluar Geofence</h4>
+                        <p class="mt-1 text-[12px] leading-5 text-slate-500">
+                            Terus mengirim pemberitahuan selama kendaraan masih
+                            berada di luar area, bukan hanya sekali saat keluar.
+                            Dikirim per area, mengikuti pengaturan Email/WhatsApp di atas.
+                        </p>
+                    </div>
+
+                    <label class="relative inline-flex shrink-0 cursor-pointer items-center">
+                        <input
+                            id="geofenceRepeatEnabled"
+                            type="checkbox"
+                            class="peer sr-only"
+                            @checked($geofenceSetting?->repeat_enabled)
+                        >
+                        <div class="h-7 w-12 rounded-full bg-slate-300 transition peer-checked:bg-blue-600 after:absolute after:left-1 after:top-1 after:h-5 after:w-5 after:rounded-full after:bg-white after:transition-all peer-checked:after:translate-x-5"></div>
+                    </label>
+
+                </div>
+
+                <div
+                    id="geofenceRepeatOptions"
+                    class="{{ $geofenceSetting?->repeat_enabled ? '' : 'hidden' }} mt-4 border-t border-slate-100 pt-4"
+                >
+
+                    <label class="mb-2 block text-[12px] font-semibold text-slate-700">
+                        Jeda Antar Pengingat (Menit)
+                    </label>
+
+                    <div class="flex flex-wrap items-center gap-3">
+
+                        <input
+                            id="geofenceRepeatMinutes"
+                            type="number"
+                            min="{{ $geofenceSetting?->min_minutes ?? 5 }}"
+                            max="{{ $geofenceSetting?->max_minutes ?? 180 }}"
+                            value="{{ $geofenceSetting?->repeat_minutes ?? 15 }}"
+                            class="h-11 w-32 rounded-xl border border-slate-300 px-4 text-[13px] outline-none transition focus:border-blue-500"
+                        >
+
+                        <button
+                            id="saveGeofenceRepeatSetting"
+                            type="button"
+                            class="h-11 rounded-xl bg-blue-600 px-5 text-[13px] font-semibold text-white transition hover:bg-blue-700"
+                        >
+                            Simpan
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
         </div>
 
     </section>
@@ -197,7 +260,7 @@
                         <h3
                             class="mt-2 text-[18px] font-bold text-slate-900"
                         >
-                            Radius Geofence
+                            Geofence Radius
                         </h3>
 
                     </div>
@@ -336,7 +399,7 @@
                                     class="fa-solid fa-pen"
                                 ></i>
 
-                                Edit
+                                Ubah
 
                             </button>
 
@@ -395,7 +458,7 @@
                         <p
                             class="mt-2 text-[12px] leading-6 text-slate-500"
                         >
-                            Kendaraan ini belum memiliki Radius Geofence.
+                            Kendaraan ini belum memiliki Geofence Radius.
                         </p>
 
                         <button
@@ -441,8 +504,6 @@
                 >
 
                     <input id="editRadiusId" type="hidden" value="{{ $radius->id ?? '' }}">
-                    <input id="editRadiusLatitude" type="hidden" value="{{ $radius->config['center']['lat'] ?? '' }}">
-                    <input id="editRadiusLongitude" type="hidden" value="{{ $radius->config['center']['lng'] ?? '' }}">
 
                     {{-- Nama --}}
 
@@ -483,10 +544,22 @@
                             class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none transition focus:border-blue-500"
                         >
                             <option value="keep_current">Pertahankan Titik Saat Ini</option>
-                            <option value="home_location">Home Location</option>
+                            <option value="home_location">Lokasi Rumah</option>
                             <option value="current_location">Lokasi GPS Terakhir</option>
                         </select>
-                    
+
+                        <p class="mt-2 text-[11px] leading-5 text-slate-500">
+                            Titik pusat saat ini diambil dari
+                            <b>{{ match($radius->config['source'] ?? null) {
+                                'home_location' => 'Lokasi Rumah',
+                                'current_location' => 'Lokasi GPS Terakhir',
+                                'manual' => 'titik manual',
+                                default => 'titik tersimpan',
+                            } }}</b>.
+                            Titik ini tidak berpindah sendiri. Pilih ulang sumbernya
+                            kalau ingin memakai koordinat terbaru.
+                        </p>
+
                     </div>
 
                     {{-- Radius --}}
@@ -592,7 +665,7 @@
         </section>
 
         {{-- ===================================================== --}}
-        {{-- Administrative --}}
+        {{-- Administratif --}}
         {{-- ===================================================== --}}
 
         <section
@@ -604,7 +677,7 @@
         >
 
             {{-- ========================================================= --}}
-            {{-- Administrative Card --}}
+            {{-- Administratif Card --}}
             {{-- ========================================================= --}}
 
             <div
@@ -626,7 +699,7 @@
                         <h3
                             class="mt-2 text-[18px] font-bold text-slate-900"
                         >
-                            Administrative Geofence
+                            Geofence Administratif
                         </h3>
 
                     </div>
@@ -779,7 +852,7 @@
 
                                 <i class="fa-solid fa-pen"></i>
 
-                                Edit
+                                Ubah
 
                             </button>
 
@@ -830,13 +903,13 @@
                         <h4
                             class="mt-5 text-[15px] font-semibold text-slate-900"
                         >
-                            Administrative belum tersedia
+                            Administratif belum tersedia
                         </h4>
 
                         <p
                             class="mt-2 text-[12px] leading-6 text-slate-500"
                         >
-                            Kendaraan ini belum memiliki Administrative Geofence.
+                            Kendaraan ini belum memiliki Geofence Administratif.
                         </p>
 
                         <button
@@ -851,7 +924,7 @@
 
                             <i class="fa-solid fa-plus"></i>
 
-                            Tambah Administrative
+                            Tambah Administratif
 
                         </button>
 
@@ -891,7 +964,7 @@
                         <label
                             class="mb-2 block text-[12px] font-medium text-slate-700"
                         >
-                            Nama Administrative
+                            Nama Administratif
                         </label>
 
                         <input
@@ -1049,7 +1122,7 @@
         </section>
 
         {{-- ===================================================== --}}
-        {{-- Polygon --}}
+        {{-- Poligon --}}
         {{-- ===================================================== --}}
 
         <section
@@ -1061,7 +1134,7 @@
         >
 
             {{-- ========================================================= --}}
-            {{-- Polygon Card --}}
+            {{-- Poligon Card --}}
             {{-- ========================================================= --}}
 
             <div
@@ -1083,7 +1156,7 @@
                         <h3
                             class="mt-2 text-[18px] font-bold text-slate-900"
                         >
-                            Polygon Geofence
+                            Geofence Poligon
                         </h3>
 
                     </div>
@@ -1264,7 +1337,7 @@
                                     class="fa-solid fa-pen"
                                 ></i>
 
-                                Edit
+                                Ubah
 
                             </button>
 
@@ -1317,13 +1390,13 @@
                         <h4
                             class="mt-5 text-[15px] font-semibold text-slate-900"
                         >
-                            Polygon belum tersedia
+                            Poligon belum tersedia
                         </h4>
 
                         <p
                             class="mt-2 text-[12px] leading-6 text-slate-500"
                         >
-                            Kendaraan ini belum memiliki Polygon Geofence.
+                            Kendaraan ini belum memiliki Geofence Poligon.
                         </p>
 
                         <button
@@ -1340,7 +1413,7 @@
                                 class="fa-solid fa-plus"
                             ></i>
 
-                            Tambah Polygon
+                            Tambah Poligon
 
                         </button>
 
@@ -1373,14 +1446,14 @@
                     <input id="editPolygonId" type="hidden" value="{{ $polygon->id ?? '' }}">
                     <input id="editPolygonGeojson" type="hidden" value="">
 
-                    {{-- Nama Polygon --}}
+                    {{-- Nama Poligon --}}
 
                     <div>
 
                         <label
                             class="mb-2 block text-[12px] font-medium text-slate-700"
                         >
-                            Nama Polygon
+                            Nama Poligon
                         </label>
 
                         <input
@@ -1431,7 +1504,7 @@
 
                     </div>
 
-                    {{-- Informasi Polygon --}}
+                    {{-- Informasi Poligon --}}
 
                     <div
                         class="rounded-xl border border-violet-200 bg-violet-50 p-4"
@@ -1448,16 +1521,16 @@
                             <p
                                 class="text-[12px] leading-6 text-violet-700"
                             >
-                                Untuk mengubah bentuk Polygon,
-                                klik tombol <strong>Ubah Area Polygon</strong>,
-                                kemudian edit titik-titik Polygon langsung pada peta.
+                                Untuk mengubah bentuk Poligon,
+                                klik tombol <strong>Ubah Area Poligon</strong>,
+                                kemudian edit titik-titik Poligon langsung pada peta.
                             </p>
 
                         </div>
 
                     </div>
 
-                    {{-- Area Polygon --}}
+                    {{-- Area Poligon --}}
 
                     <button
 
@@ -1473,7 +1546,7 @@
                             class="fa-solid fa-draw-polygon"
                         ></i>
 
-                        Ubah Area Polygon
+                        Ubah Area Poligon
 
                     </button>
 
@@ -1526,6 +1599,125 @@
     </div>
 
     {{-- ========================================================= --}}
+    {{-- RIWAYAT MASUK/KELUAR GEOFENCE --}}
+    {{-- ========================================================= --}}
+
+    <section
+        class="overflow-hidden rounded-[20px] border border-slate-200 bg-white vehicle-panel-shadow"
+    >
+
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 px-6 py-5">
+
+            <div>
+                <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-400">Riwayat</p>
+                <h2 class="mt-2 text-[18px] font-bold text-slate-900">Riwayat Masuk &amp; Keluar Geofence</h2>
+                <p class="mt-1 max-w-2xl text-[13px] leading-6 text-slate-500">
+                    Setiap perpindahan dicatat per area, lengkap dengan lamanya
+                    kendaraan berada pada status sebelumnya. Pengingat berulang
+                    tidak dicatat di sini.
+                </p>
+            </div>
+
+            <button
+                id="geofenceHistoryRefreshButton"
+                type="button"
+                class="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-[13px] font-semibold text-slate-700 transition hover:border-blue-500 hover:text-blue-600"
+            >
+                <i class="fa-solid fa-rotate"></i>
+                Muat Ulang
+            </button>
+
+        </div>
+
+        {{-- Ringkasan --}}
+
+        <div class="grid grid-cols-2 gap-px bg-slate-100 sm:grid-cols-4">
+
+            <div class="bg-white px-5 py-4">
+                <p class="text-[11px] font-medium uppercase tracking-[0.14em] text-slate-400">Total Kejadian</p>
+                <p id="geofenceHistoryTotal" class="mt-2 text-xl font-semibold text-slate-900">0</p>
+            </div>
+
+            <div class="bg-white px-5 py-4">
+                <p class="text-[11px] font-medium uppercase tracking-[0.14em] text-slate-400">Keluar</p>
+                <p id="geofenceHistoryTotalExit" class="mt-2 text-xl font-semibold text-red-600">0</p>
+            </div>
+
+            <div class="bg-white px-5 py-4">
+                <p class="text-[11px] font-medium uppercase tracking-[0.14em] text-slate-400">Masuk</p>
+                <p id="geofenceHistoryTotalEnter" class="mt-2 text-xl font-semibold text-emerald-600">0</p>
+            </div>
+
+            <div class="bg-white px-5 py-4">
+                <p class="text-[11px] font-medium uppercase tracking-[0.14em] text-slate-400">Hari Ini</p>
+                <p id="geofenceHistoryToday" class="mt-2 text-xl font-semibold text-slate-900">0</p>
+            </div>
+
+        </div>
+
+        {{-- Saring --}}
+
+        <div class="flex flex-wrap items-end gap-3 border-t border-slate-100 px-6 py-4">
+
+            <div class="min-w-[150px] flex-1">
+                <label class="mb-2 block text-[12px] font-medium text-slate-600">Dari Tanggal</label>
+                <input id="geofenceHistoryStartDate" type="date" class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none transition focus:border-blue-500">
+            </div>
+
+            <div class="min-w-[150px] flex-1">
+                <label class="mb-2 block text-[12px] font-medium text-slate-600">Sampai Tanggal</label>
+                <input id="geofenceHistoryEndDate" type="date" class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none transition focus:border-blue-500">
+            </div>
+
+            <div class="min-w-[150px] flex-1">
+                <label class="mb-2 block text-[12px] font-medium text-slate-600">Kejadian</label>
+                <select id="geofenceHistoryEvent" class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none transition focus:border-blue-500">
+                    <option value="">Semua</option>
+                    <option value="exit">Keluar</option>
+                    <option value="enter">Masuk</option>
+                </select>
+            </div>
+
+            <button
+                id="geofenceHistoryApplyButton"
+                type="button"
+                class="h-11 rounded-xl bg-blue-600 px-5 text-[13px] font-semibold text-white transition hover:bg-blue-700"
+            >
+                Tampilkan
+            </button>
+
+            <button
+                id="geofenceHistoryResetButton"
+                type="button"
+                class="h-11 rounded-xl border border-slate-300 bg-white px-5 text-[13px] font-semibold text-slate-700 transition hover:bg-slate-100"
+            >
+                Atur Ulang
+            </button>
+
+        </div>
+
+        {{-- Daftar --}}
+
+        <div id="geofenceHistoryList" class="divide-y divide-slate-100"></div>
+
+        <div id="geofenceHistoryEmpty" class="hidden px-6 py-14 text-center">
+
+            <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
+                <i class="fa-solid fa-clock-rotate-left text-2xl text-slate-400"></i>
+            </div>
+
+            <h4 class="mt-5 text-[15px] font-semibold text-slate-900">Belum ada riwayat geofence</h4>
+
+            <p class="mt-2 text-[12px] leading-6 text-slate-500">
+                Riwayat akan terisi otomatis ketika kendaraan masuk atau keluar
+                dari salah satu area Geofence.
+            </p>
+
+        </div>
+
+    </section>
+
+    {{-- ========================================================= --}}
     {{-- MODAL --}}
     {{-- Semua modal akan diletakkan di bawah setelah seluruh card --}}
     {{-- ========================================================= --}}
@@ -1565,13 +1757,13 @@
                     <h2
                         class="mt-2 text-[20px] font-bold text-slate-900"
                     >
-                        Tambah Radius Geofence
+                        Tambah Geofence Radius
                     </h2>
 
                     <p
                         class="mt-1 text-[13px] text-slate-500"
                     >
-                        Tambahkan Radius Geofence untuk kendaraan ini.
+                        Tambahkan Geofence Radius untuk kendaraan ini.
                     </p>
 
                 </div>
@@ -1653,7 +1845,7 @@
                     >
 
                         <option value="home_location">
-                            Home Location
+                            Lokasi Rumah
                         </option>
 
                         <option value="current_location">
@@ -1746,7 +1938,7 @@
                             class="text-[12px] leading-6 text-blue-700"
                         >
                             Radius akan menggunakan koordinat
-                            <b>Home Location</b> atau
+                            <b>Lokasi Rumah</b> atau
                             <b>Lokasi GPS Terakhir</b> kendaraan ini
                             sesuai pilihan Anda.
                         </p>
@@ -1838,7 +2030,7 @@
                     <h2
                         class="mt-2 text-[20px] font-bold text-slate-900"
                     >
-                        Tambah Administrative Geofence
+                        Tambah Geofence Administratif
                     </h2>
 
                     <p
@@ -2043,7 +2235,7 @@
 
                     <i class="fa-solid fa-floppy-disk mr-2"></i>
 
-                    Simpan Administrative
+                    Simpan Administratif
 
                 </button>
 
@@ -2088,13 +2280,13 @@
                     <h2
                         class="mt-2 text-[20px] font-bold text-slate-900"
                     >
-                        Tambah Polygon Geofence
+                        Tambah Geofence Poligon
                     </h2>
 
                     <p
                         class="mt-1 text-[13px] text-slate-500"
                     >
-                        Gambar area Polygon langsung pada peta.
+                        Gambar area Poligon langsung pada peta.
                     </p>
 
                 </div>
@@ -2136,7 +2328,7 @@
                     <label
                         class="mb-2 block text-[12px] font-semibold text-slate-700"
                     >
-                        Nama Polygon
+                        Nama Poligon
                     </label>
 
                     <input
@@ -2189,7 +2381,7 @@
 
                 </div>
 
-                {{-- Informasi Polygon --}}
+                {{-- Informasi Poligon --}}
 
                 <div
                     class="rounded-2xl border border-violet-100 bg-violet-50 p-5"
@@ -2214,7 +2406,7 @@
                             <h4
                                 class="text-[13px] font-semibold text-violet-900"
                             >
-                                Cara Membuat Polygon
+                                Cara Membuat Poligon
                             </h4>
 
                             <ol
@@ -2222,7 +2414,7 @@
                             >
 
                                 <li>
-                                    Tekan tombol <b>Simpan Polygon</b>.
+                                    Tekan tombol <b>Simpan Poligon</b>.
                                 </li>
 
                                 <li>
@@ -2238,7 +2430,7 @@
                                 </li>
 
                                 <li>
-                                    Polygon akan otomatis tersimpan.
+                                    Poligon akan otomatis tersimpan.
                                 </li>
 
                             </ol>
@@ -2287,7 +2479,7 @@
 
                     <i class="fa-solid fa-floppy-disk mr-2"></i>
 
-                    Simpan Polygon
+                    Simpan Poligon
 
                 </button>
 

@@ -2,7 +2,7 @@
     <x-auth.onboarding-shell
         :subtext="'Lupa kata sandi bukan masalah. Masukkan email Anda dan kami akan mengirimkan tautan untuk membuat kata sandi baru.'">
         <x-slot:heading>
-            Reset Kata Sandi Anda <span class="text-[#2563EB]">Dengan Aman</span>
+            Atur Ulang Kata Sandi Anda <span class="text-[#2563EB]">Dengan Aman</span>
         </x-slot:heading>
 
         @if (session('status'))

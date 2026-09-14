@@ -54,8 +54,8 @@
         <thead>
             <tr>
                 <th width="10%">No</th>
-                <th width="45%">Device ID</th>
-                <th width="45%">Password (Kata Sandi)</th>
+                <th width="45%">ID Perangkat</th>
+                <th width="45%">Kata Sandi</th>
             </tr>
         </thead>
         <tbody>

@@ -1967,7 +1967,7 @@ document.addEventListener(
 
             this.geofenceLog(
 
-                'Custom drawing started.'
+                'Mulai menggambar poligon kustom.'
 
             );
 
@@ -1999,7 +1999,7 @@ document.addEventListener(
 
             this.geofenceLog(
 
-                'Administrative drawing started.'
+                'Mulai memilih wilayah administratif.'
 
             );
 
@@ -2214,7 +2214,7 @@ document.addEventListener(
 
                 this.geofenceWarn(
 
-                    'Polygon requires at least 3 points.'
+                    'Poligon membutuhkan minimal 3 titik.'
 
                 );
 

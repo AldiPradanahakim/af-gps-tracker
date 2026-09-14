@@ -215,6 +215,311 @@ window.VehicleGeofence = {
 
         this.bindNotificationEvents();
 
+        this.bindRepeatSetting();
+
+        this.bindHistory();
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Pengingat "Masih di Luar Area"
+    |--------------------------------------------------------------------------
+    */
+
+    bindRepeatSetting() {
+
+        const toggle = document.getElementById('geofenceRepeatEnabled');
+
+        const options = document.getElementById('geofenceRepeatOptions');
+
+        toggle?.addEventListener('change', () => {
+
+            options?.classList.toggle('hidden', !toggle.checked);
+
+            /*
+            | Mematikan pengingat langsung disimpan supaya pengguna tidak
+            | perlu menekan Simpan hanya untuk berhenti menerima pesan.
+            | Menyalakannya menunggu Simpan, karena jedanya ikut dikirim.
+            */
+
+            if (!toggle.checked) {
+
+                this.saveRepeatSetting();
+
+            }
+
+        });
+
+        document.getElementById('saveGeofenceRepeatSetting')
+            ?.addEventListener('click', () => this.saveRepeatSetting());
+
+    },
+
+    async saveRepeatSetting() {
+
+        const toggle = document.getElementById('geofenceRepeatEnabled');
+
+        const minutesInput = document.getElementById('geofenceRepeatMinutes');
+
+        const button = document.getElementById('saveGeofenceRepeatSetting');
+
+        try {
+
+            if (button) {
+                button.disabled = true;
+            }
+
+            const response = await VehicleApi.updateGeofenceSetting({
+                repeat_enabled: Boolean(toggle?.checked),
+                repeat_minutes: Number(minutesInput?.value ?? 15),
+            });
+
+            if (!response.success) {
+
+                const message = response.errors
+                    ? Object.values(response.errors).flat().join('\n')
+                    : (response.message ?? 'Gagal menyimpan pengaturan pengingat.');
+
+                this.toast('error', 'Gagal', message);
+
+                return;
+
+            }
+
+            if (minutesInput && response.data?.repeat_minutes) {
+
+                minutesInput.value = response.data.repeat_minutes;
+
+            }
+
+            this.toast(
+                'success',
+                'Berhasil',
+                response.message ?? 'Pengaturan pengingat berhasil disimpan.'
+            );
+
+        } catch (error) {
+
+            console.error(error);
+
+            this.toast('error', 'Gagal', 'Terjadi kesalahan pada server.');
+
+        } finally {
+
+            if (button) {
+                button.disabled = false;
+            }
+
+        }
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Riwayat Masuk/Keluar Geofence
+    |--------------------------------------------------------------------------
+    */
+
+    MAX_HISTORY_ROWS: 200,
+
+    historyLoaded: false,
+
+    bindHistory() {
+
+        document.getElementById('geofenceHistoryRefreshButton')
+            ?.addEventListener('click', () => this.loadHistory());
+
+        document.getElementById('geofenceHistoryApplyButton')
+            ?.addEventListener('click', () => this.loadHistory());
+
+        document.getElementById('geofenceHistoryResetButton')
+            ?.addEventListener('click', () => {
+
+                const start = document.getElementById('geofenceHistoryStartDate');
+                const end = document.getElementById('geofenceHistoryEndDate');
+                const event = document.getElementById('geofenceHistoryEvent');
+
+                if (start) start.value = '';
+                if (end) end.value = '';
+                if (event) event.value = '';
+
+                this.loadHistory();
+
+            });
+
+    },
+
+    /*
+    | Dipanggil saat section Geofence pertama kali dibuka, supaya riwayat
+    | tidak diambil dari server sebelum tabnya benar-benar dilihat.
+    */
+
+    activate() {
+
+        if (this.historyLoaded) {
+
+            return;
+
+        }
+
+        this.historyLoaded = true;
+
+        this.loadHistory();
+
+    },
+
+    async loadHistory() {
+
+        try {
+
+            const response = await VehicleApi.geofenceHistory({
+                start_date: document.getElementById('geofenceHistoryStartDate')?.value,
+                end_date: document.getElementById('geofenceHistoryEndDate')?.value,
+                event: document.getElementById('geofenceHistoryEvent')?.value,
+            });
+
+            this.renderHistory(
+                response?.data ?? [],
+                response?.summary ?? {}
+            );
+
+        } catch (error) {
+
+            console.error(error);
+
+            this.renderHistory([], {});
+
+        }
+
+    },
+
+    renderHistory(items, summary) {
+
+        const list = document.getElementById('geofenceHistoryList');
+
+        const empty = document.getElementById('geofenceHistoryEmpty');
+
+        const setText = (id, value) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = value ?? 0;
+        };
+
+        setText('geofenceHistoryTotal', summary.total);
+        setText('geofenceHistoryTotalExit', summary.total_exit);
+        setText('geofenceHistoryTotalEnter', summary.total_enter);
+        setText('geofenceHistoryToday', summary.today);
+
+        if (!list) {
+            return;
+        }
+
+        if (!items.length) {
+
+            list.innerHTML = '';
+
+            empty?.classList.remove('hidden');
+
+            return;
+
+        }
+
+        empty?.classList.add('hidden');
+
+        list.innerHTML = items
+            .slice(0, this.MAX_HISTORY_ROWS)
+            .map(item => this.historyRow(item))
+            .join('');
+
+        list.querySelectorAll('.geofence-history-focus').forEach(button => {
+
+            button.addEventListener('click', () => {
+
+                const lat = Number(button.dataset.lat);
+                const lng = Number(button.dataset.lng);
+
+                if (Number.isFinite(lat) && Number.isFinite(lng)) {
+
+                    VehicleMap.flyTo(lat, lng);
+
+                }
+
+            });
+
+        });
+
+    },
+
+    historyRow(item) {
+
+        const isExit = item.event === 'exit';
+
+        const hasPoint = item.lat !== null && item.lng !== null;
+
+        /*
+        | Durasi pada baris "Keluar" berarti lama kendaraan berada DI DALAM
+        | area sebelum keluar; pada baris "Masuk" berarti lama di LUAR area.
+        */
+
+        const durationLabel = item.duration_label && item.duration_label !== '-'
+            ? `${isExit ? 'Di dalam area selama' : 'Di luar area selama'} ${this.escapeHtml(item.duration_label)}`
+            : '';
+
+        return `
+            <div class="flex flex-wrap items-start gap-4 px-6 py-4 transition hover:bg-slate-50">
+
+                <span class="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${isExit ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'}">
+                    <i class="fa-solid ${isExit ? 'fa-right-from-bracket' : 'fa-right-to-bracket'} text-[13px]"></i>
+                </span>
+
+                <div class="min-w-[200px] flex-1">
+
+                    <div class="flex flex-wrap items-center gap-2">
+
+                        <span class="inline-flex items-center rounded-full ${isExit ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'} px-3 py-1 text-[11px] font-semibold">
+                            ${isExit ? 'Keluar' : 'Masuk'}
+                        </span>
+
+                        <span class="text-[13px] font-semibold text-slate-900">
+                            ${this.escapeHtml(item.geofence_name)}
+                        </span>
+
+                        <span class="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-600">
+                            ${this.escapeHtml(item.geofence_type_label)}
+                        </span>
+
+                    </div>
+
+                    <p class="mt-1.5 text-[12px] text-slate-500">
+                        ${this.escapeHtml(item.address ?? '-')}
+                    </p>
+
+                    ${durationLabel ? `<p class="mt-1 text-[12px] font-medium text-slate-600">${durationLabel}</p>` : ''}
+
+                </div>
+
+                <div class="text-right">
+
+                    <p class="text-[12px] font-medium text-slate-700">
+                        ${this.escapeHtml(item.occurred_at ?? '-')}
+                    </p>
+
+                    ${hasPoint ? `
+                        <button
+                            type="button"
+                            class="geofence-history-focus mt-2 rounded-lg border border-slate-300 px-3 py-1.5 text-[11px] font-semibold text-slate-700 transition hover:bg-slate-100"
+                            data-lat="${item.lat}"
+                            data-lng="${item.lng}"
+                        >
+                            Lihat di Peta
+                        </button>
+                    ` : ''}
+
+                </div>
+
+            </div>
+        `;
+
     },
 
     /*
@@ -511,36 +816,39 @@ window.VehicleGeofence = {
                 event.preventDefault();
 
                 const id = document.getElementById('editRadiusId').value;
-                const source = document.getElementById('editRadiusSource').value;
-                
-                let latitude = document.getElementById('editRadiusLatitude').value;
-                let longitude = document.getElementById('editRadiusLongitude').value;
-                
-                if (source === 'home_location') {
-                    if (this.state.homeLocation && this.state.homeLocation.lat) {
-                        latitude = this.state.homeLocation.lat;
-                        longitude = this.state.homeLocation.lng;
-                    } else {
-                        this.toast('error', 'Peringatan', 'Home Location belum diatur.');
-                        return;
-                    }
-                } else if (source === 'current_location') {
-                    if (this.state.latestLocation && this.state.latestLocation.lat) {
-                        latitude = this.state.latestLocation.lat;
-                        longitude = this.state.latestLocation.lng;
-                    } else {
-                        this.toast('error', 'Peringatan', 'Lokasi kendaraan tidak ditemukan.');
-                        return;
-                    }
-                }
 
-                await this.submitUpdate(id, {
+                const source = document.getElementById('editRadiusSource').value;
+
+                /*
+                |--------------------------------------------------------------------------
+                | Titik pusat TIDAK lagi dihitung di sini. Sumbernya (Home
+                | Location / GPS terakhir) dikirim apa adanya, dan backend
+                | yang mengambil koordinat terbaru dari database.
+                |
+                | Sebelumnya koordinat diambil dari state di browser, sehingga
+                | mengedit radius tepat setelah mengubah Lokasi Rumah (tanpa
+                | reload) salah membaca state dan memunculkan peringatan
+                | "Lokasi Rumah belum diatur".
+                |--------------------------------------------------------------------------
+                */
+
+                const payload = {
                     name: document.getElementById('editRadiusName').value,
                     status: document.getElementById('editRadiusStatus').value,
                     radius: document.getElementById('editRadiusValue').value,
-                    latitude: latitude,
-                    longitude: longitude,
-                }, 'Radius');
+                    radius_source: source,
+                };
+
+                /*
+                |--------------------------------------------------------------------------
+                | "Pertahankan Titik Saat Ini" sengaja tidak mengirim koordinat
+                | apa pun. Titik yang tersimpan di server adalah yang paling
+                | benar -- input hidden di halaman ini bisa basi kalau Home
+                | Location sudah digeser sejak halaman dimuat.
+                |--------------------------------------------------------------------------
+                */
+
+                await this.submitUpdate(id, payload, 'Radius');
 
             });
 
@@ -609,7 +917,7 @@ window.VehicleGeofence = {
                     geojson,
                     display_name: document.getElementById('createAdministrativeDisplayName').value,
                     administrative_type: document.getElementById('createAdministrativeAreaType').value,
-                }, 'Administrative');
+                }, 'Administratif');
 
             });
 
@@ -657,7 +965,7 @@ window.VehicleGeofence = {
                     payload.administrative_type = document.getElementById('editAdministrativeAreaType').value;
                 }
 
-                await this.submitUpdate(id, payload, 'Administrative');
+                await this.submitUpdate(id, payload, 'Administratif');
 
             });
 
@@ -887,7 +1195,7 @@ window.VehicleGeofence = {
                 const name = document.getElementById('createPolygonName').value.trim();
 
                 if (!name) {
-                    this.toast('error', 'Peringatan', 'Nama Polygon wajib diisi.');
+                    this.toast('error', 'Peringatan', 'Nama Poligon wajib diisi.');
                     return;
                 }
 
@@ -897,7 +1205,7 @@ window.VehicleGeofence = {
 
                 this.toast(
                     'info',
-                    'Gambar Polygon',
+                    'Gambar Poligon',
                     'Klik pada peta untuk membuat titik, lalu double klik untuk menyelesaikan.'
                 );
 
@@ -909,7 +1217,7 @@ window.VehicleGeofence = {
                         name,
                         status,
                         geojson: JSON.stringify(geojson),
-                    }, 'Polygon');
+                    }, 'Poligon');
 
                 });
 
@@ -937,7 +1245,7 @@ window.VehicleGeofence = {
                 await this.submitUpdate(id, {
                     name: document.getElementById('editPolygonName').value,
                     status: document.getElementById('editPolygonStatus').value,
-                }, 'Polygon');
+                }, 'Poligon');
 
             });
 
@@ -962,7 +1270,7 @@ window.VehicleGeofence = {
                         name,
                         status,
                         geojson: JSON.stringify(geojson),
-                    }, 'Polygon');
+                    }, 'Poligon');
 
                 }, () => {
                     const layer = this.layers[id];
@@ -1046,7 +1354,7 @@ window.VehicleGeofence = {
 
             if (points.length < 3) {
 
-                this.toast('error', 'Polygon Kurang Titik', 'Minimal 3 titik untuk membuat polygon.');
+                this.toast('error', 'Poligon Kurang Titik', 'Minimal 3 titik untuk membuat poligon.');
 
                 return;
 
@@ -1124,9 +1432,9 @@ window.VehicleGeofence = {
 
             deleteRadiusButton: 'Radius',
 
-            deleteAdministrativeButton: 'Administrative',
+            deleteAdministrativeButton: 'Administratif',
 
-            deletePolygonButton: 'Polygon',
+            deletePolygonButton: 'Poligon',
 
         };
 

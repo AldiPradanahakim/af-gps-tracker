@@ -301,6 +301,32 @@ class RealtimeService
             'geofence_name' =>
                 ($geofenceResult['geofence'] ?? null)?->name,
 
+            /*
+            |--------------------------------------------------------------------------
+            | Status per geofence. Field agregat di atas dipertahankan apa
+            | adanya untuk kompatibilitas; daftar di bawah inilah yang
+            | membedakan "keluar dari Radius" dengan "keluar dari Polygon".
+            |--------------------------------------------------------------------------
+            */
+
+            'geofences' => collect(
+                $geofenceResult['results'] ?? []
+            )->map(fn (array $result) => [
+
+                'id' => $result['geofence']?->id,
+
+                'name' => $result['geofence']?->name,
+
+                'type' => $result['geofence']?->type,
+
+                'inside' => (bool) $result['inside'],
+
+                'entered' => (bool) $result['entered'],
+
+                'exited' => (bool) $result['exited'],
+
+            ])->values()->all(),
+
         ];
     }
 }
