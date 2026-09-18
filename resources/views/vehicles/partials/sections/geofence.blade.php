@@ -7,7 +7,7 @@
     {{-- ========================================================= --}}
 
     <section
-        class="overflow-hidden rounded-[20px] border border-slate-200 bg-white vehicle-panel-shadow"
+        class="overflow-hidden rounded-[1.25rem] border border-slate-200 bg-white vehicle-panel-shadow"
     >
 
         <div
@@ -15,19 +15,19 @@
         >
 
             <p
-                class="text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-400"
+                class="text-[0.6875rem] font-semibold uppercase tracking-[0.28em] text-slate-400"
             >
                 GEOFENCE
             </p>
 
             <h2
-                class="mt-2 text-[20px] font-bold text-slate-900"
+                class="mt-2 text-[1.25rem] font-bold text-slate-900"
             >
                 Kelola Geofence Kendaraan
             </h2>
 
             <p
-                class="mt-2 max-w-3xl text-[13px] leading-6 text-slate-500"
+                class="mt-2 max-w-3xl text-[0.8125rem] leading-6 text-slate-500"
             >
                 Setiap kendaraan hanya dapat memiliki satu Geofence Radius,
                 satu Geofence Administratif, dan satu Geofence Poligon.
@@ -42,26 +42,26 @@
                 class="mt-5 flex flex-wrap items-center gap-5 border-t border-slate-100 pt-4"
             >
 
-                <span class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                <span class="text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-slate-400">
                     Tampilkan di Peta
                 </span>
 
-                <label class="flex cursor-pointer items-center gap-2 text-[13px] text-slate-700">
+                <label class="flex cursor-pointer items-center gap-2 text-[0.8125rem] text-slate-700">
                     <input id="toggleAllGeofenceMap" type="checkbox" checked class="h-4 w-4 rounded border-slate-300 text-blue-600">
                     Semua
                 </label>
 
-                <label class="flex cursor-pointer items-center gap-2 text-[13px] text-slate-700">
+                <label class="flex cursor-pointer items-center gap-2 text-[0.8125rem] text-slate-700">
                     <input id="toggleRadiusMap" type="checkbox" checked class="h-4 w-4 rounded border-slate-300 text-blue-600">
                     Radius
                 </label>
 
-                <label class="flex cursor-pointer items-center gap-2 text-[13px] text-slate-700">
+                <label class="flex cursor-pointer items-center gap-2 text-[0.8125rem] text-slate-700">
                     <input id="toggleAdministrativeMap" type="checkbox" checked class="h-4 w-4 rounded border-slate-300 text-emerald-600">
                     Administratif
                 </label>
 
-                <label class="flex cursor-pointer items-center gap-2 text-[13px] text-slate-700">
+                <label class="flex cursor-pointer items-center gap-2 text-[0.8125rem] text-slate-700">
                     <input id="togglePolygonMap" type="checkbox" checked class="h-4 w-4 rounded border-slate-300 text-violet-600">
                     Poligon
                 </label>
@@ -77,13 +77,13 @@
     {{-- ========================================================= --}}
 
     <section
-        class="overflow-hidden rounded-[20px] border border-slate-200 bg-white vehicle-panel-shadow"
+        class="overflow-hidden rounded-[1.25rem] border border-slate-200 bg-white vehicle-panel-shadow"
     >
 
         <div class="border-b border-slate-100 px-6 py-5">
-            <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-400">Notifikasi</p>
-            <h2 class="mt-2 text-[18px] font-bold text-slate-900">Notifikasi Geofence</h2>
-            <p class="mt-1 text-[13px] text-slate-500">Kirim pemberitahuan ketika kendaraan keluar dari area Geofence.</p>
+            <p class="text-[0.6875rem] font-semibold uppercase tracking-[0.28em] text-slate-400">Notifikasi</p>
+            <h2 class="mt-2 text-[1.125rem] font-bold text-slate-900">Notifikasi Geofence</h2>
+            <p class="mt-1 text-[0.8125rem] text-slate-500">Kirim pemberitahuan ketika kendaraan keluar dari area Geofence.</p>
         </div>
 
         <div class="space-y-4 p-6">
@@ -94,13 +94,13 @@
 
             <div class="flex items-center justify-between rounded-2xl border border-slate-200 p-4">
                 <div>
-                    <h4 class="text-[13px] font-semibold text-slate-900">Notifikasi Sistem</h4>
-                    <p class="mt-1 text-[12px] text-slate-500">
+                    <h4 class="text-[0.8125rem] font-semibold text-slate-900">Notifikasi Sistem</h4>
+                    <p class="mt-1 text-[0.75rem] text-slate-500">
                         Menampilkan notifikasi pada dasbor aplikasi.
                         Selalu aktif dan tidak dapat dinonaktifkan.
                     </p>
                 </div>
-                <span class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-[12px] font-semibold text-emerald-600">
+                <span class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-[0.75rem] font-semibold text-emerald-600">
                     <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
                     Selalu Aktif
                 </span>
@@ -112,8 +112,8 @@
 
             <div class="flex items-center justify-between rounded-2xl border border-slate-200 p-4">
                 <div>
-                    <h4 class="text-[13px] font-semibold text-slate-900">Notifikasi Email</h4>
-                    <p class="mt-1 text-[12px] text-slate-500">
+                    <h4 class="text-[0.8125rem] font-semibold text-slate-900">Notifikasi Email</h4>
+                    <p class="mt-1 text-[0.75rem] text-slate-500">
                         Mengirim email ketika kendaraan keluar dari area Geofence.
                     </p>
                 </div>
@@ -134,8 +134,8 @@
 
             <div class="flex items-center justify-between rounded-2xl border border-slate-200 p-4">
                 <div>
-                    <h4 class="text-[13px] font-semibold text-slate-900">Notifikasi WhatsApp</h4>
-                    <p class="mt-1 text-[12px] text-slate-500">
+                    <h4 class="text-[0.8125rem] font-semibold text-slate-900">Notifikasi WhatsApp</h4>
+                    <p class="mt-1 text-[0.75rem] text-slate-500">
                         Mengirim WhatsApp ketika kendaraan keluar dari area Geofence.
                     </p>
                 </div>
@@ -159,8 +159,8 @@
                 <div class="flex items-start justify-between gap-4">
 
                     <div>
-                        <h4 class="text-[13px] font-semibold text-slate-900">Pengingat Keluar Geofence</h4>
-                        <p class="mt-1 text-[12px] leading-5 text-slate-500">
+                        <h4 class="text-[0.8125rem] font-semibold text-slate-900">Pengingat Keluar Geofence</h4>
+                        <p class="mt-1 text-[0.75rem] leading-5 text-slate-500">
                             Terus mengirim pemberitahuan selama kendaraan masih
                             berada di luar area, bukan hanya sekali saat keluar.
                             Dikirim per area, mengikuti pengaturan Email/WhatsApp di atas.
@@ -184,10 +184,18 @@
                     class="{{ $geofenceSetting?->repeat_enabled ? '' : 'hidden' }} mt-4 border-t border-slate-100 pt-4"
                 >
 
-                    <label class="mb-2 block text-[12px] font-semibold text-slate-700">
+                    <label class="mb-2 block text-[0.75rem] font-semibold text-slate-700">
                         Jeda Antar Pengingat (Menit)
                     </label>
 
+                    {{--
+                        Nilai yang sudah tersimpan DIKUNCI (readonly) sampai
+                        tombol "Ubah" ditekan. Sebelumnya kolom ini selalu
+                        bisa diketik, jadi angka yang tidak sengaja tersenggol
+                        terlihat seperti sudah berubah padahal Simpan belum
+                        pernah ditekan - menyesatkan, karena pengingat yang
+                        benar-benar berlaku masih nilai yang lama.
+                    --}}
                     <div class="flex flex-wrap items-center gap-3">
 
                         <input
@@ -196,15 +204,33 @@
                             min="{{ $geofenceSetting?->min_minutes ?? 5 }}"
                             max="{{ $geofenceSetting?->max_minutes ?? 180 }}"
                             value="{{ $geofenceSetting?->repeat_minutes ?? 15 }}"
-                            class="h-11 w-32 rounded-xl border border-slate-300 px-4 text-[13px] outline-none transition focus:border-blue-500"
+                            readonly
+                            class="h-11 w-32 rounded-xl border border-slate-300 px-4 text-[0.8125rem] outline-none transition read-only:cursor-not-allowed read-only:bg-slate-100 read-only:text-slate-500 focus:border-blue-500"
                         >
+
+                        <button
+                            id="editGeofenceRepeatSetting"
+                            type="button"
+                            class="inline-flex h-11 items-center gap-2 rounded-xl border border-blue-600 px-5 text-[0.8125rem] font-semibold text-blue-600 transition hover:bg-blue-50"
+                        >
+                            <i class="fa-solid fa-pen text-[0.6875rem]"></i>
+                            Ubah
+                        </button>
 
                         <button
                             id="saveGeofenceRepeatSetting"
                             type="button"
-                            class="h-11 rounded-xl bg-blue-600 px-5 text-[13px] font-semibold text-white transition hover:bg-blue-700"
+                            class="hidden h-11 rounded-xl bg-blue-600 px-5 text-[0.8125rem] font-semibold text-white transition hover:bg-blue-700"
                         >
                             Simpan
+                        </button>
+
+                        <button
+                            id="cancelGeofenceRepeatSetting"
+                            type="button"
+                            class="hidden h-11 rounded-xl border border-slate-300 px-5 text-[0.8125rem] font-semibold text-slate-600 transition hover:bg-slate-100"
+                        >
+                            Batal
                         </button>
 
                     </div>
@@ -233,7 +259,7 @@
 
             id="radiusGeofenceCard"
 
-            class="overflow-hidden rounded-[20px] border border-slate-200 bg-white vehicle-panel-shadow"
+            class="overflow-hidden rounded-[1.25rem] border border-slate-200 bg-white vehicle-panel-shadow"
 
         >
 
@@ -252,13 +278,13 @@
                     <div>
 
                         <p
-                            class="text-[10px] font-semibold uppercase tracking-[0.25em] text-blue-600"
+                            class="text-[0.625rem] font-semibold uppercase tracking-[0.25em] text-blue-600"
                         >
                             RADIUS
                         </p>
 
                         <h3
-                            class="mt-2 text-[18px] font-bold text-slate-900"
+                            class="mt-2 text-[1.125rem] font-bold text-slate-900"
                         >
                             Geofence Radius
                         </h3>
@@ -297,9 +323,9 @@
                             class="space-y-4"
                         >
 
-                            <div class="grid grid-cols-[110px_15px_1fr]">
+                            <div class="grid grid-cols-[6.875rem_0.9375rem_1fr]">
 
-                                <span class="text-[12px] text-slate-500">
+                                <span class="text-[0.75rem] text-slate-500">
                                     Nama
                                 </span>
 
@@ -313,9 +339,9 @@
 
                             </div>
 
-                            <div class="grid grid-cols-[110px_15px_1fr]">
+                            <div class="grid grid-cols-[6.875rem_0.9375rem_1fr]">
 
-                                <span class="text-[12px] text-slate-500">
+                                <span class="text-[0.75rem] text-slate-500">
                                     Radius
                                 </span>
 
@@ -329,9 +355,9 @@
 
                             </div>
 
-                            <div class="grid grid-cols-[110px_15px_1fr]">
+                            <div class="grid grid-cols-[6.875rem_0.9375rem_1fr]">
 
-                                <span class="text-[12px] text-slate-500">
+                                <span class="text-[0.75rem] text-slate-500">
                                     Status
                                 </span>
 
@@ -344,7 +370,7 @@
                                     @if($radius->status)
 
                                         <span
-                                            class="rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-semibold text-emerald-700"
+                                            class="rounded-full bg-emerald-100 px-3 py-1 text-[0.6875rem] font-semibold text-emerald-700"
                                         >
                                             Aktif
                                         </span>
@@ -352,7 +378,7 @@
                                     @else
 
                                         <span
-                                            class="rounded-full bg-red-100 px-3 py-1 text-[11px] font-semibold text-red-700"
+                                            class="rounded-full bg-red-100 px-3 py-1 text-[0.6875rem] font-semibold text-red-700"
                                         >
                                             Nonaktif
                                         </span>
@@ -363,9 +389,9 @@
 
                             </div>
 
-                            <div class="grid grid-cols-[110px_15px_1fr]">
+                            <div class="grid grid-cols-[6.875rem_0.9375rem_1fr]">
 
-                                <span class="text-[12px] text-slate-500">
+                                <span class="text-[0.75rem] text-slate-500">
                                     Dibuat
                                 </span>
 
@@ -391,7 +417,7 @@
 
                                 type="button"
 
-                                class="inline-flex items-center justify-center gap-2 rounded-xl border border-blue-200 bg-blue-50 py-2.5 text-[12px] font-semibold text-blue-600 transition hover:bg-blue-100"
+                                class="inline-flex items-center justify-center gap-2 rounded-xl border border-blue-200 bg-blue-50 py-2.5 text-[0.75rem] font-semibold text-blue-600 transition hover:bg-blue-100"
 
                             >
 
@@ -413,7 +439,7 @@
 
                                 data-name="{{ $radius->name }}"
 
-                                class="inline-flex items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 py-2.5 text-[12px] font-semibold text-red-600 transition hover:bg-red-100"
+                                class="inline-flex items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 py-2.5 text-[0.75rem] font-semibold text-red-600 transition hover:bg-red-100"
 
                             >
 
@@ -450,13 +476,13 @@
                         </div>
 
                         <h4
-                            class="mt-5 text-[15px] font-semibold text-slate-900"
+                            class="mt-5 text-[0.9375rem] font-semibold text-slate-900"
                         >
                             Radius belum tersedia
                         </h4>
 
                         <p
-                            class="mt-2 text-[12px] leading-6 text-slate-500"
+                            class="mt-2 text-[0.75rem] leading-6 text-slate-500"
                         >
                             Kendaraan ini belum memiliki Geofence Radius.
                         </p>
@@ -467,7 +493,7 @@
 
                             type="button"
 
-                            class="mt-6 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-[12px] font-semibold text-white transition hover:bg-blue-700"
+                            class="mt-6 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-[0.75rem] font-semibold text-white transition hover:bg-blue-700"
 
                         >
 
@@ -510,7 +536,7 @@
                     <div>
 
                         <label
-                            class="mb-2 block text-[12px] font-medium text-slate-700"
+                            class="mb-2 block text-[0.75rem] font-medium text-slate-700"
                         >
                             Nama Radius
                         </label>
@@ -525,7 +551,7 @@
 
                             value="{{ $radius->name ?? '' }}"
 
-                            class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none transition focus:border-blue-500"
+                            class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[0.8125rem] outline-none transition focus:border-blue-500"
 
                         >
 
@@ -535,20 +561,20 @@
                     
                     <div>
                     
-                        <label class="mb-2 block text-[12px] font-medium text-slate-700">
+                        <label class="mb-2 block text-[0.75rem] font-medium text-slate-700">
                             Titik Pusat
                         </label>
                     
                         <select
                             id="editRadiusSource"
-                            class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none transition focus:border-blue-500"
+                            class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[0.8125rem] outline-none transition focus:border-blue-500"
                         >
                             <option value="keep_current">Pertahankan Titik Saat Ini</option>
                             <option value="home_location">Lokasi Rumah</option>
                             <option value="current_location">Lokasi GPS Terakhir</option>
                         </select>
 
-                        <p class="mt-2 text-[11px] leading-5 text-slate-500">
+                        <p class="mt-2 text-[0.6875rem] leading-5 text-slate-500">
                             Titik pusat saat ini diambil dari
                             <b>{{ match($radius->config['source'] ?? null) {
                                 'home_location' => 'Lokasi Rumah',
@@ -567,7 +593,7 @@
                     <div>
 
                         <label
-                            class="mb-2 block text-[12px] font-medium text-slate-700"
+                            class="mb-2 block text-[0.75rem] font-medium text-slate-700"
                         >
                             Radius (Meter)
                         </label>
@@ -582,7 +608,7 @@
 
                             value="{{ $radius->config['radius'] ?? '' }}"
 
-                            class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none transition focus:border-blue-500"
+                            class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[0.8125rem] outline-none transition focus:border-blue-500"
 
                         >
 
@@ -593,7 +619,7 @@
                     <div>
 
                         <label
-                            class="mb-2 block text-[12px] font-medium text-slate-700"
+                            class="mb-2 block text-[0.75rem] font-medium text-slate-700"
                         >
                             Status
                         </label>
@@ -604,7 +630,7 @@
 
                             name="status"
 
-                            class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none"
+                            class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[0.8125rem] outline-none"
 
                         >
 
@@ -632,7 +658,7 @@
 
                             type="button"
 
-                            class="rounded-xl border border-slate-300 py-2.5 text-[12px] font-semibold"
+                            class="rounded-xl border border-slate-300 py-2.5 text-[0.75rem] font-semibold"
 
                         >
 
@@ -646,7 +672,7 @@
 
                             type="submit"
 
-                            class="rounded-xl bg-blue-600 py-2.5 text-[12px] font-semibold text-white"
+                            class="rounded-xl bg-blue-600 py-2.5 text-[0.75rem] font-semibold text-white"
 
                         >
 
@@ -672,7 +698,7 @@
 
             id="administrativeGeofenceCard"
 
-            class="overflow-hidden rounded-[20px] border border-slate-200 bg-white vehicle-panel-shadow"
+            class="overflow-hidden rounded-[1.25rem] border border-slate-200 bg-white vehicle-panel-shadow"
 
         >
 
@@ -691,13 +717,13 @@
                     <div>
 
                         <p
-                            class="text-[10px] font-semibold uppercase tracking-[0.25em] text-emerald-600"
+                            class="text-[0.625rem] font-semibold uppercase tracking-[0.25em] text-emerald-600"
                         >
-                            ADMINISTRATIVE
+                            ADMINISTRATIF
                         </p>
 
                         <h3
-                            class="mt-2 text-[18px] font-bold text-slate-900"
+                            class="mt-2 text-[1.125rem] font-bold text-slate-900"
                         >
                             Geofence Administratif
                         </h3>
@@ -736,9 +762,9 @@
                             class="space-y-4"
                         >
 
-                            <div class="grid grid-cols-[110px_15px_1fr]">
+                            <div class="grid grid-cols-[6.875rem_0.9375rem_1fr]">
 
-                                <span class="text-[12px] text-slate-500">
+                                <span class="text-[0.75rem] text-slate-500">
                                     Nama
                                 </span>
 
@@ -752,9 +778,9 @@
 
                             </div>
 
-                            <div class="grid grid-cols-[110px_15px_1fr]">
+                            <div class="grid grid-cols-[6.875rem_0.9375rem_1fr]">
 
-                                <span class="text-[12px] text-slate-500">
+                                <span class="text-[0.75rem] text-slate-500">
                                     Wilayah
                                 </span>
 
@@ -768,9 +794,9 @@
 
                             </div>
 
-                            <div class="grid grid-cols-[110px_15px_1fr]">
+                            <div class="grid grid-cols-[6.875rem_0.9375rem_1fr]">
 
-                                <span class="text-[12px] text-slate-500">
+                                <span class="text-[0.75rem] text-slate-500">
                                     Tipe Wilayah
                                 </span>
 
@@ -784,9 +810,9 @@
 
                             </div>
 
-                            <div class="grid grid-cols-[110px_15px_1fr]">
+                            <div class="grid grid-cols-[6.875rem_0.9375rem_1fr]">
 
-                                <span class="text-[12px] text-slate-500">
+                                <span class="text-[0.75rem] text-slate-500">
                                     Status
                                 </span>
 
@@ -799,7 +825,7 @@
                                     @if($administrative->status)
 
                                         <span
-                                            class="rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-semibold text-emerald-700"
+                                            class="rounded-full bg-emerald-100 px-3 py-1 text-[0.6875rem] font-semibold text-emerald-700"
                                         >
                                             Aktif
                                         </span>
@@ -807,7 +833,7 @@
                                     @else
 
                                         <span
-                                            class="rounded-full bg-red-100 px-3 py-1 text-[11px] font-semibold text-red-700"
+                                            class="rounded-full bg-red-100 px-3 py-1 text-[0.6875rem] font-semibold text-red-700"
                                         >
                                             Nonaktif
                                         </span>
@@ -818,9 +844,9 @@
 
                             </div>
 
-                            <div class="grid grid-cols-[110px_15px_1fr]">
+                            <div class="grid grid-cols-[6.875rem_0.9375rem_1fr]">
 
-                                <span class="text-[12px] text-slate-500">
+                                <span class="text-[0.75rem] text-slate-500">
                                     Dibuat
                                 </span>
 
@@ -846,7 +872,7 @@
 
                                 type="button"
 
-                                class="inline-flex items-center justify-center gap-2 rounded-xl border border-blue-200 bg-blue-50 py-2.5 text-[12px] font-semibold text-blue-600 transition hover:bg-blue-100"
+                                class="inline-flex items-center justify-center gap-2 rounded-xl border border-blue-200 bg-blue-50 py-2.5 text-[0.75rem] font-semibold text-blue-600 transition hover:bg-blue-100"
 
                             >
 
@@ -866,7 +892,7 @@
 
                                 data-name="{{ $administrative->name }}"
 
-                                class="inline-flex items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 py-2.5 text-[12px] font-semibold text-red-600 transition hover:bg-red-100"
+                                class="inline-flex items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 py-2.5 text-[0.75rem] font-semibold text-red-600 transition hover:bg-red-100"
 
                             >
 
@@ -901,13 +927,13 @@
                         </div>
 
                         <h4
-                            class="mt-5 text-[15px] font-semibold text-slate-900"
+                            class="mt-5 text-[0.9375rem] font-semibold text-slate-900"
                         >
                             Administratif belum tersedia
                         </h4>
 
                         <p
-                            class="mt-2 text-[12px] leading-6 text-slate-500"
+                            class="mt-2 text-[0.75rem] leading-6 text-slate-500"
                         >
                             Kendaraan ini belum memiliki Geofence Administratif.
                         </p>
@@ -918,7 +944,7 @@
 
                             type="button"
 
-                            class="mt-6 inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-[12px] font-semibold text-white transition hover:bg-emerald-700"
+                            class="mt-6 inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-[0.75rem] font-semibold text-white transition hover:bg-emerald-700"
 
                         >
 
@@ -962,7 +988,7 @@
                     <div>
 
                         <label
-                            class="mb-2 block text-[12px] font-medium text-slate-700"
+                            class="mb-2 block text-[0.75rem] font-medium text-slate-700"
                         >
                             Nama Administratif
                         </label>
@@ -977,7 +1003,7 @@
 
                             value="{{ $administrative->name ?? '' }}"
 
-                            class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none transition focus:border-emerald-500"
+                            class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[0.8125rem] outline-none transition focus:border-emerald-500"
 
                         >
 
@@ -988,7 +1014,7 @@
                     <div>
 
                         <label
-                            class="mb-2 block text-[12px] font-medium text-slate-700"
+                            class="mb-2 block text-[0.75rem] font-medium text-slate-700"
                         >
                             Wilayah (opsional, biarkan kosong jika tidak diubah)
                         </label>
@@ -1007,7 +1033,7 @@
 
                                 placeholder="Cari kecamatan atau kelurahan..."
 
-                                class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none transition focus:border-emerald-500"
+                                class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[0.8125rem] outline-none transition focus:border-emerald-500"
 
                             >
 
@@ -1025,7 +1051,7 @@
                     <div>
 
                         <label
-                            class="mb-2 block text-[12px] font-medium text-slate-700"
+                            class="mb-2 block text-[0.75rem] font-medium text-slate-700"
                         >
                             Status
                         </label>
@@ -1036,7 +1062,7 @@
 
                             name="status"
 
-                            class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none"
+                            class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[0.8125rem] outline-none"
 
                         >
 
@@ -1067,7 +1093,7 @@
                             ></i>
 
                             <p
-                                class="text-[12px] leading-6 text-emerald-700"
+                                class="text-[0.75rem] leading-6 text-emerald-700"
                             >
                                 Perubahan wilayah administrasi akan memperbarui
                                 batas geofence sesuai wilayah yang dipilih.
@@ -1089,7 +1115,7 @@
 
                             type="button"
 
-                            class="rounded-xl border border-slate-300 py-2.5 text-[12px] font-semibold"
+                            class="rounded-xl border border-slate-300 py-2.5 text-[0.75rem] font-semibold"
 
                         >
 
@@ -1103,7 +1129,7 @@
 
                             type="submit"
 
-                            class="rounded-xl bg-emerald-600 py-2.5 text-[12px] font-semibold text-white"
+                            class="rounded-xl bg-emerald-600 py-2.5 text-[0.75rem] font-semibold text-white"
 
                         >
 
@@ -1129,7 +1155,7 @@
 
             id="polygonGeofenceCard"
 
-            class="overflow-hidden rounded-[20px] border border-slate-200 bg-white vehicle-panel-shadow"
+            class="overflow-hidden rounded-[1.25rem] border border-slate-200 bg-white vehicle-panel-shadow"
 
         >
 
@@ -1148,13 +1174,13 @@
                     <div>
 
                         <p
-                            class="text-[10px] font-semibold uppercase tracking-[0.25em] text-violet-600"
+                            class="text-[0.625rem] font-semibold uppercase tracking-[0.25em] text-violet-600"
                         >
-                            POLYGON
+                            POLIGON
                         </p>
 
                         <h3
-                            class="mt-2 text-[18px] font-bold text-slate-900"
+                            class="mt-2 text-[1.125rem] font-bold text-slate-900"
                         >
                             Geofence Poligon
                         </h3>
@@ -1196,11 +1222,11 @@
                             {{-- Nama --}}
 
                             <div
-                                class="grid grid-cols-[110px_15px_1fr]"
+                                class="grid grid-cols-[6.875rem_0.9375rem_1fr]"
                             >
 
                                 <span
-                                    class="text-[12px] text-slate-500"
+                                    class="text-[0.75rem] text-slate-500"
                                 >
                                     Nama
                                 </span>
@@ -1222,11 +1248,11 @@
                             {{-- Jumlah Titik --}}
 
                             <div
-                                class="grid grid-cols-[110px_15px_1fr]"
+                                class="grid grid-cols-[6.875rem_0.9375rem_1fr]"
                             >
 
                                 <span
-                                    class="text-[12px] text-slate-500"
+                                    class="text-[0.75rem] text-slate-500"
                                 >
                                     Jumlah Titik
                                 </span>
@@ -1248,11 +1274,11 @@
                             {{-- Status --}}
 
                             <div
-                                class="grid grid-cols-[110px_15px_1fr]"
+                                class="grid grid-cols-[6.875rem_0.9375rem_1fr]"
                             >
 
                                 <span
-                                    class="text-[12px] text-slate-500"
+                                    class="text-[0.75rem] text-slate-500"
                                 >
                                     Status
                                 </span>
@@ -1268,7 +1294,7 @@
                                     @if($polygon->status)
 
                                         <span
-                                            class="rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-semibold text-emerald-700"
+                                            class="rounded-full bg-emerald-100 px-3 py-1 text-[0.6875rem] font-semibold text-emerald-700"
                                         >
                                             Aktif
                                         </span>
@@ -1276,7 +1302,7 @@
                                     @else
 
                                         <span
-                                            class="rounded-full bg-red-100 px-3 py-1 text-[11px] font-semibold text-red-700"
+                                            class="rounded-full bg-red-100 px-3 py-1 text-[0.6875rem] font-semibold text-red-700"
                                         >
                                             Nonaktif
                                         </span>
@@ -1290,11 +1316,11 @@
                             {{-- Dibuat --}}
 
                             <div
-                                class="grid grid-cols-[110px_15px_1fr]"
+                                class="grid grid-cols-[6.875rem_0.9375rem_1fr]"
                             >
 
                                 <span
-                                    class="text-[12px] text-slate-500"
+                                    class="text-[0.75rem] text-slate-500"
                                 >
                                     Dibuat
                                 </span>
@@ -1329,7 +1355,7 @@
 
                                 type="button"
 
-                                class="inline-flex items-center justify-center gap-2 rounded-xl border border-blue-200 bg-blue-50 py-2.5 text-[12px] font-semibold text-blue-600 transition hover:bg-blue-100"
+                                class="inline-flex items-center justify-center gap-2 rounded-xl border border-blue-200 bg-blue-50 py-2.5 text-[0.75rem] font-semibold text-blue-600 transition hover:bg-blue-100"
 
                             >
 
@@ -1351,7 +1377,7 @@
 
                                 data-name="{{ $polygon->name }}"
 
-                                class="inline-flex items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 py-2.5 text-[12px] font-semibold text-red-600 transition hover:bg-red-100"
+                                class="inline-flex items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 py-2.5 text-[0.75rem] font-semibold text-red-600 transition hover:bg-red-100"
 
                             >
 
@@ -1388,13 +1414,13 @@
                         </div>
 
                         <h4
-                            class="mt-5 text-[15px] font-semibold text-slate-900"
+                            class="mt-5 text-[0.9375rem] font-semibold text-slate-900"
                         >
                             Poligon belum tersedia
                         </h4>
 
                         <p
-                            class="mt-2 text-[12px] leading-6 text-slate-500"
+                            class="mt-2 text-[0.75rem] leading-6 text-slate-500"
                         >
                             Kendaraan ini belum memiliki Geofence Poligon.
                         </p>
@@ -1405,7 +1431,7 @@
 
                             type="button"
 
-                            class="mt-6 inline-flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-2.5 text-[12px] font-semibold text-white transition hover:bg-violet-700"
+                            class="mt-6 inline-flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-2.5 text-[0.75rem] font-semibold text-white transition hover:bg-violet-700"
 
                         >
 
@@ -1451,7 +1477,7 @@
                     <div>
 
                         <label
-                            class="mb-2 block text-[12px] font-medium text-slate-700"
+                            class="mb-2 block text-[0.75rem] font-medium text-slate-700"
                         >
                             Nama Poligon
                         </label>
@@ -1466,7 +1492,7 @@
 
                             value="{{ $polygon->name ?? '' }}"
 
-                            class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none transition focus:border-violet-500"
+                            class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[0.8125rem] outline-none transition focus:border-violet-500"
 
                         >
 
@@ -1477,7 +1503,7 @@
                     <div>
 
                         <label
-                            class="mb-2 block text-[12px] font-medium text-slate-700"
+                            class="mb-2 block text-[0.75rem] font-medium text-slate-700"
                         >
                             Status
                         </label>
@@ -1488,7 +1514,7 @@
 
                             name="status"
 
-                            class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none transition focus:border-violet-500"
+                            class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[0.8125rem] outline-none transition focus:border-violet-500"
 
                         >
 
@@ -1519,7 +1545,7 @@
                             ></i>
 
                             <p
-                                class="text-[12px] leading-6 text-violet-700"
+                                class="text-[0.75rem] leading-6 text-violet-700"
                             >
                                 Untuk mengubah bentuk Poligon,
                                 klik tombol <strong>Ubah Area Poligon</strong>,
@@ -1538,7 +1564,7 @@
 
                         type="button"
 
-                        class="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-violet-200 bg-violet-50 text-[12px] font-semibold text-violet-600 transition hover:bg-violet-100"
+                        class="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-violet-200 bg-violet-50 text-[0.75rem] font-semibold text-violet-600 transition hover:bg-violet-100"
 
                     >
 
@@ -1562,7 +1588,7 @@
 
                             type="button"
 
-                            class="rounded-xl border border-slate-300 py-2.5 text-[12px] font-semibold transition hover:bg-slate-100"
+                            class="rounded-xl border border-slate-300 py-2.5 text-[0.75rem] font-semibold transition hover:bg-slate-100"
 
                         >
 
@@ -1576,7 +1602,7 @@
 
                             type="submit"
 
-                            class="rounded-xl bg-violet-600 py-2.5 text-[12px] font-semibold text-white transition hover:bg-violet-700"
+                            class="rounded-xl bg-violet-600 py-2.5 text-[0.75rem] font-semibold text-white transition hover:bg-violet-700"
 
                         >
 
@@ -1603,15 +1629,15 @@
     {{-- ========================================================= --}}
 
     <section
-        class="overflow-hidden rounded-[20px] border border-slate-200 bg-white vehicle-panel-shadow"
+        class="overflow-hidden rounded-[1.25rem] border border-slate-200 bg-white vehicle-panel-shadow"
     >
 
         <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 px-6 py-5">
 
             <div>
-                <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-400">Riwayat</p>
-                <h2 class="mt-2 text-[18px] font-bold text-slate-900">Riwayat Masuk &amp; Keluar Geofence</h2>
-                <p class="mt-1 max-w-2xl text-[13px] leading-6 text-slate-500">
+                <p class="text-[0.6875rem] font-semibold uppercase tracking-[0.28em] text-slate-400">Riwayat</p>
+                <h2 class="mt-2 text-[1.125rem] font-bold text-slate-900">Riwayat Masuk &amp; Keluar Geofence</h2>
+                <p class="mt-1 max-w-2xl text-[0.8125rem] leading-6 text-slate-500">
                     Setiap perpindahan dicatat per area, lengkap dengan lamanya
                     kendaraan berada pada status sebelumnya. Pengingat berulang
                     tidak dicatat di sini.
@@ -1621,7 +1647,7 @@
             <button
                 id="geofenceHistoryRefreshButton"
                 type="button"
-                class="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-[13px] font-semibold text-slate-700 transition hover:border-blue-500 hover:text-blue-600"
+                class="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-[0.8125rem] font-semibold text-slate-700 transition hover:border-blue-500 hover:text-blue-600"
             >
                 <i class="fa-solid fa-rotate"></i>
                 Muat Ulang
@@ -1634,22 +1660,22 @@
         <div class="grid grid-cols-2 gap-px bg-slate-100 sm:grid-cols-4">
 
             <div class="bg-white px-5 py-4">
-                <p class="text-[11px] font-medium uppercase tracking-[0.14em] text-slate-400">Total Kejadian</p>
+                <p class="text-[0.6875rem] font-medium uppercase tracking-[0.14em] text-slate-400">Total Kejadian</p>
                 <p id="geofenceHistoryTotal" class="mt-2 text-xl font-semibold text-slate-900">0</p>
             </div>
 
             <div class="bg-white px-5 py-4">
-                <p class="text-[11px] font-medium uppercase tracking-[0.14em] text-slate-400">Keluar</p>
+                <p class="text-[0.6875rem] font-medium uppercase tracking-[0.14em] text-slate-400">Keluar</p>
                 <p id="geofenceHistoryTotalExit" class="mt-2 text-xl font-semibold text-red-600">0</p>
             </div>
 
             <div class="bg-white px-5 py-4">
-                <p class="text-[11px] font-medium uppercase tracking-[0.14em] text-slate-400">Masuk</p>
+                <p class="text-[0.6875rem] font-medium uppercase tracking-[0.14em] text-slate-400">Masuk</p>
                 <p id="geofenceHistoryTotalEnter" class="mt-2 text-xl font-semibold text-emerald-600">0</p>
             </div>
 
             <div class="bg-white px-5 py-4">
-                <p class="text-[11px] font-medium uppercase tracking-[0.14em] text-slate-400">Hari Ini</p>
+                <p class="text-[0.6875rem] font-medium uppercase tracking-[0.14em] text-slate-400">Hari Ini</p>
                 <p id="geofenceHistoryToday" class="mt-2 text-xl font-semibold text-slate-900">0</p>
             </div>
 
@@ -1659,19 +1685,19 @@
 
         <div class="flex flex-wrap items-end gap-3 border-t border-slate-100 px-6 py-4">
 
-            <div class="min-w-[150px] flex-1">
-                <label class="mb-2 block text-[12px] font-medium text-slate-600">Dari Tanggal</label>
-                <input id="geofenceHistoryStartDate" type="date" class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none transition focus:border-blue-500">
+            <div class="min-w-[9.375rem] flex-1">
+                <label class="mb-2 block text-[0.75rem] font-medium text-slate-600">Dari Tanggal</label>
+                <input id="geofenceHistoryStartDate" type="date" class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[0.8125rem] outline-none transition focus:border-blue-500">
             </div>
 
-            <div class="min-w-[150px] flex-1">
-                <label class="mb-2 block text-[12px] font-medium text-slate-600">Sampai Tanggal</label>
-                <input id="geofenceHistoryEndDate" type="date" class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none transition focus:border-blue-500">
+            <div class="min-w-[9.375rem] flex-1">
+                <label class="mb-2 block text-[0.75rem] font-medium text-slate-600">Sampai Tanggal</label>
+                <input id="geofenceHistoryEndDate" type="date" class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[0.8125rem] outline-none transition focus:border-blue-500">
             </div>
 
-            <div class="min-w-[150px] flex-1">
-                <label class="mb-2 block text-[12px] font-medium text-slate-600">Kejadian</label>
-                <select id="geofenceHistoryEvent" class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none transition focus:border-blue-500">
+            <div class="min-w-[9.375rem] flex-1">
+                <label class="mb-2 block text-[0.75rem] font-medium text-slate-600">Kejadian</label>
+                <select id="geofenceHistoryEvent" class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[0.8125rem] outline-none transition focus:border-blue-500">
                     <option value="">Semua</option>
                     <option value="exit">Keluar</option>
                     <option value="enter">Masuk</option>
@@ -1681,7 +1707,7 @@
             <button
                 id="geofenceHistoryApplyButton"
                 type="button"
-                class="h-11 rounded-xl bg-blue-600 px-5 text-[13px] font-semibold text-white transition hover:bg-blue-700"
+                class="h-11 rounded-xl bg-blue-600 px-5 text-[0.8125rem] font-semibold text-white transition hover:bg-blue-700"
             >
                 Tampilkan
             </button>
@@ -1689,7 +1715,7 @@
             <button
                 id="geofenceHistoryResetButton"
                 type="button"
-                class="h-11 rounded-xl border border-slate-300 bg-white px-5 text-[13px] font-semibold text-slate-700 transition hover:bg-slate-100"
+                class="h-11 rounded-xl border border-slate-300 bg-white px-5 text-[0.8125rem] font-semibold text-slate-700 transition hover:bg-slate-100"
             >
                 Atur Ulang
             </button>
@@ -1706,9 +1732,9 @@
                 <i class="fa-solid fa-clock-rotate-left text-2xl text-slate-400"></i>
             </div>
 
-            <h4 class="mt-5 text-[15px] font-semibold text-slate-900">Belum ada riwayat geofence</h4>
+            <h4 class="mt-5 text-[0.9375rem] font-semibold text-slate-900">Belum ada riwayat geofence</h4>
 
-            <p class="mt-2 text-[12px] leading-6 text-slate-500">
+            <p class="mt-2 text-[0.75rem] leading-6 text-slate-500">
                 Riwayat akan terisi otomatis ketika kendaraan masuk atau keluar
                 dari salah satu area Geofence.
             </p>
@@ -1735,7 +1761,7 @@
     >
 
         <div
-            class="w-full max-w-xl overflow-hidden rounded-[24px] bg-white shadow-2xl"
+            class="w-full max-w-xl overflow-hidden rounded-[1.5rem] bg-white shadow-2xl"
         >
 
             {{-- ============================================== --}}
@@ -1749,19 +1775,19 @@
                 <div>
 
                     <p
-                        class="text-[10px] font-semibold uppercase tracking-[0.25em] text-blue-600"
+                        class="text-[0.625rem] font-semibold uppercase tracking-[0.25em] text-blue-600"
                     >
                         RADIUS
                     </p>
 
                     <h2
-                        class="mt-2 text-[20px] font-bold text-slate-900"
+                        class="mt-2 text-[1.25rem] font-bold text-slate-900"
                     >
                         Tambah Geofence Radius
                     </h2>
 
                     <p
-                        class="mt-1 text-[13px] text-slate-500"
+                        class="mt-1 text-[0.8125rem] text-slate-500"
                     >
                         Tambahkan Geofence Radius untuk kendaraan ini.
                     </p>
@@ -1803,7 +1829,7 @@
                 <div>
 
                     <label
-                        class="mb-2 block text-[12px] font-semibold text-slate-700"
+                        class="mb-2 block text-[0.75rem] font-semibold text-slate-700"
                     >
                         Nama Radius
                     </label>
@@ -1816,7 +1842,7 @@
 
                         type="text"
 
-                        class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none transition focus:border-blue-500"
+                        class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[0.8125rem] outline-none transition focus:border-blue-500"
 
                         placeholder="Contoh : Rumah"
 
@@ -1829,7 +1855,7 @@
                 <div>
 
                     <label
-                        class="mb-2 block text-[12px] font-semibold text-slate-700"
+                        class="mb-2 block text-[0.75rem] font-semibold text-slate-700"
                     >
                         Titik Pusat
                     </label>
@@ -1840,7 +1866,7 @@
 
                         name="radius_source"
 
-                        class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none transition focus:border-blue-500"
+                        class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[0.8125rem] outline-none transition focus:border-blue-500"
 
                     >
 
@@ -1861,7 +1887,7 @@
                 <div>
 
                     <label
-                        class="mb-2 block text-[12px] font-semibold text-slate-700"
+                        class="mb-2 block text-[0.75rem] font-semibold text-slate-700"
                     >
                         Radius (Meter)
                     </label>
@@ -1880,7 +1906,7 @@
 
                         value="500"
 
-                        class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none transition focus:border-blue-500"
+                        class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[0.8125rem] outline-none transition focus:border-blue-500"
 
                         placeholder="100"
 
@@ -1893,7 +1919,7 @@
                 <div>
 
                     <label
-                        class="mb-2 block text-[12px] font-semibold text-slate-700"
+                        class="mb-2 block text-[0.75rem] font-semibold text-slate-700"
                     >
                         Status
                     </label>
@@ -1904,7 +1930,7 @@
 
                         name="status"
 
-                        class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none transition focus:border-blue-500"
+                        class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[0.8125rem] outline-none transition focus:border-blue-500"
 
                     >
 
@@ -1935,7 +1961,7 @@
                         ></i>
 
                         <p
-                            class="text-[12px] leading-6 text-blue-700"
+                            class="text-[0.75rem] leading-6 text-blue-700"
                         >
                             Radius akan menggunakan koordinat
                             <b>Lokasi Rumah</b> atau
@@ -1963,7 +1989,7 @@
 
                     type="button"
 
-                    class="rounded-xl border border-slate-300 px-5 py-2.5 text-[13px] font-semibold text-slate-700 transition hover:bg-slate-100"
+                    class="rounded-xl border border-slate-300 px-5 py-2.5 text-[0.8125rem] font-semibold text-slate-700 transition hover:bg-slate-100"
 
                 >
 
@@ -1979,7 +2005,7 @@
 
                     form="createRadiusForm"
 
-                    class="rounded-xl bg-blue-600 px-5 py-2.5 text-[13px] font-semibold text-white transition hover:bg-blue-700"
+                    class="rounded-xl bg-blue-600 px-5 py-2.5 text-[0.8125rem] font-semibold text-white transition hover:bg-blue-700"
 
                 >
 
@@ -1996,7 +2022,7 @@
     </div>
 
     {{-- ========================================================= --}}
-    {{-- CREATE ADMINISTRATIVE MODAL --}}
+    {{-- MODAL BUAT GEOFENCE ADMINISTRATIF --}}
     {{-- ========================================================= --}}
 
     <div
@@ -2008,7 +2034,7 @@
     >
 
         <div
-            class="w-full max-w-2xl overflow-hidden rounded-[24px] bg-white shadow-2xl"
+            class="w-full max-w-2xl overflow-hidden rounded-[1.5rem] bg-white shadow-2xl"
         >
 
             {{-- ============================================== --}}
@@ -2022,19 +2048,19 @@
                 <div>
 
                     <p
-                        class="text-[10px] font-semibold uppercase tracking-[0.25em] text-emerald-600"
+                        class="text-[0.625rem] font-semibold uppercase tracking-[0.25em] text-emerald-600"
                     >
-                        ADMINISTRATIVE
+                        ADMINISTRATIF
                     </p>
 
                     <h2
-                        class="mt-2 text-[20px] font-bold text-slate-900"
+                        class="mt-2 text-[1.25rem] font-bold text-slate-900"
                     >
                         Tambah Geofence Administratif
                     </h2>
 
                     <p
-                        class="mt-1 text-[13px] text-slate-500"
+                        class="mt-1 text-[0.8125rem] text-slate-500"
                     >
                         Pilih wilayah administratif sebagai geofence kendaraan.
                     </p>
@@ -2074,7 +2100,7 @@
                 <div>
 
                     <label
-                        class="mb-2 block text-[12px] font-semibold text-slate-700"
+                        class="mb-2 block text-[0.75rem] font-semibold text-slate-700"
                     >
                         Nama Geofence
                     </label>
@@ -2087,7 +2113,7 @@
 
                         type="text"
 
-                        class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none focus:border-emerald-500"
+                        class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[0.8125rem] outline-none focus:border-emerald-500"
 
                         placeholder="Contoh : Area Bandung"
 
@@ -2104,7 +2130,7 @@
                 <div>
 
                     <label
-                        class="mb-2 block text-[12px] font-semibold text-slate-700"
+                        class="mb-2 block text-[0.75rem] font-semibold text-slate-700"
                     >
                         Cari Wilayah
                     </label>
@@ -2121,7 +2147,7 @@
 
                             placeholder="Cari kecamatan atau kelurahan..."
 
-                            class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none focus:border-emerald-500"
+                            class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[0.8125rem] outline-none focus:border-emerald-500"
 
                         >
 
@@ -2134,7 +2160,7 @@
 
                     <p
                         id="createAdministrativeSelected"
-                        class="mt-2 hidden text-[12px] font-semibold text-emerald-700"
+                        class="mt-2 hidden text-[0.75rem] font-semibold text-emerald-700"
                     ></p>
 
                 </div>
@@ -2144,7 +2170,7 @@
                 <div>
 
                     <label
-                        class="mb-2 block text-[12px] font-semibold text-slate-700"
+                        class="mb-2 block text-[0.75rem] font-semibold text-slate-700"
                     >
                         Status
                     </label>
@@ -2155,7 +2181,7 @@
 
                         name="status"
 
-                        class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none focus:border-emerald-500"
+                        class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[0.8125rem] outline-none focus:border-emerald-500"
 
                     >
 
@@ -2186,7 +2212,7 @@
                         ></i>
 
                         <p
-                            class="text-[12px] leading-6 text-emerald-700"
+                            class="text-[0.75rem] leading-6 text-emerald-700"
                         >
                             Setelah wilayah dipilih, sistem akan otomatis
                             mengambil batas administrasi (GeoJSON) sebagai
@@ -2213,7 +2239,7 @@
 
                     type="button"
 
-                    class="rounded-xl border border-slate-300 px-5 py-2.5 text-[13px] font-semibold text-slate-700 hover:bg-slate-100"
+                    class="rounded-xl border border-slate-300 px-5 py-2.5 text-[0.8125rem] font-semibold text-slate-700 hover:bg-slate-100"
 
                 >
 
@@ -2229,7 +2255,7 @@
 
                     form="createAdministrativeForm"
 
-                    class="rounded-xl bg-emerald-600 px-5 py-2.5 text-[13px] font-semibold text-white hover:bg-emerald-700"
+                    class="rounded-xl bg-emerald-600 px-5 py-2.5 text-[0.8125rem] font-semibold text-white hover:bg-emerald-700"
 
                 >
 
@@ -2246,7 +2272,7 @@
     </div>
 
     {{-- ========================================================= --}}
-    {{-- CREATE POLYGON MODAL --}}
+    {{-- MODAL BUAT GEOFENCE POLIGON --}}
     {{-- ========================================================= --}}
 
     <div
@@ -2258,7 +2284,7 @@
     >
 
         <div
-            class="w-full max-w-2xl overflow-hidden rounded-[24px] bg-white shadow-2xl"
+            class="w-full max-w-2xl overflow-hidden rounded-[1.5rem] bg-white shadow-2xl"
         >
 
             {{-- ============================================== --}}
@@ -2272,19 +2298,19 @@
                 <div>
 
                     <p
-                        class="text-[10px] font-semibold uppercase tracking-[0.25em] text-violet-600"
+                        class="text-[0.625rem] font-semibold uppercase tracking-[0.25em] text-violet-600"
                     >
-                        POLYGON
+                        POLIGON
                     </p>
 
                     <h2
-                        class="mt-2 text-[20px] font-bold text-slate-900"
+                        class="mt-2 text-[1.25rem] font-bold text-slate-900"
                     >
                         Tambah Geofence Poligon
                     </h2>
 
                     <p
-                        class="mt-1 text-[13px] text-slate-500"
+                        class="mt-1 text-[0.8125rem] text-slate-500"
                     >
                         Gambar area Poligon langsung pada peta.
                     </p>
@@ -2326,7 +2352,7 @@
                 <div>
 
                     <label
-                        class="mb-2 block text-[12px] font-semibold text-slate-700"
+                        class="mb-2 block text-[0.75rem] font-semibold text-slate-700"
                     >
                         Nama Poligon
                     </label>
@@ -2341,7 +2367,7 @@
 
                         placeholder="Contoh : Gudang"
 
-                        class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none transition focus:border-violet-500"
+                        class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[0.8125rem] outline-none transition focus:border-violet-500"
 
                     >
 
@@ -2354,7 +2380,7 @@
                 <div>
 
                     <label
-                        class="mb-2 block text-[12px] font-semibold text-slate-700"
+                        class="mb-2 block text-[0.75rem] font-semibold text-slate-700"
                     >
                         Status
                     </label>
@@ -2365,7 +2391,7 @@
 
                         name="status"
 
-                        class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[13px] outline-none transition focus:border-violet-500"
+                        class="h-11 w-full rounded-xl border border-slate-300 px-4 text-[0.8125rem] outline-none transition focus:border-violet-500"
 
                     >
 
@@ -2404,13 +2430,13 @@
                         <div>
 
                             <h4
-                                class="text-[13px] font-semibold text-violet-900"
+                                class="text-[0.8125rem] font-semibold text-violet-900"
                             >
                                 Cara Membuat Poligon
                             </h4>
 
                             <ol
-                                class="mt-3 list-decimal space-y-2 pl-4 text-[12px] leading-6 text-violet-700"
+                                class="mt-3 list-decimal space-y-2 pl-4 text-[0.75rem] leading-6 text-violet-700"
                             >
 
                                 <li>
@@ -2457,7 +2483,7 @@
 
                     type="button"
 
-                    class="rounded-xl border border-slate-300 px-5 py-2.5 text-[13px] font-semibold text-slate-700 transition hover:bg-slate-100"
+                    class="rounded-xl border border-slate-300 px-5 py-2.5 text-[0.8125rem] font-semibold text-slate-700 transition hover:bg-slate-100"
 
                 >
 
@@ -2473,7 +2499,7 @@
 
                     form="createPolygonForm"
 
-                    class="rounded-xl bg-violet-600 px-5 py-2.5 text-[13px] font-semibold text-white transition hover:bg-violet-700"
+                    class="rounded-xl bg-violet-600 px-5 py-2.5 text-[0.8125rem] font-semibold text-white transition hover:bg-violet-700"
 
                 >
 
@@ -2502,7 +2528,7 @@
     >
 
         <div
-            class="w-full max-w-md overflow-hidden rounded-[24px] bg-white shadow-2xl"
+            class="w-full max-w-md overflow-hidden rounded-[1.5rem] bg-white shadow-2xl"
         >
 
             {{-- ============================================== --}}
@@ -2524,13 +2550,13 @@
                 </div>
 
                 <h2
-                    class="mt-5 text-[20px] font-bold text-slate-900"
+                    class="mt-5 text-[1.25rem] font-bold text-slate-900"
                 >
                     Hapus Geofence
                 </h2>
 
                 <p
-                    class="mt-2 text-[13px] leading-6 text-slate-500"
+                    class="mt-2 text-[0.8125rem] leading-6 text-slate-500"
                 >
                     Tindakan ini tidak dapat dibatalkan.
                 </p>
@@ -2566,7 +2592,7 @@
                 >
 
                     <p
-                        class="text-[11px] uppercase tracking-[0.22em] text-slate-400"
+                        class="text-[0.6875rem] uppercase tracking-[0.22em] text-slate-400"
                     >
                         Jenis
                     </p>
@@ -2575,7 +2601,7 @@
 
                         id="deleteGeofenceTypeText"
 
-                        class="mt-2 text-[15px] font-semibold text-slate-900"
+                        class="mt-2 text-[0.9375rem] font-semibold text-slate-900"
 
                     >
 
@@ -2590,7 +2616,7 @@
                 >
 
                     <p
-                        class="text-[11px] uppercase tracking-[0.22em] text-slate-400"
+                        class="text-[0.6875rem] uppercase tracking-[0.22em] text-slate-400"
                     >
                         Nama Geofence
                     </p>
@@ -2599,7 +2625,7 @@
 
                         id="deleteGeofenceName"
 
-                        class="mt-2 text-[15px] font-semibold text-slate-900"
+                        class="mt-2 text-[0.9375rem] font-semibold text-slate-900"
 
                     >
 
@@ -2622,7 +2648,7 @@
                         ></i>
 
                         <p
-                            class="text-[12px] leading-6 text-red-700"
+                            class="text-[0.75rem] leading-6 text-red-700"
                         >
                             Geofence akan dihapus secara permanen dari kendaraan ini.
                             Data yang telah dihapus tidak dapat dikembalikan.
@@ -2648,7 +2674,7 @@
 
                     type="button"
 
-                    class="rounded-xl border border-slate-300 px-5 py-2.5 text-[13px] font-semibold text-slate-700 transition hover:bg-slate-100"
+                    class="rounded-xl border border-slate-300 px-5 py-2.5 text-[0.8125rem] font-semibold text-slate-700 transition hover:bg-slate-100"
 
                 >
 
@@ -2662,7 +2688,7 @@
 
                     type="button"
 
-                    class="rounded-xl bg-red-600 px-5 py-2.5 text-[13px] font-semibold text-white transition hover:bg-red-700"
+                    class="rounded-xl bg-red-600 px-5 py-2.5 text-[0.8125rem] font-semibold text-white transition hover:bg-red-700"
 
                 >
 

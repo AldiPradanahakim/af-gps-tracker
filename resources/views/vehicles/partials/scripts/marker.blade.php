@@ -230,7 +230,7 @@ window.VehicleMarker = {
 
         return `
 
-            <div class="min-w-[240px] rounded-[20px] bg-white p-4 shadow-[0_18px_48px_rgba(15,23,42,0.12)]">
+            <div class="min-w-[15rem] rounded-[1.25rem] bg-white p-4 shadow-[0_18px_48px_rgba(15,23,42,0.12)]">
 
                 <div class="flex items-center justify-between gap-4">
 
@@ -242,7 +242,7 @@ window.VehicleMarker = {
 
                     </div>
 
-                    <span class="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-700">
+                    <span class="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-[0.625rem] font-semibold uppercase tracking-[0.18em] text-emerald-700">
                         Terhubung
                     </span>
 
@@ -252,7 +252,7 @@ window.VehicleMarker = {
 
                     <div class="rounded-2xl bg-slate-50 p-3">
 
-                        <div class="text-[10px] uppercase tracking-[0.18em] text-slate-400">ID Perangkat</div>
+                        <div class="text-[0.625rem] uppercase tracking-[0.18em] text-slate-400">ID Perangkat</div>
 
                         <div class="mt-2 font-semibold text-slate-900">${this.state.device.device_id}</div>
 
@@ -261,12 +261,12 @@ window.VehicleMarker = {
                     <div class="grid gap-3 sm:grid-cols-2">
 
                         <div class="rounded-2xl bg-white p-3 border border-slate-100">
-                            <div class="text-[10px] uppercase tracking-[0.18em] text-slate-400">Kecepatan</div>
+                            <div class="text-[0.625rem] uppercase tracking-[0.18em] text-slate-400">Kecepatan</div>
                             <div class="mt-2 font-semibold text-slate-900">${Number(location.speed ?? 0).toFixed(0)} km/h</div>
                         </div>
 
                         <div class="rounded-2xl bg-white p-3 border border-slate-100">
-                            <div class="text-[10px] uppercase tracking-[0.18em] text-slate-400">Baterai</div>
+                            <div class="text-[0.625rem] uppercase tracking-[0.18em] text-slate-400">Baterai</div>
                             <div class="mt-2 font-semibold text-slate-900">${location.battery ?? '-'}</div>
                         </div>
 

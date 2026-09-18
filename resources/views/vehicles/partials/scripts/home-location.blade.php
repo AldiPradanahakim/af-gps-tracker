@@ -302,7 +302,7 @@ window.VehicleHomeLocation = {
         if (!container) return;
         
         if (!results.length) {
-            container.innerHTML = '<div class="px-4 py-3 text-[13px] text-slate-500">Lokasi tidak ditemukan.</div>';
+            container.innerHTML = '<div class="px-4 py-3 text-[0.8125rem] text-slate-500">Lokasi tidak ditemukan.</div>';
             container.classList.remove('hidden');
             return;
         }
@@ -316,8 +316,8 @@ window.VehicleHomeLocation = {
                 data-lng="${result.lon}"
                 data-address="${result.display_name}"
             >
-                <div class="text-[13px] font-semibold text-slate-800">${result.display_name}</div>
-                <div class="text-[11px] text-slate-500 mt-1">${Number(result.lat).toFixed(6)}, ${Number(result.lon).toFixed(6)}</div>
+                <div class="text-[0.8125rem] font-semibold text-slate-800">${result.display_name}</div>
+                <div class="text-[0.6875rem] text-slate-500 mt-1">${Number(result.lat).toFixed(6)}, ${Number(result.lon).toFixed(6)}</div>
             </button>
         `).join('');
         
@@ -404,7 +404,7 @@ window.VehicleHomeLocation = {
             });
             this.marker.bindPopup('<div class="p-2 text-sm font-semibold text-slate-800">Geser marker untuk menyesuaikan</div>').openPopup();
         } else {
-            this.marker.bindPopup(`<div class="p-2 min-w-[150px]"><div class="font-bold text-slate-800 mb-1 border-b pb-1">Lokasi Rumah</div><div class="text-xs text-slate-500">${location.address || ''}</div></div>`);
+            this.marker.bindPopup(`<div class="p-2 min-w-[9.375rem]"><div class="font-bold text-slate-800 mb-1 border-b pb-1">Lokasi Rumah</div><div class="text-xs text-slate-500">${location.address || ''}</div></div>`);
         }
         
         VehicleMap.addOverlay('home-location', this.marker);

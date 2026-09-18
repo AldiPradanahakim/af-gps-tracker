@@ -178,7 +178,7 @@ window.VehicleNotification = {
         return `
             <div class="flex flex-col items-center justify-center px-6 py-10 text-center">
                 <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-400">
-                    <i class="fa-regular fa-bell text-[18px]"></i>
+                    <i class="fa-regular fa-bell text-[1.125rem]"></i>
                 </div>
                 <div class="text-sm font-semibold text-slate-700">
                     Belum ada notifikasi
@@ -200,7 +200,7 @@ window.VehicleNotification = {
                 data-id="${notification.id}">
 
                 <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-100 text-sky-600">
-                    <i class="fa-regular fa-bell text-[13px]"></i>
+                    <i class="fa-regular fa-bell text-[0.8125rem]"></i>
                 </div>
 
                 <div class="min-w-0 flex-1">
@@ -217,7 +217,7 @@ window.VehicleNotification = {
                         ${this.escapeHtml(this.getMessage(notification))}
                     </div>
 
-                    <div class="mt-2 text-[11px] text-slate-400">
+                    <div class="mt-2 text-[0.6875rem] text-slate-400">
                         ${this.getTime(notification)}
                     </div>
 
@@ -246,7 +246,7 @@ window.VehicleNotification = {
 
         const list = this.notifications.length
 
-            ? `<div class="max-h-[420px] overflow-y-auto">${this.notifications
+            ? `<div class="max-h-[26.25rem] overflow-y-auto">${this.notifications
                 .map(notification => this.renderItem(notification))
                 .join('')}</div>`
 

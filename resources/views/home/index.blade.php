@@ -20,7 +20,7 @@
             @include('home.partials.topbar')
 
             {{-- MAP --}}
-            <main class="relative w-full overflow-hidden" style="height: calc(100vh - 72px);">
+            <main class="relative w-full overflow-hidden" style="height: calc(100vh - 4.5rem);">
 
                 @include('home.partials.map')
 
@@ -77,7 +77,7 @@ body{
 }
 
 .leaflet-popup-content-wrapper{
-    border-radius:14px;
+    border-radius:0.875rem;
 }
 /* ===========================================
 | Layer Button
@@ -91,13 +91,13 @@ body{
 
 .gps-layer-control .leaflet-control-layers-toggle{
 
-    width:70px !important;
+    width:4.375rem !important;
 
-    height:70px !important;
+    height:4.375rem !important;
 
     background-size:cover !important;
 
-    border-radius:18px;
+    border-radius:1.125rem;
 
     background-image:url('/images/map-layer.png');
 
@@ -107,9 +107,9 @@ body{
 
     background:white;
 
-    border-radius:18px;
+    border-radius:1.125rem;
 
-    padding:10px;
+    padding:0.625rem;
 
     box-shadow:0 15px 40px rgba(0,0,0,.18);
 
@@ -129,21 +129,21 @@ body{
 
 .leaflet-control-zoom{
 
-    margin-bottom:10px !important;
+    margin-bottom:0.625rem !important;
 
 }
 
 .gps-layer-control{
 
-    margin-bottom:18px !important;
+    margin-bottom:1.125rem !important;
 
 }
 
 .leaflet-bottom.leaflet-right{
 
-    bottom:120px !important;
+    bottom:7.5rem !important;
 
-    right:16px !important;
+    right:1rem !important;
 
 }
 

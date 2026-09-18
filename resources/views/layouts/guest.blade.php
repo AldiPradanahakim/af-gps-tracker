@@ -20,7 +20,8 @@
         ])
     </head>
     <body class="bg-[#F8FAFC] antialiased text-slate-900">
-        <main class="min-h-screen flex items-start lg:items-center justify-center px-4 py-6 sm:px-6 lg:py-8">
+        {{-- "safe center" - lihat catatan di components/auth/onboarding-shell. --}}
+        <main class="min-h-screen flex items-start lg:[align-items:safe_center] justify-center px-4 py-6 sm:px-6 lg:py-8">
             {{ $slot }}
         </main>
     </body>

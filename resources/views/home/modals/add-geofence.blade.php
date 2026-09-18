@@ -2297,7 +2297,7 @@
                     ]);
 
                     if (!districtResponse.ok) {
-                        throw new Error('Failed loading districts.');
+                        throw new Error('Gagal memuat daftar kecamatan.');
                     }
 
                     const response = await districtResponse.json();
@@ -2306,7 +2306,7 @@
 
                             throw new Error(
                                 response.message ??
-                                'Failed loading districts.'
+                                'Gagal memuat daftar kecamatan.'
                             );
 
                         }

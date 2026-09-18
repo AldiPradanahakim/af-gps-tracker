@@ -1,6 +1,6 @@
 <div class="relative z-[3000] border-b border-slate-200 bg-white">
 
-    <div class="flex h-[72px] items-center justify-between px-4 lg:px-8">
+    <div class="flex h-[4.5rem] items-center justify-between px-4 lg:px-8">
 
         {{-- LEFT (Hamburger) --}}
         <div class="flex items-center">
@@ -17,7 +17,7 @@
         <div class="flex flex-1 justify-start px-2 lg:px-6">
 
             {{-- SEARCH --}}
-            <div class="relative w-full max-w-[450px]">
+            <div class="relative w-full max-w-[28.125rem]">
 
                 <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
 
@@ -48,7 +48,7 @@
             {{-- SEARCH RESULT --}}
             <div
                 id="searchResult"
-                class="absolute left-0 right-0 top-[56px] z-[9999] hidden overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
+                class="absolute left-0 right-0 top-[3.5rem] z-[9999] hidden overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
 
             </div>
 
@@ -90,7 +90,7 @@
 
                 </svg>
 
-                <span class="hidden md:inline">Home</span>
+                <span class="hidden md:inline">Rumah</span>
 
             </button>
 
@@ -150,7 +150,7 @@
                     <div class="border-b border-slate-200 p-4">
 
                         <p class="mb-3 text-xs font-bold uppercase tracking-wider text-slate-400">
-                            Quick Action
+                            Aksi Cepat
                         </p>
 
                         <div class="space-y-2">
@@ -287,7 +287,7 @@
 
                     <span
                             id="notificationBadge"
-                            class="absolute -right-1 -top-1 hidden flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+                            class="absolute -right-1 -top-1 hidden flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-red-500 px-1 text-[0.625rem] font-bold text-white">
                     </span> 
 
                 </button>

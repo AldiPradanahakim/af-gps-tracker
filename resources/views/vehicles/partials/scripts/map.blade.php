@@ -213,11 +213,15 @@ window.VehicleMap = {
 
         const osm = L.tileLayer(
 
-            'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            // Tanpa {s} dan tanpa detectRetina - alasannya di
+            // home/partials/scripts/map.blade.php.
+            'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
 
             {
 
                 maxZoom: 19,
+
+                keepBuffer: 4,
 
                 attribution: '&copy; OpenStreetMap'
 

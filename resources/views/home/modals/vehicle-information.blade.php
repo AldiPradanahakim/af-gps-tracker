@@ -1,10 +1,10 @@
 <div
     id="vehicleInformationModal"
-    class="fixed inset-0 z-[99999] hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm">
+    class="fixed inset-0 z-[99999] hidden items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm">
 
-    <div class="w-full max-w-xl rounded-3xl bg-white shadow-2xl">
+    <div class="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-3xl bg-white shadow-2xl">
 
-        <div class="border-b border-slate-200 px-8 py-6">
+        <div class="border-b border-slate-200 px-6 py-4">
 
             <h2 class="text-2xl font-bold">
 
@@ -22,7 +22,7 @@
 
         <form
             id="vehicleInformationForm"
-            class="space-y-6 p-8">
+            class="space-y-4 p-6">
 
             <div>
 

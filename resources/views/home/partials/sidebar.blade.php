@@ -7,7 +7,7 @@
 
 <!-- Sidebar -->
 <div :class="mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'" 
-     class="fixed inset-y-0 left-0 z-[4001] flex h-full w-[320px] sm:w-[360px] flex-col border-r border-slate-200 bg-white transition-transform duration-300 lg:static lg:translate-x-0">
+     class="fixed inset-y-0 left-0 z-[4001] flex h-full w-[20rem] sm:w-[22.5rem] flex-col border-r border-slate-200 bg-white transition-transform duration-300 lg:static lg:translate-x-0">
 
     {{-- HEADER --}}
     <div class="flex items-center justify-between border-b border-slate-200 px-6 py-5">
@@ -21,7 +21,7 @@
 
             <div>
 
-                <h1 class="text-[13px] font-bold uppercase tracking-[0.25em] text-[#2563EB]">
+                <h1 class="text-[0.8125rem] font-bold uppercase tracking-[0.25em] text-[#2563EB]">
                     AF GPS TRACKER
                 </h1>
 
@@ -283,7 +283,7 @@
                         Belum ada kendaraan
                     </p>
 
-                    <p class="mt-1 text-[12px] text-slate-500">
+                    <p class="mt-1 text-[0.75rem] text-slate-500">
                         @if(($onboardingStep ?? null) === 'vehicle')
                             Perangkat Anda sudah aktif. Lengkapi informasi kendaraan untuk mulai memantau.
                         @else
@@ -295,9 +295,9 @@
                         id="emptyStateAddVehicle"
                         type="button"
                         data-step="{{ $onboardingStep ?? 'device' }}"
-                        class="mt-4 inline-flex items-center gap-2 rounded-xl bg-[#2563EB] px-4 py-2.5 text-[13px] font-semibold text-white shadow transition hover:bg-blue-700">
+                        class="mt-4 inline-flex items-center gap-2 rounded-xl bg-[#2563EB] px-4 py-2.5 text-[0.8125rem] font-semibold text-white shadow transition hover:bg-blue-700">
 
-                        <i class="fa-solid fa-plus text-[11px]"></i>
+                        <i class="fa-solid fa-plus text-[0.6875rem]"></i>
 
                         @if(($onboardingStep ?? null) === 'vehicle')
                             Lengkapi Informasi Kendaraan

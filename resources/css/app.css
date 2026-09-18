@@ -5,6 +5,38 @@
 @tailwind utilities;
 
 @layer base {
+    /*
+    |--------------------------------------------------------------------------
+    | Skala Antarmuka
+    |--------------------------------------------------------------------------
+    |
+    | SATU-SATUNYA tempat untuk mengatur besar-kecilnya seluruh tampilan.
+    |
+    | Seluruh ukuran di aplikasi ini (padding, tinggi tombol, ukuran huruf,
+    | lebar sidebar, tinggi peta) dinyatakan dalam `rem`, jadi semuanya
+    | mengikuti angka di bawah ini secara proporsional.
+    |
+    | 87.5% = 14px per 1rem (bawaan browser 16px). Dipilih supaya tampilan
+    | pada zoom 100% sama lapangnya dengan zoom 90% versi sebelumnya - itu
+    | ukuran yang sebelumnya harus dicapai pengguna dengan mengecilkan zoom
+    | manual, dan tanpa itu banyak form/tombol terpotong di layar laptop.
+    |
+    | Memakai persen (bukan `14px`) supaya pengguna yang menaikkan ukuran
+    | huruf bawaan browser demi keterbacaan tetap terlayani - skalanya ikut
+    | naik, bukan dipaku.
+    |
+    | Kalau suatu saat terasa terlalu kecil/besar, UBAH ANGKA INI SAJA -
+    | jangan menambal ukuran per halaman, karena itu yang dulu membuat
+    | tiap halaman punya skalanya sendiri.
+    |
+    | Catatan: breakpoint Tailwind (sm/md/lg/xl) tetap dalam px, jadi titik
+    | perpindahan layout TIDAK ikut bergeser saat angka ini diubah.
+    |--------------------------------------------------------------------------
+    */
+    html {
+        font-size: 87.5%;
+    }
+
     html,
     body {
         min-height: 100%;

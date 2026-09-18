@@ -36,14 +36,14 @@
 
     {{-- Admin Sidebar --}}
     <div :class="mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'" 
-         class="fixed inset-y-0 left-0 z-[4001] flex h-full w-[280px] flex-col border-r border-slate-200 bg-white transition-transform duration-300 lg:static lg:translate-x-0">
+         class="fixed inset-y-0 left-0 z-[4001] flex h-full w-[17.5rem] flex-col border-r border-slate-200 bg-white transition-transform duration-300 lg:static lg:translate-x-0">
         
         {{-- Header --}}
         <div class="flex h-24 shrink-0 items-center justify-between border-b border-slate-200 px-6">
             <div class="flex items-center gap-4">
                 <img src="{{ asset('images/logo-gps.png') }}" alt="AF GPS TRACKER" class="h-12 w-12 object-contain">
                 <div>
-                    <h1 class="text-[12px] font-bold uppercase tracking-[0.22em] text-[#2563EB]">AF GPS TRACKER</h1>
+                    <h1 class="text-[0.75rem] font-bold uppercase tracking-[0.22em] text-[#2563EB]">AF GPS TRACKER</h1>
                     <p class="mt-1 text-sm text-slate-500">Dasbor Admin</p>
                 </div>
             </div>

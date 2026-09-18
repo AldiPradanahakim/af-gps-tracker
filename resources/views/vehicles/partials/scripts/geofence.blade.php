@@ -240,19 +240,102 @@ window.VehicleGeofence = {
             /*
             | Mematikan pengingat langsung disimpan supaya pengguna tidak
             | perlu menekan Simpan hanya untuk berhenti menerima pesan.
-            | Menyalakannya menunggu Simpan, karena jedanya ikut dikirim.
+            | Menyalakannya menunggu Simpan, karena jedanya ikut dikirim -
+            | jadi begitu dinyalakan kolom jeda dibuka supaya pengguna bisa
+            | langsung mengisinya.
             */
 
-            if (!toggle.checked) {
+            if (toggle.checked) {
 
-                this.saveRepeatSetting();
+                this.setRepeatEditing(true);
+
+                return;
 
             }
 
+            this.setRepeatEditing(false);
+
+            this.saveRepeatSetting();
+
         });
+
+        document.getElementById('editGeofenceRepeatSetting')
+            ?.addEventListener('click', () => this.setRepeatEditing(true));
+
+        document.getElementById('cancelGeofenceRepeatSetting')
+            ?.addEventListener('click', () => {
+
+                const minutesInput = document.getElementById('geofenceRepeatMinutes');
+
+                /*
+                | Kembalikan ke nilai yang benar-benar tersimpan, bukan
+                | sekadar mengunci kolomnya - kalau tidak, angka hasil
+                | ketikan yang dibatalkan tetap terpampang seolah berlaku.
+                */
+
+                if (minutesInput) {
+
+                    minutesInput.value = this.repeatMinutesSaved ?? minutesInput.value;
+
+                }
+
+                this.setRepeatEditing(false);
+
+            });
 
         document.getElementById('saveGeofenceRepeatSetting')
             ?.addEventListener('click', () => this.saveRepeatSetting());
+
+        /*
+        | Nilai awal dari server dianggap sudah tersimpan: kolom terkunci,
+        | hanya tombol "Ubah" yang terlihat.
+        */
+
+        this.repeatMinutesSaved =
+            document.getElementById('geofenceRepeatMinutes')?.value ?? null;
+
+        this.setRepeatEditing(false);
+
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Kunci / Buka Kolom Jeda Pengingat
+    |--------------------------------------------------------------------------
+    |
+    | Mode terkunci = nilai yang sedang berlaku, tidak bisa diketik.
+    | Mode edit     = kolom terbuka, tombol Simpan & Batal muncul.
+    */
+
+    setRepeatEditing(editing) {
+
+        const minutesInput = document.getElementById('geofenceRepeatMinutes');
+
+        const editButton = document.getElementById('editGeofenceRepeatSetting');
+
+        const saveButton = document.getElementById('saveGeofenceRepeatSetting');
+
+        const cancelButton = document.getElementById('cancelGeofenceRepeatSetting');
+
+        if (minutesInput) {
+
+            minutesInput.readOnly = !editing;
+
+        }
+
+        editButton?.classList.toggle('hidden', editing);
+
+        saveButton?.classList.toggle('hidden', !editing);
+
+        cancelButton?.classList.toggle('hidden', !editing);
+
+        if (editing) {
+
+            minutesInput?.focus();
+
+            minutesInput?.select();
+
+        }
 
     },
 
@@ -292,6 +375,16 @@ window.VehicleGeofence = {
                 minutesInput.value = response.data.repeat_minutes;
 
             }
+
+            /*
+            | Server yang menentukan nilai final (dibatasi 5-180 menit di
+            | GeofenceEventService), jadi yang diingat sebagai "tersimpan"
+            | adalah jawabannya - bukan angka yang diketik pengguna.
+            */
+
+            this.repeatMinutesSaved = minutesInput?.value ?? this.repeatMinutesSaved;
+
+            this.setRepeatEditing(false);
 
             this.toast(
                 'success',
@@ -469,45 +562,45 @@ window.VehicleGeofence = {
             <div class="flex flex-wrap items-start gap-4 px-6 py-4 transition hover:bg-slate-50">
 
                 <span class="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${isExit ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'}">
-                    <i class="fa-solid ${isExit ? 'fa-right-from-bracket' : 'fa-right-to-bracket'} text-[13px]"></i>
+                    <i class="fa-solid ${isExit ? 'fa-right-from-bracket' : 'fa-right-to-bracket'} text-[0.8125rem]"></i>
                 </span>
 
-                <div class="min-w-[200px] flex-1">
+                <div class="min-w-[12.5rem] flex-1">
 
                     <div class="flex flex-wrap items-center gap-2">
 
-                        <span class="inline-flex items-center rounded-full ${isExit ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'} px-3 py-1 text-[11px] font-semibold">
+                        <span class="inline-flex items-center rounded-full ${isExit ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'} px-3 py-1 text-[0.6875rem] font-semibold">
                             ${isExit ? 'Keluar' : 'Masuk'}
                         </span>
 
-                        <span class="text-[13px] font-semibold text-slate-900">
+                        <span class="text-[0.8125rem] font-semibold text-slate-900">
                             ${this.escapeHtml(item.geofence_name)}
                         </span>
 
-                        <span class="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-600">
+                        <span class="rounded-full bg-slate-100 px-2.5 py-1 text-[0.6875rem] font-medium text-slate-600">
                             ${this.escapeHtml(item.geofence_type_label)}
                         </span>
 
                     </div>
 
-                    <p class="mt-1.5 text-[12px] text-slate-500">
+                    <p class="mt-1.5 text-[0.75rem] text-slate-500">
                         ${this.escapeHtml(item.address ?? '-')}
                     </p>
 
-                    ${durationLabel ? `<p class="mt-1 text-[12px] font-medium text-slate-600">${durationLabel}</p>` : ''}
+                    ${durationLabel ? `<p class="mt-1 text-[0.75rem] font-medium text-slate-600">${durationLabel}</p>` : ''}
 
                 </div>
 
                 <div class="text-right">
 
-                    <p class="text-[12px] font-medium text-slate-700">
+                    <p class="text-[0.75rem] font-medium text-slate-700">
                         ${this.escapeHtml(item.occurred_at ?? '-')}
                     </p>
 
                     ${hasPoint ? `
                         <button
                             type="button"
-                            class="geofence-history-focus mt-2 rounded-lg border border-slate-300 px-3 py-1.5 text-[11px] font-semibold text-slate-700 transition hover:bg-slate-100"
+                            class="geofence-history-focus mt-2 rounded-lg border border-slate-300 px-3 py-1.5 text-[0.6875rem] font-semibold text-slate-700 transition hover:bg-slate-100"
                             data-lat="${item.lat}"
                             data-lng="${item.lng}"
                         >
@@ -1112,7 +1205,7 @@ window.VehicleGeofence = {
         if (!items.length) {
 
             container.innerHTML =
-                '<div class="p-4 text-[13px] text-slate-500">Wilayah tidak ditemukan.</div>';
+                '<div class="p-4 text-[0.8125rem] text-slate-500">Wilayah tidak ditemukan.</div>';
 
             container.classList.remove('hidden');
 
@@ -1127,11 +1220,11 @@ window.VehicleGeofence = {
             button.type = 'button';
 
             button.className =
-                'block w-full border-b border-slate-100 px-4 py-3 text-left text-[13px] hover:bg-slate-50 last:border-0';
+                'block w-full border-b border-slate-100 px-4 py-3 text-left text-[0.8125rem] hover:bg-slate-50 last:border-0';
 
             button.innerHTML = `
                 <div class="font-semibold text-slate-800">${this.escapeHtml(item.name)}</div>
-                <div class="mt-1 text-[11px] text-slate-500">${this.escapeHtml(item.type)}${item.district_name ? ' &middot; ' + this.escapeHtml(item.district_name) : ''}</div>
+                <div class="mt-1 text-[0.6875rem] text-slate-500">${this.escapeHtml(item.type)}${item.district_name ? ' &middot; ' + this.escapeHtml(item.district_name) : ''}</div>
             `;
 
             button.addEventListener('click', () => onClick(item));

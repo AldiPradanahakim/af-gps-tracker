@@ -707,7 +707,7 @@ document.addEventListener('gpstracker:map-ready', () => {
 
             <div
                 id="notificationList"
-                class="max-h-[480px] overflow-y-auto">
+                class="max-h-[30rem] overflow-y-auto">
 
                 ${this.notifications
                     .map(notification => this.renderNotificationItem(notification))

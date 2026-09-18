@@ -30,8 +30,8 @@
                 id="messagesModalPrev"
                 type="button"
                 disabled
-                class="rounded-[14px] border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40">
-                <i class="fa-solid fa-chevron-left text-[11px]"></i>
+                class="rounded-[0.875rem] border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40">
+                <i class="fa-solid fa-chevron-left text-[0.6875rem]"></i>
                 Sebelumnya
             </button>
 
@@ -41,9 +41,9 @@
                 id="messagesModalNext"
                 type="button"
                 disabled
-                class="rounded-[14px] border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40">
+                class="rounded-[0.875rem] border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40">
                 Selanjutnya
-                <i class="fa-solid fa-chevron-right text-[11px]"></i>
+                <i class="fa-solid fa-chevron-right text-[0.6875rem]"></i>
             </button>
 
         </div>

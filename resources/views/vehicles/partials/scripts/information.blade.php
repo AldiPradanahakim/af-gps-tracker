@@ -646,7 +646,7 @@ window.VehicleInformation = {
 
                 'error',
 
-                'Server Error',
+                'Kesalahan Server',
 
                 'Terjadi kesalahan pada server.'
 
@@ -1098,7 +1098,7 @@ window.VehicleInformation = {
 
             activity => `
 
-                <div class="grid grid-cols-12 items-center px-6 py-3 text-[12px] text-slate-700">
+                <div class="grid grid-cols-12 items-center px-6 py-3 text-[0.75rem] text-slate-700">
                     <div class="col-span-2 text-slate-500">${this.escapeHtml(activity.received_at_label ?? activity.received_at ?? '-')}</div>
                     <div class="col-span-2">${activity.lat ?? '-'}</div>
                     <div class="col-span-2">${activity.lng ?? '-'}</div>
@@ -1374,7 +1374,7 @@ window.VehicleInformation = {
             element.textContent = 'Terputus';
 
             element.className =
-                'text-[13px] font-semibold text-slate-500';
+                'text-[0.8125rem] font-semibold text-slate-500';
 
             const container = element.parentElement;
             if (container) {
@@ -1389,7 +1389,7 @@ window.VehicleInformation = {
         element.textContent = 'Terhubung';
 
         element.className =
-            'text-[13px] font-semibold text-emerald-600';
+            'text-[0.8125rem] font-semibold text-emerald-600';
 
         const container = element.parentElement;
         if (container) {

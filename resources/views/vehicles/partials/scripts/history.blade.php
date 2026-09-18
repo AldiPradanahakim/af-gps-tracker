@@ -692,7 +692,7 @@ window.VehicleHistory = {
             );
 
             point.bindPopup(() => `
-                <div class="min-w-[220px] p-1">
+                <div class="min-w-[13.75rem] p-1">
                     <div class="text-sm font-semibold text-slate-900">${history.address ?? 'Lokasi tidak diketahui'}</div>
                     <div class="mt-1 text-xs text-slate-500">${history.received_at ?? '-'}</div>
                     <div class="mt-2 grid grid-cols-2 gap-2 text-xs text-slate-600">
@@ -1004,11 +1004,11 @@ window.VehicleHistory = {
                         <button
                             id="historyTimelineMore"
                             type="button"
-                            class="inline-flex items-center gap-2 rounded-[14px] border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-100">
-                            <i class="fa-solid fa-chevron-down text-[11px]"></i>
+                            class="inline-flex items-center gap-2 rounded-[0.875rem] border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-100">
+                            <i class="fa-solid fa-chevron-down text-[0.6875rem]"></i>
                             Muat ${Math.min(remaining, this.MAX_TIMELINE_ROWS)} titik lagi
                         </button>
-                        <p class="mt-2 text-[12px] text-slate-500">
+                        <p class="mt-2 text-[0.75rem] text-slate-500">
                             Menampilkan ${visible.length} dari ${ordered.length} titik.
                             Garis rute di peta tetap memakai seluruh titik.
                         </p>
@@ -1055,9 +1055,9 @@ window.VehicleHistory = {
             return;
         }
 
-        const active = 'rounded-[12px] bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white';
+        const active = 'rounded-[0.75rem] bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white';
 
-        const inactive = 'rounded-[12px] border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100';
+        const inactive = 'rounded-[0.75rem] border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100';
 
         desc.className = this.sortDirection === 'desc' ? active : inactive;
 
@@ -1145,9 +1145,9 @@ window.VehicleHistory = {
             return;
         }
 
-        const active = 'rounded-[12px] bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white';
+        const active = 'rounded-[0.75rem] bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white';
 
-        const inactive = 'rounded-[12px] border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100';
+        const inactive = 'rounded-[0.75rem] border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100';
 
         pointsButton.className = this.viewMode === 'points' ? active : inactive;
 
@@ -1211,11 +1211,11 @@ window.VehicleHistory = {
 
         return `
 
-            <div class="rounded-[20px] border border-slate-200 p-5">
+            <div class="rounded-[1.25rem] border border-slate-200 p-5">
 
                 <div class="flex items-center justify-between gap-3">
 
-                    <span class="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-2.5 py-0.5 text-[10px] font-semibold text-blue-600">
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-2.5 py-0.5 text-[0.625rem] font-semibold text-blue-600">
                         <i class="fa-solid fa-route"></i>
                         Perjalanan
                     </span>
@@ -1268,11 +1268,11 @@ window.VehicleHistory = {
 
                 <div class="flex items-center justify-between gap-4">
 
-                    <div class="min-w-0">
+                    <div class="min-w-0 flex-1">
 
                         <div class="flex items-center gap-2">
 
-                            <span class="inline-flex items-center gap-1.5 rounded-full ${isMoving ? 'bg-blue-50 text-blue-600' : 'bg-orange-50 text-orange-600'} px-2.5 py-0.5 text-[10px] font-semibold">
+                            <span class="inline-flex items-center gap-1.5 rounded-full ${isMoving ? 'bg-blue-50 text-blue-600' : 'bg-orange-50 text-orange-600'} px-2.5 py-0.5 text-[0.625rem] font-semibold">
                                 <span class="h-1.5 w-1.5 rounded-full ${isMoving ? 'bg-blue-500' : 'bg-orange-500'}"></span>
                                 ${isMoving ? 'Bergerak' : 'Berhenti'}
                             </span>
@@ -1287,7 +1287,13 @@ window.VehicleHistory = {
                             ${history.address ?? '-'}
                         </h4>
 
-                        <p class="mt-1 text-xs text-slate-400">
+                        {{--
+                            "truncate" wajib di sini: koordinat 6 desimal
+                            selalu lebih panjang dari kolom kiri pada layar
+                            sempit, dan tanpa ini barisnya melebar sampai
+                            menindih kolom kecepatan di sebelah kanan.
+                        --}}
+                        <p class="mt-1 truncate text-xs text-slate-400">
                             Lat ${history.lat != null ? Number(history.lat).toFixed(6) : '-'},
                             Lng ${history.lng != null ? Number(history.lng).toFixed(6) : '-'}
                         </p>
@@ -1300,7 +1306,7 @@ window.VehicleHistory = {
                             ${Number(history.speed ?? 0).toFixed(0)}
                         </div>
 
-                        <div class="text-[11px] text-slate-400">
+                        <div class="text-[0.6875rem] text-slate-400">
                             km/jam
                         </div>
 

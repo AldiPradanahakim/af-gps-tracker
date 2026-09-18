@@ -132,7 +132,7 @@ window.VehicleMessages = {
             >
 
                 <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${iconConfig.color}">
-                    <i class="${iconConfig.icon} text-[15px]"></i>
+                    <i class="${iconConfig.icon} text-[0.9375rem]"></i>
                 </div>
 
                 <div class="min-w-0 flex-1">
@@ -140,7 +140,7 @@ window.VehicleMessages = {
                     <div class="flex items-center justify-between gap-2">
                         <div class="truncate text-sm font-semibold text-slate-900">${this.escapeAttribute(title)}</div>
                         ${isRead
-                            ? '<span class="shrink-0 text-[10px] font-medium text-slate-400">Dibaca</span>'
+                            ? '<span class="shrink-0 text-[0.625rem] font-medium text-slate-400">Dibaca</span>'
                             : '<span class="shrink-0 h-2 w-2 rounded-full bg-blue-500"></span>'
                         }
                     </div>
@@ -154,7 +154,7 @@ window.VehicleMessages = {
                         <span class="text-xs text-slate-400">${this.formatTime(notification.created_at)}</span>
 
                         ${hasLocation ? `
-                            <span class="text-[11px] font-semibold text-blue-600">
+                            <span class="text-[0.6875rem] font-semibold text-blue-600">
                                 <i class="fa-solid fa-location-dot mr-1"></i>Lihat titik di peta
                             </span>
                         ` : ''}
@@ -173,7 +173,7 @@ window.VehicleMessages = {
         return `
             <div class="flex flex-col items-center justify-center px-6 py-14 text-center">
                 <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 text-slate-400">
-                    <i class="fa-regular fa-bell text-[22px]"></i>
+                    <i class="fa-regular fa-bell text-[1.375rem]"></i>
                 </div>
                 <div class="text-sm font-semibold text-slate-700">Belum ada pesan</div>
             </div>

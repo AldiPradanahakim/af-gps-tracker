@@ -21,12 +21,32 @@ document.addEventListener('DOMContentLoaded', () => {
         118.0148,
     ];
 
+    /*
+    |--------------------------------------------------------------------------
+    | Base Tile Layer
+    |--------------------------------------------------------------------------
+    |
+    | Tanpa "{s}": subdomain a/b/c warisan era HTTP/1.1 (biar browser bisa
+    | membuka lebih banyak koneksi paralel). Dengan HTTP/2 justru merugikan -
+    | tiga host berarti tiga handshake TLS terpisah, bukan satu koneksi yang
+    | dipakai bersama.
+    |
+    | detectRetina SENGAJA TIDAK dinyalakan. Di layar HiDPI - termasuk laptop
+    | biasa dengan penskalaan Windows 125% - opsi itu membuat Leaflet menarik
+    | ubin satu tingkat zoom lebih dalam, yaitu EMPAT KALI jumlah request ke
+    | server ubin gratis OpenStreetMap yang memang dibatasi lajunya. Itulah
+    | penyebab utama peta terasa lama muncul saat halaman dibuka.
+    |--------------------------------------------------------------------------
+    */
+
     const defaultLayer = L.tileLayer(
-    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
         {
             maxZoom:19,
             minZoom:4,
-            detectRetina:true,
+
+            // Simpan ubin di luar layar supaya geser/zoom tidak memuat ulang.
+            keepBuffer:4,
         }
     );
 
@@ -1209,7 +1229,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         marker.bindPopup(`
 
-        <div class="min-w-[230px]">
+        <div class="min-w-[14.375rem]">
 
             <div class="mb-2 flex items-center gap-2">
 

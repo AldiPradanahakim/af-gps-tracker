@@ -14,7 +14,7 @@
         <div class="absolute inset-0 z-[500] flex items-center justify-center bg-white/95">
             <div class="flex flex-col items-center gap-3 px-8 text-center">
                 <div class="flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 text-slate-400">
-                    <i class="fa-solid fa-location-crosshairs text-[22px]"></i>
+                    <i class="fa-solid fa-location-crosshairs text-[1.375rem]"></i>
                 </div>
                 <p class="text-sm font-semibold text-slate-700">
                     Lokasi kendaraan belum tersedia.
@@ -28,7 +28,7 @@
     {{-- ========================================================= --}}
 
     <div class="pointer-events-none absolute left-4 top-4 z-[600]">
-        <span class="pointer-events-auto rounded-full bg-white/95 px-3 py-1.5 text-[11px] font-bold text-[#2563EB] shadow-md backdrop-blur">
+        <span class="pointer-events-auto rounded-full bg-white/95 px-3 py-1.5 text-[0.6875rem] font-bold text-[#2563EB] shadow-md backdrop-blur">
             {{ config('app.name') }}
         </span>
     </div>
@@ -70,8 +70,9 @@ document.addEventListener('DOMContentLoaded', function () {
         attributionControl: false,
     }).setView([latitude, longitude], 16);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
+        keepBuffer: 4,
     }).addTo(map);
 
     /*

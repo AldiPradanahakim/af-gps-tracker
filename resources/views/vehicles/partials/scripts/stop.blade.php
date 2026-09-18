@@ -387,12 +387,12 @@ window.VehicleStop = {
 
         return `
             <tr class="hover:bg-slate-50">
-                <td class="px-6 py-4 text-[13px] text-slate-700">${stop.started_at ?? '-'}</td>
-                <td class="px-6 py-4 text-[13px] text-slate-700">${stop.ended_at ?? '-'}</td>
-                <td class="px-6 py-4 text-[13px] font-semibold text-slate-900">${duration}</td>
-                <td class="px-6 py-4 text-[13px] text-slate-700">${stop.address ?? '-'}</td>
+                <td class="px-6 py-4 text-[0.8125rem] text-slate-700">${stop.started_at ?? '-'}</td>
+                <td class="px-6 py-4 text-[0.8125rem] text-slate-700">${stop.ended_at ?? '-'}</td>
+                <td class="px-6 py-4 text-[0.8125rem] font-semibold text-slate-900">${duration}</td>
+                <td class="px-6 py-4 text-[0.8125rem] text-slate-700">${stop.address ?? '-'}</td>
                 <td class="px-6 py-4 text-center">
-                    <span class="inline-flex items-center gap-2 rounded-full ${isOngoing ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600'} px-3 py-1 text-[11px] font-semibold">
+                    <span class="inline-flex items-center gap-2 rounded-full ${isOngoing ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600'} px-3 py-1 text-[0.6875rem] font-semibold">
                         <span class="h-2 w-2 rounded-full ${isOngoing ? 'bg-amber-500' : 'bg-emerald-500'}"></span>
                         ${isOngoing ? 'Sedang Berhenti' : 'Selesai'}
                     </span>
@@ -400,7 +400,7 @@ window.VehicleStop = {
                 <td class="px-6 py-4 text-center">
                     <button
                         type="button"
-                        class="stop-focus rounded-lg border border-slate-300 px-4 py-2 text-[12px] font-semibold text-slate-700 transition hover:bg-slate-100"
+                        class="stop-focus rounded-lg border border-slate-300 px-4 py-2 text-[0.75rem] font-semibold text-slate-700 transition hover:bg-slate-100"
                         data-id="${stop.id}"
                     >
                         Lihat di Peta

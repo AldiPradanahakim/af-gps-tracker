@@ -17,16 +17,16 @@
 
             <!-- Hamburger Button -->
             <button @click="mobileMenuOpen = !mobileMenuOpen" type="button" class="lg:hidden rounded-xl p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700">
-                <i class="fa-solid fa-bars text-[16px]"></i>
+                <i class="fa-solid fa-bars text-[1rem]"></i>
             </button>
 
             <a
                 href="{{ route('home') }}"
-                class="flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 md:px-4 text-[13px] font-semibold text-slate-700 transition-all duration-200 hover:border-blue-300 hover:text-blue-600"
+                class="flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 md:px-4 text-[0.8125rem] font-semibold text-slate-700 transition-all duration-200 hover:border-blue-300 hover:text-blue-600"
             >
 
                 <i
-                    class="fa-solid fa-arrow-left text-[12px]"
+                    class="fa-solid fa-arrow-left text-[0.75rem]"
                 ></i>
 
                 <span class="hidden md:inline">
@@ -42,7 +42,7 @@
         {{-- ========================================================= --}}
 
         <div
-            class="flex-1 px-2 lg:px-4 max-w-[560px]"
+            class="flex-1 px-2 lg:px-4 max-w-[35rem]"
         >
 
             <div
@@ -50,7 +50,7 @@
             >
 
                 <i
-                    class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-[13px] text-slate-400"
+                    class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-[0.8125rem] text-slate-400"
                 ></i>
 
                 <input
@@ -63,7 +63,7 @@
 
                     placeholder="Cari lokasi atau alamat..."
 
-                    class="h-10 w-full rounded-full border border-slate-200 bg-white pl-11 pr-4 text-[13px] outline-none transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                    class="h-10 w-full rounded-full border border-slate-200 bg-white pl-11 pr-4 text-[0.8125rem] outline-none transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
 
                 >
 
@@ -104,14 +104,14 @@
                 >
 
                     <i
-                        class="fa-regular fa-bell text-[15px]"
+                        class="fa-regular fa-bell text-[0.9375rem]"
                     ></i>
 
                     <span
 
                         id="vehicleNotificationBadge"
 
-                        class="absolute -right-1 -top-1 hidden h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-bold leading-none text-white"
+                        class="absolute -right-1 -top-1 hidden h-4 min-w-[1rem] items-center justify-center rounded-full bg-red-500 px-1 text-[0.5625rem] font-bold leading-none text-white"
 
                     ></span>
 

@@ -4,7 +4,7 @@
 
     <div
         id="toast-card"
-        class="flex min-w-[340px] items-center gap-4 rounded-2xl bg-white px-5 py-4 shadow-2xl ring-1 ring-slate-200">
+        class="flex min-w-[21.25rem] items-center gap-4 rounded-2xl bg-white px-5 py-4 shadow-2xl ring-1 ring-slate-200">
 
         <div
             id="toast-icon"

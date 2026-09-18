@@ -8,7 +8,7 @@
 <aside
     id="vehicleSidebar"
     :class="mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'"
-    class="fixed inset-y-0 left-0 z-[4001] flex h-screen w-[280px] flex-shrink-0 flex-col border-r border-slate-200 bg-white transition-transform duration-300 lg:static lg:w-[240px] lg:translate-x-0"
+    class="fixed inset-y-0 left-0 z-[4001] flex h-screen w-[17.5rem] flex-shrink-0 flex-col border-r border-slate-200 bg-white transition-transform duration-300 lg:static lg:w-[15rem] lg:translate-x-0"
 >
 
     {{-- ========================================================= --}}
@@ -37,13 +37,13 @@
             <div class="leading-tight">
 
                 <h1
-                    class="text-[13px] font-bold tracking-wide text-slate-900"
+                    class="text-[0.8125rem] font-bold tracking-wide text-slate-900"
                 >
                     AF GPS TRACKER
                 </h1>
 
                 <p
-                    class="mt-0.5 text-[9px] font-semibold uppercase tracking-[0.22em] text-slate-400"
+                    class="mt-0.5 text-[0.5625rem] font-semibold uppercase tracking-[0.22em] text-slate-400"
                 >
                     Sistem Pemantauan Kendaraan
                 </p>
@@ -74,7 +74,7 @@
             <div>
 
                 <p
-                    class="mb-3 text-[10px] font-bold uppercase tracking-[0.22em] text-slate-400"
+                    class="mb-3 text-[0.625rem] font-bold uppercase tracking-[0.22em] text-slate-400"
                 >
                     Kendaraan
                 </p>
@@ -126,13 +126,13 @@
                                 >
 
                                     <p
-                                        class="truncate text-[12px] font-semibold text-slate-900"
+                                        class="truncate text-[0.75rem] font-semibold text-slate-900"
                                     >
                                         {{ $item->vehicle->vehicle_name }}
                                     </p>
 
                                     <p
-                                        class="mt-0.5 truncate text-[10px] text-slate-400"
+                                        class="mt-0.5 truncate text-[0.625rem] text-slate-400"
                                     >
                                         {{ $item->device_id }}
                                     </p>
@@ -142,7 +142,7 @@
                             </div>
 
                             <i
-                                class="fa-solid fa-chevron-right text-[10px] text-slate-300 transition group-hover:text-blue-500"
+                                class="fa-solid fa-chevron-right text-[0.625rem] text-slate-300 transition group-hover:text-blue-500"
                             ></i>
 
                         </a>
@@ -162,10 +162,10 @@
                 <button
                     id="sidebarAddVehicleButton"
                     type="button"
-                    class="flex h-11 w-full items-center justify-center gap-2 rounded-2xl border border-blue-200 bg-white text-[12px] font-semibold text-blue-700 transition-all duration-200 hover:border-blue-300 hover:bg-blue-50"
+                    class="flex h-11 w-full items-center justify-center gap-2 rounded-2xl border border-blue-200 bg-white text-[0.75rem] font-semibold text-blue-700 transition-all duration-200 hover:border-blue-300 hover:bg-blue-50"
                 >
 
-                    <i class="fa-solid fa-plus text-[10px]"></i>
+                    <i class="fa-solid fa-plus text-[0.625rem]"></i>
 
                     <span>
                         Tambah Kendaraan
@@ -182,7 +182,7 @@
             <div class="mt-6">
 
                 <p
-                    class="mb-3 text-[10px] font-bold uppercase tracking-[0.22em] text-slate-400"
+                    class="mb-3 text-[0.625rem] font-bold uppercase tracking-[0.22em] text-slate-400"
                 >
                     Menu
                 </p>
@@ -205,11 +205,11 @@
                         <span
                             class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-blue-100 text-blue-600"
                         >
-                            <i class="fa-solid fa-circle-info text-[13px]"></i>
+                            <i class="fa-solid fa-circle-info text-[0.8125rem]"></i>
                         </span>
 
                         <span
-                            class="text-[12px] font-semibold text-blue-700"
+                            class="text-[0.75rem] font-semibold text-blue-700"
                         >
                             Informasi Kendaraan
                         </span>
@@ -229,11 +229,11 @@
                         <span
                             class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition group-hover:bg-blue-50 group-hover:text-blue-600"
                         >
-                            <i class="fa-solid fa-house text-[13px]"></i>
+                            <i class="fa-solid fa-house text-[0.8125rem]"></i>
                         </span>
 
                         <span
-                            class="text-[12px] font-semibold text-slate-700 transition group-hover:text-blue-600"
+                            class="text-[0.75rem] font-semibold text-slate-700 transition group-hover:text-blue-600"
                         >
                             Lokasi Rumah
                         </span>
@@ -252,11 +252,11 @@
                         <span
                             class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition group-hover:bg-blue-50 group-hover:text-blue-600"
                         >
-                            <i class="fa-solid fa-draw-polygon text-[13px]"></i>
+                            <i class="fa-solid fa-draw-polygon text-[0.8125rem]"></i>
                         </span>
 
                         <span
-                            class="text-[12px] font-semibold text-slate-700 transition group-hover:text-blue-600"
+                            class="text-[0.75rem] font-semibold text-slate-700 transition group-hover:text-blue-600"
                         >
                             Geofence
                         </span>
@@ -276,11 +276,11 @@
                         <span
                             class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition group-hover:bg-blue-50 group-hover:text-blue-600"
                         >
-                            <i class="fa-solid fa-route text-[13px]"></i>
+                            <i class="fa-solid fa-route text-[0.8125rem]"></i>
                         </span>
 
                         <span
-                            class="text-[12px] font-semibold text-slate-700 transition group-hover:text-blue-600"
+                            class="text-[0.75rem] font-semibold text-slate-700 transition group-hover:text-blue-600"
                         >
                             Riwayat Perjalanan
                         </span>
@@ -299,11 +299,11 @@
                         <span
                             class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition group-hover:bg-blue-50 group-hover:text-blue-600"
                         >
-                            <i class="fa-regular fa-bell text-[13px]"></i>
+                            <i class="fa-regular fa-bell text-[0.8125rem]"></i>
                         </span>
 
                         <span
-                            class="text-[12px] font-semibold text-slate-700 transition group-hover:text-blue-600"
+                            class="text-[0.75rem] font-semibold text-slate-700 transition group-hover:text-blue-600"
                         >
                             Pesan
                         </span>
@@ -322,11 +322,11 @@
                         <span
                             class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition group-hover:bg-blue-50 group-hover:text-blue-600"
                         >
-                            <i class="fa-solid fa-stopwatch text-[13px]"></i>
+                            <i class="fa-solid fa-stopwatch text-[0.8125rem]"></i>
                         </span>
 
                         <span
-                            class="text-[12px] font-semibold text-slate-700 transition group-hover:text-blue-600"
+                            class="text-[0.75rem] font-semibold text-slate-700 transition group-hover:text-blue-600"
                         >
                             Kendaraan Berhenti
                         </span>
@@ -345,11 +345,11 @@
                         <span
                             class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition group-hover:bg-blue-50 group-hover:text-blue-600"
                         >
-                            <i class="fa-solid fa-gauge-high text-[13px]"></i>
+                            <i class="fa-solid fa-gauge-high text-[0.8125rem]"></i>
                         </span>
 
                         <span
-                            class="text-[12px] font-semibold text-slate-700 transition group-hover:text-blue-600"
+                            class="text-[0.75rem] font-semibold text-slate-700 transition group-hover:text-blue-600"
                         >
                             Batas Kecepatan
                         </span>
@@ -384,7 +384,7 @@
                        rounded-2xl
                        border border-red-200
                        bg-red-50
-                       text-[12px] font-semibold text-red-600
+                       text-[0.75rem] font-semibold text-red-600
                        transition-all duration-200
                        hover:bg-red-100
                        hover:border-red-300"
@@ -392,7 +392,7 @@
             >
 
                 <i
-                    class="fa-solid fa-trash text-[12px]"
+                    class="fa-solid fa-trash text-[0.75rem]"
                 ></i>
 
                 <span>

@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     | Edit/Hapus hanya tersedia di halaman Detail Kendaraan.
                     */
                     marker.bindPopup(`
-                        <div class="p-2 min-w-[200px]">
+                        <div class="p-2 min-w-[12.5rem]">
                             <div class="font-bold text-slate-800 mb-1 border-b pb-1">${title}</div>
                             <div class="text-xs text-slate-500">${address}</div>
                         </div>
@@ -280,7 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
             );
 
             if (!response.ok) {
-                throw new Error('Search gagal.');
+                throw new Error('Pencarian gagal.');
             }
 
             const items = await response.json();
@@ -589,7 +589,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             GPSTracker.showToast(
                 'error',
-                'Error',
+                'Gagal',
                 'Terjadi kesalahan pada server.'
             );
 

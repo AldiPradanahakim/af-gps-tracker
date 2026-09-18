@@ -1607,7 +1607,7 @@ document.addEventListener('gpstracker:map-ready', () => {
 
             'error',
 
-            'Server Error',
+            'Kesalahan Server',
 
             'Terjadi kesalahan pada server.'
 
@@ -1934,7 +1934,7 @@ document.addEventListener('gpstracker:map-ready', () => {
 
             'error',
 
-            'Server Error',
+            'Kesalahan Server',
 
             'Terjadi kesalahan pada server.'
 

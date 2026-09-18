@@ -1,9 +1,9 @@
 {{-- ========================================================= --}}
-{{-- HOME LOCATION --}}
+{{-- LOKASI RUMAH --}}
 {{-- ========================================================= --}}
 
 <section
-    class="overflow-hidden rounded-[26px] border border-slate-200 bg-white vehicle-panel-shadow"
+    class="overflow-hidden rounded-[1.625rem] border border-slate-200 bg-white vehicle-panel-shadow"
 >
 
     {{-- ===================================================== --}}
@@ -17,21 +17,21 @@
         <div>
 
             <p
-                class="text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-400"
+                class="text-[0.6875rem] font-semibold uppercase tracking-[0.28em] text-slate-400"
             >
-                HOME LOCATION
+                LOKASI RUMAH
             </p>
 
             <h2
-                class="mt-2 text-[20px] font-bold text-slate-900"
+                class="mt-2 text-[1.25rem] font-bold text-slate-900"
             >
                 Lokasi Rumah Kendaraan
             </h2>
 
             <p
-                class="mt-2 max-w-3xl text-[13px] leading-6 text-slate-500"
+                class="mt-2 max-w-3xl text-[0.8125rem] leading-6 text-slate-500"
             >
-                Tentukan lokasi Home kendaraan sebagai titik acuan monitoring.
+                Tentukan lokasi Rumah kendaraan sebagai titik acuan monitoring.
                 Lokasi dapat dicari menggunakan pencarian alamat ataupun
                 dipindahkan langsung melalui Drag & Drop marker pada peta.
             </p>
@@ -55,7 +55,7 @@
 
                 type="button"
 
-                class="{{ $homeLocation ? 'hidden' : 'inline-flex' }} h-10 items-center gap-2 rounded-xl bg-blue-600 px-5 text-[13px] font-semibold text-white transition hover:bg-blue-700"
+                class="{{ $homeLocation ? 'hidden' : 'inline-flex' }} h-10 items-center gap-2 rounded-xl bg-blue-600 px-5 text-[0.8125rem] font-semibold text-white transition hover:bg-blue-700"
 
             >
 
@@ -73,7 +73,7 @@
 
                 type="button"
 
-                class="{{ $homeLocation ? 'inline-flex' : 'hidden' }} h-10 items-center gap-2 rounded-xl border border-slate-300 bg-white px-5 text-[13px] font-semibold text-slate-700 transition hover:border-blue-500 hover:text-blue-600"
+                class="{{ $homeLocation ? 'inline-flex' : 'hidden' }} h-10 items-center gap-2 rounded-xl border border-slate-300 bg-white px-5 text-[0.8125rem] font-semibold text-slate-700 transition hover:border-blue-500 hover:text-blue-600"
 
             >
 
@@ -91,7 +91,7 @@
 
                 type="button"
 
-                class="{{ $homeLocation ? 'inline-flex' : 'hidden' }} h-10 items-center gap-2 rounded-xl border border-red-300 bg-white px-5 text-[13px] font-semibold text-red-600 transition hover:bg-red-50"
+                class="{{ $homeLocation ? 'inline-flex' : 'hidden' }} h-10 items-center gap-2 rounded-xl border border-red-300 bg-white px-5 text-[0.8125rem] font-semibold text-red-600 transition hover:bg-red-50"
 
             >
 
@@ -118,7 +118,7 @@
     >
 
         <div
-            class="grid grid-cols-[220px_20px_1fr] gap-y-5 text-[13px]"
+            class="grid grid-cols-[13.75rem_1.25rem_1fr] gap-y-5 text-[0.8125rem]"
         >
 
             {{-- ============================================== --}}
@@ -150,7 +150,7 @@
                             ? 'bg-emerald-50 text-emerald-600'
                             : 'bg-red-50 text-red-600'
                         }}
-                        px-3 py-1 text-[12px] font-semibold"
+                        px-3 py-1 text-[0.75rem] font-semibold"
 
                     >
 
@@ -177,7 +177,7 @@
                 @else
 
                     <span
-                        class="inline-flex items-center gap-2 rounded-full bg-red-50 px-3 py-1 text-[12px] font-semibold text-red-600"
+                        class="inline-flex items-center gap-2 rounded-full bg-red-50 px-3 py-1 text-[0.75rem] font-semibold text-red-600"
                     >
 
                         <span
@@ -307,13 +307,13 @@
             </div>
 
             <h3
-                class="mt-6 text-[22px] font-bold text-slate-900"
+                class="mt-6 text-[1.375rem] font-bold text-slate-900"
             >
                 Lokasi Rumah Belum Ditentukan
             </h3>
 
             <p
-                class="mx-auto mt-3 max-w-xl text-[14px] leading-7 text-slate-500"
+                class="mx-auto mt-3 max-w-xl text-[0.875rem] leading-7 text-slate-500"
             >
                 Kendaraan ini belum memiliki Lokasi Rumah.
                 Tambahkan Lokasi Rumah terlebih dahulu untuk
@@ -326,7 +326,7 @@
 
                 type="button"
 
-                class="mt-8 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-[13px] font-semibold text-white transition hover:bg-blue-700"
+                class="mt-8 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-[0.8125rem] font-semibold text-white transition hover:bg-blue-700"
 
             >
 
@@ -369,7 +369,7 @@
             <div>
 
                 <label
-                    class="mb-2 block text-[12px] font-semibold text-slate-700"
+                    class="mb-2 block text-[0.75rem] font-semibold text-slate-700"
                 >
                     Cari Lokasi
                 </label>
@@ -390,7 +390,7 @@
 
                         placeholder="Cari alamat atau lokasi..."
 
-                        class="h-12 w-full rounded-xl border border-slate-300 pl-11 pr-4 text-[13px] outline-none transition focus:border-blue-500"
+                        class="h-12 w-full rounded-xl border border-slate-300 pl-11 pr-4 text-[0.8125rem] outline-none transition focus:border-blue-500"
 
                     >
 
@@ -423,7 +423,7 @@
                 <div>
 
                     <label
-                        class="mb-2 block text-[12px] font-semibold text-slate-700"
+                        class="mb-2 block text-[0.75rem] font-semibold text-slate-700"
                     >
                         Lintang
                     </label>
@@ -440,7 +440,7 @@
 
                         value="{{ isset($homeLocation['lat']) ? number_format((float)$homeLocation['lat'], 6) : '' }}"
 
-                        class="h-11 w-full rounded-xl border border-slate-300 bg-slate-50 px-4 text-[13px]"
+                        class="h-11 w-full rounded-xl border border-slate-300 bg-slate-50 px-4 text-[0.8125rem]"
 
                     >
 
@@ -451,7 +451,7 @@
                 <div>
 
                     <label
-                        class="mb-2 block text-[12px] font-semibold text-slate-700"
+                        class="mb-2 block text-[0.75rem] font-semibold text-slate-700"
                     >
                         Bujur
                     </label>
@@ -468,7 +468,7 @@
 
                         value="{{ isset($homeLocation['lng']) ? number_format((float)$homeLocation['lng'], 6) : '' }}"
 
-                        class="h-11 w-full rounded-xl border border-slate-300 bg-slate-50 px-4 text-[13px]"
+                        class="h-11 w-full rounded-xl border border-slate-300 bg-slate-50 px-4 text-[0.8125rem]"
 
                     >
 
@@ -483,7 +483,7 @@
             <div>
 
                 <label
-                    class="mb-2 block text-[12px] font-semibold text-slate-700"
+                    class="mb-2 block text-[0.75rem] font-semibold text-slate-700"
                 >
                     Alamat
                 </label>
@@ -498,7 +498,7 @@
 
                     readonly
 
-                    class="w-full rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-[13px] leading-6"
+                    class="w-full rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-[0.8125rem] leading-6"
 
                 >{{ $homeLocation['display_name'] ?? '' }}</textarea>
 
@@ -523,13 +523,13 @@
                     <div>
 
                         <h4
-                            class="text-[13px] font-semibold text-blue-700"
+                            class="text-[0.8125rem] font-semibold text-blue-700"
                         >
                             Informasi
                         </h4>
 
                         <p
-                            class="mt-2 text-[12px] leading-6 text-blue-700"
+                            class="mt-2 text-[0.75rem] leading-6 text-blue-700"
                         >
                             Penanda Lokasi Rumah pada peta dapat digeser
                             menggunakan <strong>Drag & Drop</strong>.
@@ -558,7 +558,7 @@
 
                     type="button"
 
-                    class="rounded-xl border border-slate-300 px-5 py-2.5 text-[13px] font-semibold text-slate-700 transition hover:bg-slate-100"
+                    class="rounded-xl border border-slate-300 px-5 py-2.5 text-[0.8125rem] font-semibold text-slate-700 transition hover:bg-slate-100"
 
                 >
 
@@ -572,7 +572,7 @@
 
                     type="submit"
 
-                    class="rounded-xl bg-blue-600 px-5 py-2.5 text-[13px] font-semibold text-white transition hover:bg-blue-700"
+                    class="rounded-xl bg-blue-600 px-5 py-2.5 text-[0.8125rem] font-semibold text-white transition hover:bg-blue-700"
 
                 >
 
@@ -631,13 +631,13 @@
                 <div>
 
                     <h3
-                        class="text-[18px] font-bold text-slate-900"
+                        class="text-[1.125rem] font-bold text-slate-900"
                     >
                         Hapus Lokasi Rumah
                     </h3>
 
                     <p
-                        class="mt-1 text-[13px] text-slate-500"
+                        class="mt-1 text-[0.8125rem] text-slate-500"
                     >
                         Tindakan ini tidak dapat dibatalkan.
                     </p>
@@ -657,7 +657,7 @@
         >
 
             <p
-                class="text-[14px] leading-7 text-slate-600"
+                class="text-[0.875rem] leading-7 text-slate-600"
             >
 
                 Apakah Anda yakin ingin menghapus
@@ -679,14 +679,14 @@
                     ></i>
 
                     <p
-                        class="text-[13px] leading-6 text-red-700"
+                        class="text-[0.8125rem] leading-6 text-red-700"
                     >
 
                         Setelah Lokasi Rumah dihapus,
                         sistem tidak lagi memiliki titik
-                        acuan Home untuk kendaraan ini
-                        sampai pengguna membuat Home
-                        Location baru.
+                        acuan Rumah untuk kendaraan ini
+                        sampai pengguna membuat Lokasi
+                        Rumah baru.
 
                     </p>
 
@@ -710,7 +710,7 @@
 
                 type="button"
 
-                class="rounded-xl border border-slate-300 px-5 py-2.5 text-[13px] font-semibold text-slate-700 transition hover:bg-slate-100"
+                class="rounded-xl border border-slate-300 px-5 py-2.5 text-[0.8125rem] font-semibold text-slate-700 transition hover:bg-slate-100"
 
             >
 
@@ -724,7 +724,7 @@
 
                 type="button"
 
-                class="rounded-xl bg-red-600 px-5 py-2.5 text-[13px] font-semibold text-white transition hover:bg-red-700"
+                class="rounded-xl bg-red-600 px-5 py-2.5 text-[0.8125rem] font-semibold text-white transition hover:bg-red-700"
 
             >
 

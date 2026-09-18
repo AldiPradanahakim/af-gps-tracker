@@ -1,9 +1,9 @@
 {{-- ========================================================= --}}
-{{-- STOP DETECTION --}}
+{{-- DETEKSI BERHENTI --}}
 {{-- ========================================================= --}}
 
 <section
-    class="overflow-hidden rounded-[26px] border border-slate-200 bg-white vehicle-panel-shadow pt-4" 
+    class="overflow-hidden rounded-[1.625rem] border border-slate-200 bg-white vehicle-panel-shadow pt-4" 
 >
 
     {{-- ===================================================== --}}
@@ -17,19 +17,19 @@
         <div>
 
             <p
-                class="text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-400"
+                class="text-[0.6875rem] font-semibold uppercase tracking-[0.28em] text-slate-400"
             >
-                STOP DETECTION
+                DETEKSI BERHENTI
             </p>
 
             <h2
-                class="mt-2 text-[20px] font-bold text-slate-900"
+                class="mt-2 text-[1.25rem] font-bold text-slate-900"
             >
                 Pengaturan Deteksi Berhenti
             </h2>
 
             <p
-                class="mt-2 max-w-3xl text-[13px] leading-6 text-slate-500"
+                class="mt-2 max-w-3xl text-[0.8125rem] leading-6 text-slate-500"
             >
                 Atur kapan kendaraan dianggap berhenti berdasarkan durasi
                 kendaraan berada pada kecepatan 0 km/jam serta tentukan media
@@ -44,7 +44,7 @@
 
             type="button"
 
-            class="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-5 text-[12px] font-semibold text-slate-700 transition hover:border-blue-300 hover:text-blue-600"
+            class="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-5 text-[0.75rem] font-semibold text-slate-700 transition hover:border-blue-300 hover:text-blue-600"
 
         >
 
@@ -73,7 +73,7 @@
         >
 
             <div
-                class="grid grid-cols-[220px_20px_1fr] gap-y-5 text-[13px]"
+                class="grid grid-cols-[13.75rem_1.25rem_1fr] gap-y-5 text-[0.8125rem]"
             >
 
                 {{-- ===================================================== --}}
@@ -97,7 +97,7 @@
                     @if($stopDetection?->enabled)
 
                         <span
-                            class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-[12px] font-semibold text-emerald-600"
+                            class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-[0.75rem] font-semibold text-emerald-600"
                         >
 
                             <span
@@ -111,7 +111,7 @@
                     @else
 
                         <span
-                            class="inline-flex items-center gap-2 rounded-full bg-red-50 px-3 py-1 text-[12px] font-semibold text-red-600"
+                            class="inline-flex items-center gap-2 rounded-full bg-red-50 px-3 py-1 text-[0.75rem] font-semibold text-red-600"
                         >
 
                             <span
@@ -301,13 +301,13 @@
                         <div>
 
                             <p
-                                class="text-[11px] font-medium text-slate-500"
+                                class="text-[0.6875rem] font-medium text-slate-500"
                             >
                                 Deteksi Berhenti
                             </p>
 
                             <h4
-                                class="mt-2 text-[18px] font-bold text-slate-900"
+                                class="mt-2 text-[1.125rem] font-bold text-slate-900"
                             >
                                 {{ $stopDetection?->enabled ? 'ON' : 'OFF' }}
                             </h4>
@@ -343,18 +343,18 @@
                         <div>
 
                             <p
-                                class="text-[11px] font-medium text-slate-500"
+                                class="text-[0.6875rem] font-medium text-slate-500"
                             >
                                 Waktu Berhenti
                             </p>
 
                             <h4
-                                class="mt-2 text-[18px] font-bold text-slate-900"
+                                class="mt-2 text-[1.125rem] font-bold text-slate-900"
                             >
                                 {{ $stopDetection?->stop_minutes ?? '-' }}
 
                                 <span
-                                    class="text-[12px] font-medium text-slate-500"
+                                    class="text-[0.75rem] font-medium text-slate-500"
                                 >
                                     Menit
                                 </span>
@@ -392,13 +392,13 @@
                         <div>
 
                             <p
-                                class="text-[11px] font-medium text-slate-500"
+                                class="text-[0.6875rem] font-medium text-slate-500"
                             >
                                 Email
                             </p>
 
                             <h4
-                                class="mt-2 text-[18px] font-bold text-slate-900"
+                                class="mt-2 text-[1.125rem] font-bold text-slate-900"
                             >
                                 {{ $stopDetection?->email_notification ? 'ON' : 'OFF' }}
                             </h4>
@@ -434,13 +434,13 @@
                         <div>
 
                             <p
-                                class="text-[11px] font-medium text-slate-500"
+                                class="text-[0.6875rem] font-medium text-slate-500"
                             >
                                 WhatsApp
                             </p>
 
                             <h4
-                                class="mt-2 text-[18px] font-bold text-slate-900"
+                                class="mt-2 text-[1.125rem] font-bold text-slate-900"
                             >
                                 {{ $stopDetection?->whatsapp_notification ? 'ON' : 'OFF' }}
                             </h4>
@@ -502,13 +502,13 @@
                         <div>
 
                             <h3
-                                class="text-[14px] font-semibold text-slate-900"
+                                class="text-[0.875rem] font-semibold text-slate-900"
                             >
                                 Deteksi Berhenti
                             </h3>
 
                             <p
-                                class="mt-1 text-[12px] leading-5 text-slate-500"
+                                class="mt-1 text-[0.75rem] leading-5 text-slate-500"
                             >
                                 Aktifkan atau nonaktifkan fitur pendeteksi kendaraan berhenti.
                             </p>
@@ -548,7 +548,7 @@
                 <div>
 
                     <label
-                        class="mb-2 block text-[12px] font-semibold text-slate-700"
+                        class="mb-2 block text-[0.75rem] font-semibold text-slate-700"
                     >
                         Durasi Kendaraan Berhenti
                     </label>
@@ -573,16 +573,16 @@
 
                             value="{{ $stopDetection?->stop_minutes ?? 5 }}"
 
-                            class="h-11 w-40 rounded-xl border border-slate-300 px-4 text-center text-[14px] font-semibold outline-none transition focus:border-blue-500"
+                            class="h-11 w-40 rounded-xl border border-slate-300 px-4 text-center text-[0.875rem] font-semibold outline-none transition focus:border-blue-500"
 
                         >
 
-                        <span class="text-[13px] font-medium text-slate-500">Menit</span>
+                        <span class="text-[0.8125rem] font-medium text-slate-500">Menit</span>
 
                     </div>
 
                     <p
-                        class="mt-2 text-[12px] text-slate-400"
+                        class="mt-2 text-[0.75rem] text-slate-400"
                     >
                         Kendaraan dianggap berhenti apabila berada pada kecepatan
                         <strong>0 km/jam</strong> selama durasi di atas.
@@ -609,13 +609,13 @@
                         <div>
 
                             <h4
-                                class="text-[13px] font-semibold text-slate-900"
+                                class="text-[0.8125rem] font-semibold text-slate-900"
                             >
                                 Notifikasi Sistem
                             </h4>
 
                             <p
-                                class="mt-1 text-[12px] text-slate-500"
+                                class="mt-1 text-[0.75rem] text-slate-500"
                             >
                                 Menampilkan notifikasi pada dasbor aplikasi.
                                 Selalu aktif dan tidak dapat dinonaktifkan.
@@ -624,7 +624,7 @@
                         </div>
 
                         <span
-                            class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-[12px] font-semibold text-emerald-600"
+                            class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-[0.75rem] font-semibold text-emerald-600"
                         >
                             <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
                             Selalu Aktif
@@ -643,13 +643,13 @@
                         <div>
 
                             <h4
-                                class="text-[13px] font-semibold text-slate-900"
+                                class="text-[0.8125rem] font-semibold text-slate-900"
                             >
                                 Notifikasi Email
                             </h4>
 
                             <p
-                                class="mt-1 text-[12px] text-slate-500"
+                                class="mt-1 text-[0.75rem] text-slate-500"
                             >
                                 Mengirim email ketika Deteksi Berhenti terjadi.
                             </p>
@@ -691,13 +691,13 @@
                         <div>
 
                             <h4
-                                class="text-[13px] font-semibold text-slate-900"
+                                class="text-[0.8125rem] font-semibold text-slate-900"
                             >
                                 Notifikasi WhatsApp
                             </h4>
 
                             <p
-                                class="mt-1 text-[12px] text-slate-500"
+                                class="mt-1 text-[0.75rem] text-slate-500"
                             >
                                 Mengirim WhatsApp ketika Deteksi Berhenti terjadi.
                             </p>
@@ -744,7 +744,7 @@
 
                         type="button"
 
-                        class="rounded-xl border border-slate-300 px-5 py-2.5 text-[13px] font-semibold text-slate-700 transition hover:bg-slate-100"
+                        class="rounded-xl border border-slate-300 px-5 py-2.5 text-[0.8125rem] font-semibold text-slate-700 transition hover:bg-slate-100"
 
                     >
 
@@ -758,7 +758,7 @@
 
                         type="submit"
 
-                        class="rounded-xl bg-blue-600 px-5 py-2.5 text-[13px] font-semibold text-white transition hover:bg-blue-700"
+                        class="rounded-xl bg-blue-600 px-5 py-2.5 text-[0.8125rem] font-semibold text-white transition hover:bg-blue-700"
 
                     >
 
@@ -787,12 +787,12 @@
 >
 
     {{-- ========================================================= --}}
-    {{-- STOP DETECTION SUMMARY --}}
+    {{-- RINGKASAN DETEKSI BERHENTI --}}
     {{-- ========================================================= --}}
 
     <section
         id="stopDetectionSummarySection"
-        class="overflow-hidden rounded-[26px] border border-slate-200 bg-white vehicle-panel-shadow mt-5"
+        class="overflow-hidden rounded-[1.625rem] border border-slate-200 bg-white vehicle-panel-shadow mt-5"
     >
 
         {{-- ===================================================== --}}
@@ -804,19 +804,19 @@
         >
 
             <p
-                class="text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-400"
+                class="text-[0.6875rem] font-semibold uppercase tracking-[0.28em] text-slate-400"
             >
-                STOP SUMMARY
+                RINGKASAN BERHENTI
             </p>
 
             <h2
-                class="mt-2 text-[20px] font-bold text-slate-900"
+                class="mt-2 text-[1.25rem] font-bold text-slate-900"
             >
                 Ringkasan Deteksi Berhenti
             </h2>
 
             <p
-                class="mt-2 text-[13px] leading-6 text-slate-500"
+                class="mt-2 text-[0.8125rem] leading-6 text-slate-500"
             >
                 Statistik kendaraan berhenti berdasarkan hasil Deteksi Berhenti.
             </p>
@@ -844,7 +844,7 @@
                 >
 
                     <p
-                        class="text-[12px] font-medium text-slate-500"
+                        class="text-[0.75rem] font-medium text-slate-500"
                     >
                         Total Berhenti
                     </p>
@@ -862,7 +862,7 @@
                 </div>
 
                 <h3
-                    class="mt-5 text-[28px] font-bold text-slate-900"
+                    class="mt-5 text-[1.75rem] font-bold text-slate-900"
                 >
                     {{ $stopSummary['total_stop'] ?? 0 }}
                 </h3>
@@ -882,7 +882,7 @@
                 >
 
                     <p
-                        class="text-[12px] font-medium text-slate-500"
+                        class="text-[0.75rem] font-medium text-slate-500"
                     >
                         Hari Ini
                     </p>
@@ -900,7 +900,7 @@
                 </div>
 
                 <h3
-                    class="mt-5 text-[28px] font-bold text-slate-900"
+                    class="mt-5 text-[1.75rem] font-bold text-slate-900"
                 >
                     {{ $stopSummary['today_stop'] ?? 0 }}
                 </h3>
@@ -920,7 +920,7 @@
                 >
 
                     <p
-                        class="text-[12px] font-medium text-slate-500"
+                        class="text-[0.75rem] font-medium text-slate-500"
                     >
                         Durasi Terlama
                     </p>
@@ -938,7 +938,7 @@
                 </div>
 
                 <h3
-                    class="mt-5 text-[28px] font-bold text-slate-900"
+                    class="mt-5 text-[1.75rem] font-bold text-slate-900"
                 >
                     {{ $stopSummary['longest_stop'] ?? '-' }}
                 </h3>
@@ -958,7 +958,7 @@
                 >
 
                     <p
-                        class="text-[12px] font-medium text-slate-500"
+                        class="text-[0.75rem] font-medium text-slate-500"
                     >
                         Total Waktu Berhenti
                     </p>
@@ -976,7 +976,7 @@
                 </div>
 
                 <h3
-                    class="mt-5 text-[28px] font-bold text-slate-900"
+                    class="mt-5 text-[1.75rem] font-bold text-slate-900"
                 >
                     {{ $stopSummary['total_duration'] ?? '-' }}
                 </h3>
@@ -1000,12 +1000,12 @@
 >
 
     {{-- ========================================================= --}}
-    {{-- STOP HISTORY --}}
+    {{-- RIWAYAT BERHENTI --}}
     {{-- ========================================================= --}}
 
     <section
         id="stopDetectionHistorySection"
-        class="overflow-hidden rounded-[26px] border border-slate-200 bg-white vehicle-panel-shadow mt-5"
+        class="overflow-hidden rounded-[1.625rem] border border-slate-200 bg-white vehicle-panel-shadow mt-5"
     >
 
         {{-- ===================================================== --}}
@@ -1019,19 +1019,19 @@
             <div>
 
                 <p
-                    class="text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-400"
+                    class="text-[0.6875rem] font-semibold uppercase tracking-[0.28em] text-slate-400"
                 >
-                    STOP HISTORY
+                    RIWAYAT BERHENTI
                 </p>
 
                 <h2
-                    class="mt-2 text-[20px] font-bold text-slate-900"
+                    class="mt-2 text-[1.25rem] font-bold text-slate-900"
                 >
                     Riwayat Kendaraan Berhenti
                 </h2>
 
                 <p
-                    class="mt-2 text-[13px] leading-6 text-slate-500"
+                    class="mt-2 text-[0.8125rem] leading-6 text-slate-500"
                 >
                     Seluruh riwayat kendaraan berhenti yang berhasil dideteksi
                     berdasarkan pengaturan Deteksi Berhenti.
@@ -1051,7 +1051,7 @@
 
                     rel="noopener"
 
-                    class="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-[12px] font-semibold text-slate-700 transition hover:bg-slate-100"
+                    class="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-[0.75rem] font-semibold text-slate-700 transition hover:bg-slate-100"
 
                 >
 
@@ -1067,7 +1067,7 @@
 
                     type="button"
 
-                    class="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-[12px] font-semibold text-slate-700 transition hover:bg-slate-100"
+                    class="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-[0.75rem] font-semibold text-slate-700 transition hover:bg-slate-100"
 
                 >
 
@@ -1099,27 +1099,27 @@
 
                     <tr>
 
-                        <th class="px-6 py-4 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                        <th class="px-6 py-4 text-left text-[0.6875rem] font-semibold uppercase tracking-wider text-slate-500">
                             Mulai
                         </th>
 
-                        <th class="px-6 py-4 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                        <th class="px-6 py-4 text-left text-[0.6875rem] font-semibold uppercase tracking-wider text-slate-500">
                             Selesai
                         </th>
 
-                        <th class="px-6 py-4 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                        <th class="px-6 py-4 text-left text-[0.6875rem] font-semibold uppercase tracking-wider text-slate-500">
                             Durasi
                         </th>
 
-                        <th class="px-6 py-4 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                        <th class="px-6 py-4 text-left text-[0.6875rem] font-semibold uppercase tracking-wider text-slate-500">
                             Lokasi
                         </th>
 
-                        <th class="px-6 py-4 text-center text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                        <th class="px-6 py-4 text-center text-[0.6875rem] font-semibold uppercase tracking-wider text-slate-500">
                             Status
                         </th>
 
-                        <th class="px-6 py-4 text-center text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                        <th class="px-6 py-4 text-center text-[0.6875rem] font-semibold uppercase tracking-wider text-slate-500">
                             Aksi
                         </th>
 
@@ -1149,7 +1149,7 @@
 
         <p
             id="stopHistoryTruncatedNotice"
-            class="hidden px-6 py-3 text-center text-[12px] text-slate-500"
+            class="hidden px-6 py-3 text-center text-[0.75rem] text-slate-500"
         ></p>
 
         {{-- ===================================================== --}}
@@ -1175,13 +1175,13 @@
             </div>
 
             <h3
-                class="mt-6 text-[18px] font-semibold text-slate-900"
+                class="mt-6 text-[1.125rem] font-semibold text-slate-900"
             >
                 Belum Ada Riwayat Berhenti
             </h3>
 
             <p
-                class="mt-2 text-[13px] leading-6 text-slate-500"
+                class="mt-2 text-[0.8125rem] leading-6 text-slate-500"
             >
                 Riwayat akan muncul secara otomatis ketika kendaraan
                 berhenti sesuai durasi Deteksi Berhenti yang telah ditentukan.

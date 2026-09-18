@@ -29,7 +29,7 @@
     </div>
 
     <div
-        class="absolute bottom-1 left-0 right-0 flex items-center justify-center gap-1 px-1 text-[11px] font-semibold text-white">
+        class="absolute bottom-1 left-0 right-0 flex items-center justify-center gap-1 px-1 text-[0.6875rem] font-semibold text-white">
 
         <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -53,13 +53,13 @@
 
     <div
         id="layerDropdown"
-        class="absolute bottom-0 right-[90px] hidden w-48 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
+        class="absolute bottom-0 right-[5.625rem] hidden w-48 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
 
         <button
             class="layer-option flex w-full items-center gap-3 px-4 py-3 hover:bg-slate-50"
             data-layer="default">
 
-            🗺️ Default
+            🗺️ Standar
 
         </button>
 

@@ -2,12 +2,12 @@
 
     id="deleteVehicleModal"
 
-    class="fixed inset-0 z-[99999] hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm"
+    class="fixed inset-0 z-[99999] hidden items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm"
 
 >
 
     <div
-        class="w-full max-w-md overflow-hidden rounded-[24px] bg-white shadow-2xl"
+        class="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-[1.5rem] bg-white shadow-2xl"
     >
 
         {{-- ============================================== --}}
@@ -29,13 +29,13 @@
             </div>
 
             <h2
-                class="mt-5 text-[20px] font-bold text-slate-900"
+                class="mt-5 text-[1.25rem] font-bold text-slate-900"
             >
                 Hapus Kendaraan
             </h2>
 
             <p
-                class="mt-2 text-[13px] leading-6 text-slate-500"
+                class="mt-2 text-[0.8125rem] leading-6 text-slate-500"
             >
                 Tindakan ini tidak dapat dibatalkan.
             </p>
@@ -55,7 +55,7 @@
             >
 
                 <p
-                    class="text-[11px] uppercase tracking-[0.22em] text-slate-400"
+                    class="text-[0.6875rem] uppercase tracking-[0.22em] text-slate-400"
                 >
                     Kendaraan
                 </p>
@@ -64,7 +64,7 @@
 
                     id="deleteVehicleName"
 
-                    class="mt-2 text-[15px] font-semibold text-slate-900"
+                    class="mt-2 text-[0.9375rem] font-semibold text-slate-900"
 
                 >
                     -
@@ -85,7 +85,7 @@
                     ></i>
 
                     <p
-                        class="text-[12px] leading-6 text-red-700"
+                        class="text-[0.75rem] leading-6 text-red-700"
                     >
                         Seluruh data kendaraan ini (riwayat perjalanan,
                         geofence, riwayat berhenti, notifikasi) akan
@@ -112,7 +112,7 @@
 
                 type="button"
 
-                class="rounded-xl border border-slate-300 px-5 py-2.5 text-[13px] font-semibold text-slate-700 transition hover:bg-slate-100"
+                class="rounded-xl border border-slate-300 px-5 py-2.5 text-[0.8125rem] font-semibold text-slate-700 transition hover:bg-slate-100"
 
             >
                 Batal
@@ -124,7 +124,7 @@
 
                 type="button"
 
-                class="rounded-xl bg-red-600 px-5 py-2.5 text-[13px] font-semibold text-white transition hover:bg-red-700"
+                class="rounded-xl bg-red-600 px-5 py-2.5 text-[0.8125rem] font-semibold text-white transition hover:bg-red-700"
 
             >
 

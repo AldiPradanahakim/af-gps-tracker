@@ -24,7 +24,7 @@
     class="pointer-events-none fixed inset-0 z-[999998] flex items-center justify-center opacity-0 transition-opacity duration-200">
 
     {{-- Latar buram --}}
-    <div class="absolute inset-0 bg-white/55 backdrop-blur-[3px]"></div>
+    <div class="absolute inset-0 bg-white/55 backdrop-blur-[0.1875rem]"></div>
 
     {{-- Kartu --}}
     <div
@@ -34,9 +34,9 @@
         {{-- Spinner: dua cincin berlawanan arah + titik GPS di tengah --}}
         <div class="relative h-14 w-14">
 
-            <span class="app-loading-ring absolute inset-0 rounded-full border-[3px] border-slate-200 border-t-[#2563EB]"></span>
+            <span class="app-loading-ring absolute inset-0 rounded-full border-[0.1875rem] border-slate-200 border-t-[#2563EB]"></span>
 
-            <span class="app-loading-ring-reverse absolute inset-[7px] rounded-full border-[3px] border-transparent border-b-[#93C5FD]"></span>
+            <span class="app-loading-ring-reverse absolute inset-[0.4375rem] rounded-full border-[0.1875rem] border-transparent border-b-[#93C5FD]"></span>
 
             <span class="absolute inset-0 flex items-center justify-center">
                 <span class="app-loading-pulse block h-2.5 w-2.5 rounded-full bg-[#2563EB]"></span>
@@ -48,13 +48,13 @@
 
             <p
                 id="appLoadingTitle"
-                class="text-[14px] font-bold text-slate-900">
+                class="text-[0.875rem] font-bold text-slate-900">
                 Memuat data
             </p>
 
             <p
                 id="appLoadingMessage"
-                class="mt-1 text-[12px] text-slate-500">
+                class="mt-1 text-[0.75rem] text-slate-500">
                 Mohon tunggu sebentar&hellip;
             </p>
 

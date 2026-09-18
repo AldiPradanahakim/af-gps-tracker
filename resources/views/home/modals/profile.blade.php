@@ -1,13 +1,18 @@
 <!-- PROFILE MODAL -->
 <div
     id="profileModal"
-    class="fixed inset-0 z-[99999] hidden items-center justify-center bg-black/40 backdrop-blur-sm">
+    class="fixed inset-0 z-[99999] hidden items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
 
+    {{--
+        Tinggi dibatasi ke layar dan isinya yang menggulir, bukan halaman -
+        tanpa ini seluruh formulir memaksa modal lebih tinggi dari viewport
+        dan tombol "Simpan Perubahan" di footer tidak pernah terlihat.
+    --}}
     <div
-        class="relative w-full max-w-2xl rounded-3xl bg-white shadow-2xl">
+        class="relative flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-3xl bg-white shadow-2xl">
 
         {{-- HEADER --}}
-        <div class="flex items-center justify-between border-b border-slate-200 px-6 py-5">
+        <div class="flex shrink-0 items-center justify-between border-b border-slate-200 px-6 py-4">
 
             <div>
                 <h2 class="text-xl font-bold text-slate-900">
@@ -44,37 +49,51 @@
         </div>
 
         {{-- BODY --}}
-        <div class="space-y-6 px-6 py-6">
+        <div class="flex-1 space-y-4 overflow-y-auto px-6 py-5">
 
-            {{-- AVATAR --}}
-            <div class="flex flex-col items-center">
+            {{--
+                Avatar disusun mendatar (bukan bertumpuk di tengah) supaya
+                blok identitas ini memakan satu baris saja - versi tumpuk
+                menghabiskan tinggi yang dibutuhkan formulir di bawahnya.
+            --}}
+            <div class="flex items-center gap-3">
 
                 <div
                     data-profile-avatar
-                    class="flex h-20 w-20 items-center justify-center rounded-full bg-[#2563EB] text-3xl font-bold text-white">
+                    class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#2563EB] text-lg font-bold text-white">
 
                     {{ strtoupper(mb_substr(auth()->user()->name,0,1)) }}
 
                 </div>
 
-                <h3
-                    data-profile-name
-                    class="mt-4 text-lg font-semibold text-slate-900">
-                    {{ auth()->user()->name }}
-                </h3>
+                <div class="min-w-0">
 
-                <p
-                    data-profile-email
-                    class="text-sm text-slate-500">
-                    {{ auth()->user()->email }}
-                </p>
+                    <h3
+                        data-profile-name
+                        class="truncate font-semibold text-slate-900">
+                        {{ auth()->user()->name }}
+                    </h3>
+
+                    <p
+                        data-profile-email
+                        class="truncate text-sm text-slate-500">
+                        {{ auth()->user()->email }}
+                    </p>
+
+                </div>
 
             </div>
 
-            {{-- FORM --}}
+            {{--
+                FORM
+
+                Dua kolom di layar sedang ke atas: tinggi formulir turun
+                separuh, jadi seluruh isinya (termasuk syarat kata sandi)
+                muat tanpa menggulir di layar laptop.
+            --}}
             <form
                 id="profileForm"
-                class="space-y-5">
+                class="grid grid-cols-1 gap-x-4 gap-y-3 md:grid-cols-2">
 
                 @csrf
 
@@ -83,7 +102,7 @@
                 {{-- NAME --}}
                 <div>
 
-                    <label class="mb-2 block text-sm font-medium text-slate-700">
+                    <label class="mb-1.5 block text-sm font-medium text-slate-700">
                         Nama
                     </label>
 
@@ -93,14 +112,14 @@
                         type="text"
                         value="{{ auth()->user()->name }}"
                         disabled
-                        class="w-full rounded-xl border border-slate-300 bg-slate-100 px-4 py-3 text-sm text-slate-700">
+                        class="w-full rounded-xl border border-slate-300 bg-slate-100 px-3 py-2 text-sm text-slate-700">
 
                 </div>
 
                 {{-- EMAIL --}}
                 <div>
 
-                    <label class="mb-2 block text-sm font-medium text-slate-700">
+                    <label class="mb-1.5 block text-sm font-medium text-slate-700">
                         Email
                     </label>
 
@@ -110,14 +129,14 @@
                         type="email"
                         value="{{ auth()->user()->email }}"
                         disabled
-                        class="w-full rounded-xl border border-slate-300 bg-slate-100 px-4 py-3 text-sm text-slate-700">
+                        class="w-full rounded-xl border border-slate-300 bg-slate-100 px-3 py-2 text-sm text-slate-700">
 
                 </div>
 
                 {{-- PHONE --}}
                 <div>
 
-                    <label class="mb-2 block text-sm font-medium text-slate-700">
+                    <label class="mb-1.5 block text-sm font-medium text-slate-700">
                         Nomor HP
                     </label>
 
@@ -128,7 +147,7 @@
                         value="{{ auth()->user()->phone }}"
                         disabled
                         placeholder="-"
-                        class="w-full rounded-xl border border-slate-300 bg-slate-100 px-4 py-3 text-sm text-slate-700">
+                        class="w-full rounded-xl border border-slate-300 bg-slate-100 px-3 py-2 text-sm text-slate-700">
 
                 </div>
 
@@ -142,7 +161,7 @@
                 --}}
                 <div>
 
-                    <label class="mb-2 block text-sm font-medium text-slate-700">
+                    <label class="mb-1.5 block text-sm font-medium text-slate-700">
                         Zona Waktu
                     </label>
 
@@ -150,7 +169,7 @@
                         id="profileTimezone"
                         name="timezone"
                         disabled
-                        class="w-full rounded-xl border border-slate-300 bg-slate-100 px-4 py-3 text-sm text-slate-700">
+                        class="w-full rounded-xl border border-slate-300 bg-slate-100 px-3 py-2 text-sm text-slate-700">
 
                         @foreach(\App\Models\User::TIMEZONE_OPTIONS as $value => $label)
                             <option
@@ -162,7 +181,7 @@
 
                     </select>
 
-                    <p class="mt-1.5 text-[11px] text-slate-500">
+                    <p class="mt-1.5 text-[0.6875rem] text-slate-500">
                         Dipakai untuk semua tanggal &amp; jam yang Anda lihat &mdash;
                         termasuk export PDF dan notifikasi Email/WhatsApp.
                     </p>
@@ -170,11 +189,11 @@
                 </div>
 
                 {{-- PASSWORD --}}
-                <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                <div class="grid grid-cols-1 gap-3 md:col-span-2 md:grid-cols-3">
 
                     <div>
 
-                        <label class="mb-2 block text-sm font-medium text-slate-700">
+                        <label class="mb-1.5 block text-sm font-medium text-slate-700">
                             Kata Sandi Lama
                         </label>
 
@@ -183,13 +202,13 @@
                             name="current_password"
                             type="password"
                             disabled
-                            class="w-full rounded-xl border border-slate-300 bg-slate-100 px-4 py-3 text-sm">
+                            class="w-full rounded-xl border border-slate-300 bg-slate-100 px-3 py-2 text-sm">
 
                     </div>
 
                     <div>
 
-                        <label class="mb-2 block text-sm font-medium text-slate-700">
+                        <label class="mb-1.5 block text-sm font-medium text-slate-700">
                             Kata Sandi Baru
                         </label>
 
@@ -199,13 +218,13 @@
                             type="password"
                             placeholder="Contoh: Gps#Tracker2026"
                             disabled
-                            class="w-full rounded-xl border border-slate-300 bg-slate-100 px-4 py-3 text-sm">
+                            class="w-full rounded-xl border border-slate-300 bg-slate-100 px-3 py-2 text-sm">
 
                     </div>
 
                     <div>
 
-                        <label class="mb-2 block text-sm font-medium text-slate-700">
+                        <label class="mb-1.5 block text-sm font-medium text-slate-700">
                             Konfirmasi
                         </label>
 
@@ -214,14 +233,14 @@
                             name="password_confirmation"
                             type="password"
                             disabled
-                            class="w-full rounded-xl border border-slate-300 bg-slate-100 px-4 py-3 text-sm">
+                            class="w-full rounded-xl border border-slate-300 bg-slate-100 px-3 py-2 text-sm">
 
                     </div>
 
                 </div>
 
                 {{-- Syarat kata sandi (hanya relevan saat mode edit aktif) --}}
-                <x-password-requirements id="passwordRequirements" class="hidden" />
+                <x-password-requirements id="passwordRequirements" class="hidden md:col-span-2" />
 
             </form>
 
@@ -229,7 +248,7 @@
 
         {{-- FOOTER --}}
         <div
-            class="flex items-center justify-between rounded-b-3xl border-t border-slate-200 bg-slate-50 px-6 py-4">
+            class="flex shrink-0 items-center justify-between border-t border-slate-200 bg-slate-50 px-6 py-3">
 
             <button
                 id="editProfileButton"

@@ -3,7 +3,7 @@
     class="fixed inset-0 z-[9999] hidden pointer-events-none">
 
     <div
-    class="pointer-events-auto absolute left-6 top-6 flex w-[460px] max-h-[calc(100vh-48px)] flex-col overflow-hidden rounded-3xl bg-white shadow-2xl">
+    class="pointer-events-auto absolute left-6 top-6 flex w-[28.75rem] max-h-[calc(100vh-3rem)] flex-col overflow-hidden rounded-3xl bg-white shadow-2xl">
 
         <div
             class="flex items-center justify-between border-b border-slate-200 px-8 py-6">
@@ -149,7 +149,7 @@
                 <div
                     class="font-semibold text-blue-700">
 
-                    Titik Home
+                    Titik Rumah
 
                 </div>
 

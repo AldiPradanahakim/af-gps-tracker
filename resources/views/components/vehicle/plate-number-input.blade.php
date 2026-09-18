@@ -2,7 +2,7 @@
     'name' => null,
     'id' => 'plateNumber',
     'value' => '',
-    'inputClass' => 'h-[52px] rounded-xl border border-slate-300 bg-white text-center text-sm font-semibold uppercase text-slate-700 outline-none transition focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20',
+    'inputClass' => 'h-[3.25rem] rounded-xl border border-slate-300 bg-white text-center text-sm font-semibold uppercase text-slate-700 outline-none transition focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20',
     'wrapperId' => null,
 ])
 

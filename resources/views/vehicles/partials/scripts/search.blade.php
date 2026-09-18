@@ -326,7 +326,7 @@ window.VehicleSearch = {
                         </span>
 
                         ${isCurrentVehicle
-                            ? '<span class="flex-shrink-0 rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-semibold text-blue-700">Sedang Dilihat</span>'
+                            ? '<span class="flex-shrink-0 rounded-full bg-blue-100 px-2 py-0.5 text-[0.625rem] font-semibold text-blue-700">Sedang Dilihat</span>'
                             : ''}
 
                     </div>

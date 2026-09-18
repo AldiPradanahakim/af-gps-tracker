@@ -1,10 +1,10 @@
 <div
     id="activateDeviceModal"
-    class="fixed inset-0 z-[99999] hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm">
+    class="fixed inset-0 z-[99999] hidden items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm">
 
-    <div class="w-full max-w-lg rounded-3xl bg-white shadow-2xl">
+    <div class="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-3xl bg-white shadow-2xl">
 
-        <div class="flex items-center justify-between border-b border-slate-200 px-8 py-6">
+        <div class="flex items-center justify-between border-b border-slate-200 px-6 py-4">
 
             <div>
 
@@ -35,7 +35,7 @@
 
         <form
             id="activateDeviceForm"
-            class="space-y-6 p-8">
+            class="space-y-4 p-6">
 
             <div>
 

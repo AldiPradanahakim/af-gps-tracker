@@ -1,9 +1,9 @@
 @props(['subtext' => null])
 
 {{-- Mobile/Tablet: stacked card, Desktop (lg+): side-by-side split panel --}}
-<div class="w-full max-w-[1400px] rounded-[24px] lg:rounded-[32px] bg-white shadow-2xl border border-slate-200 overflow-hidden
+<div class="w-full max-w-[87.5rem] rounded-[1.5rem] lg:rounded-[2rem] bg-white shadow-2xl border border-slate-200 overflow-hidden
             flex flex-col lg:grid lg:grid-cols-[55%_45%]
-            lg:h-[calc(100vh-4rem)] lg:max-h-[860px]">
+            lg:h-[calc(100vh-4rem)] lg:max-h-[53.75rem]">
 
     {{-- Left panel: hidden on mobile, visible on lg+ --}}
     <x-auth.left-panel :subtext="$subtext">
@@ -20,14 +20,14 @@
             <img src="{{ asset('images/logo-gps.png') }}" alt="AF GPS TRACKER" class="h-9 w-9 object-contain" />
             <div>
                 <div class="text-xs font-semibold uppercase tracking-widest text-[#2563EB]">AF GPS TRACKER</div>
-                <div class="text-[11px] text-slate-500">Platform Pelacakan Kendaraan</div>
+                <div class="text-[0.6875rem] text-slate-500">Platform Pelacakan Kendaraan</div>
             </div>
         </div>
 
         {{-- Mobile heading --}}
         @isset($heading)
         <div class="lg:hidden px-5 pt-4 pb-1">
-            <h1 class="text-[20px] sm:text-[24px] font-extrabold leading-tight text-slate-950 tracking-tight">
+            <h1 class="text-[1.25rem] sm:text-[1.5rem] font-extrabold leading-tight text-slate-950 tracking-tight">
                 {!! $heading !!}
             </h1>
             @if($subtext)
@@ -36,8 +36,16 @@
         </div>
         @endisset
 
-        {{-- Content slot --}}
-        <div class="flex-1 flex items-start lg:items-center justify-center p-4 sm:p-6">
+        {{--
+            Content slot
+
+            "safe center": kartu tetap di tengah selama masih muat, tapi
+            begitu isinya lebih tinggi dari panel, perataannya otomatis
+            kembali ke atas. Dengan "items-center" biasa, isi yang kelebihan
+            meluber ke DUA arah - bagian atas kartu ikut terpotong dan tidak
+            bisa dijangkau walaupun panelnya sudah bisa digulir.
+        --}}
+        <div class="flex-1 flex items-start lg:[align-items:safe_center] justify-center p-4 sm:p-6">
             {{ $slot }}
         </div>
 

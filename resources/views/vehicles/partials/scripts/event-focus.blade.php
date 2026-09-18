@@ -225,11 +225,11 @@ window.VehicleEventFocus = {
     createPopup() {
 
         return `
-            <div class="min-w-[220px] rounded-[16px] bg-white p-3">
+            <div class="min-w-[13.75rem] rounded-[1rem] bg-white p-3">
                 <div class="text-sm font-semibold text-slate-900">${this.event.title ?? '-'}</div>
                 <div class="mt-1 text-xs leading-relaxed text-slate-600">${this.event.message ?? ''}</div>
                 ${this.event.address ? `<div class="mt-2 text-xs text-slate-500">${this.event.address}</div>` : ''}
-                <div class="mt-2 text-[11px] text-slate-400">${this.formatTime()}</div>
+                <div class="mt-2 text-[0.6875rem] text-slate-400">${this.formatTime()}</div>
             </div>
         `;
 

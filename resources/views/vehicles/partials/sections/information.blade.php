@@ -13,7 +13,7 @@
         {{-- ========================================================= --}}
 
         <section
-            class="col-span-12 xl:col-span-6 flex h-full min-h-[370px] flex-col overflow-hidden rounded-[20px] border border-slate-200 bg-white vehicle-panel-shadow"
+            class="col-span-12 xl:col-span-6 flex h-full min-h-[23.125rem] flex-col overflow-hidden rounded-[1.25rem] border border-slate-200 bg-white vehicle-panel-shadow"
         >
 
             {{-- ===================================================== --}}
@@ -25,7 +25,7 @@
             >
 
                 <h2
-                    class="text-[15px] font-semibold text-slate-900"
+                    class="text-[0.9375rem] font-semibold text-slate-900"
                 >
                     Informasi Kendaraan
                 </h2>
@@ -38,10 +38,10 @@
                     <button
                         id="editVehicleButton"
                         type="button"
-                        class="inline-flex h-9 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-[11px] font-medium text-slate-700 transition hover:border-blue-300 hover:bg-slate-50"
+                        class="inline-flex h-9 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-[0.6875rem] font-medium text-slate-700 transition hover:border-blue-300 hover:bg-slate-50"
                     >
 
-                        <i class="fa-solid fa-pen text-[10px]"></i>
+                        <i class="fa-solid fa-pen text-[0.625rem]"></i>
 
                         Ubah
 
@@ -50,10 +50,10 @@
                     <button
                         id="cancelVehicleButton"
                         type="button"
-                        class="hidden inline-flex h-9 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-[11px] font-medium text-slate-700 transition hover:bg-slate-50"
+                        class="hidden inline-flex h-9 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-[0.6875rem] font-medium text-slate-700 transition hover:bg-slate-50"
                     >
 
-                        <i class="fa-solid fa-xmark text-[10px]"></i>
+                        <i class="fa-solid fa-xmark text-[0.625rem]"></i>
 
                         Batal
 
@@ -62,10 +62,10 @@
                     <button
                         id="saveVehicleButton"
                         type="button"
-                        class="hidden inline-flex h-9 items-center gap-2 rounded-xl bg-blue-600 px-4 text-[11px] font-medium text-white transition hover:bg-blue-700"
+                        class="hidden inline-flex h-9 items-center gap-2 rounded-xl bg-blue-600 px-4 text-[0.6875rem] font-medium text-white transition hover:bg-blue-700"
                     >
 
-                        <i class="fa-solid fa-floppy-disk text-[10px]"></i>
+                        <i class="fa-solid fa-floppy-disk text-[0.625rem]"></i>
 
                         Simpan
 
@@ -84,16 +84,16 @@
             >
 
                 <div
-                    class="max-w-[390px] space-y-4"
+                    class="max-w-[24.375rem] space-y-4"
                 >
 
                     {{-- Nama --}}
                     <div
-                        class="grid grid-cols-[145px_15px_1fr] items-center"
+                        class="grid grid-cols-[9.0625rem_0.9375rem_1fr] items-center"
                     >
 
                         <span
-                            class="text-[13px] text-slate-500"
+                            class="text-[0.8125rem] text-slate-500"
                         >
                             Nama Kendaraan
                         </span>
@@ -114,7 +114,7 @@
 
                                 id="vehicleNameText"
 
-                                class="text-[13px] font-semibold text-slate-900"
+                                class="text-[0.8125rem] font-semibold text-slate-900"
 
                             >
 
@@ -136,7 +136,7 @@
 
                                 maxlength="100"
 
-                                class="hidden h-10 w-full rounded-xl border border-slate-300 px-3 text-[13px] font-medium text-slate-900 outline-none transition focus:border-blue-500"
+                                class="hidden h-10 w-full rounded-xl border border-slate-300 px-3 text-[0.8125rem] font-medium text-slate-900 outline-none transition focus:border-blue-500"
 
                             >
 
@@ -145,9 +145,9 @@
                     </div>
 
                     {{-- Device --}}
-                    <div class="grid grid-cols-[145px_15px_1fr] items-center">
+                    <div class="grid grid-cols-[9.0625rem_0.9375rem_1fr] items-center">
 
-                        <span class="text-[13px] text-slate-500">
+                        <span class="text-[0.8125rem] text-slate-500">
                             ID Perangkat
                         </span>
 
@@ -155,7 +155,7 @@
                             :
                         </span>
 
-                        <span class="text-[13px] font-semibold text-slate-900">
+                        <span class="text-[0.8125rem] font-semibold text-slate-900">
                             {{ $device->device_id }}
                         </span>
 
@@ -163,11 +163,11 @@
 
                     {{-- Plat --}}
                     <div
-                        class="grid grid-cols-[145px_15px_1fr] items-center"
+                        class="grid grid-cols-[9.0625rem_0.9375rem_1fr] items-center"
                     >
 
                         <span
-                            class="text-[13px] text-slate-500"
+                            class="text-[0.8125rem] text-slate-500"
                         >
                             Nomor Polisi
                         </span>
@@ -188,7 +188,7 @@
 
                                 id="vehiclePlateText"
 
-                                class="text-[13px] font-semibold text-slate-900"
+                                class="text-[0.8125rem] font-semibold text-slate-900"
 
                             >
 
@@ -204,7 +204,7 @@
                                 <x-vehicle.plate-number-input
                                     id="vehiclePlateInput"
                                     :value="$device->vehicle->plate_number"
-                                    input-class="h-10 rounded-xl border border-slate-300 text-center text-[13px] font-semibold uppercase text-slate-900 outline-none transition focus:border-blue-500"
+                                    input-class="h-10 rounded-xl border border-slate-300 text-center text-[0.8125rem] font-semibold uppercase text-slate-900 outline-none transition focus:border-blue-500"
                                     wrapper-id="vehiclePlateInputBoxesInner"
                                 />
                             </div>
@@ -215,11 +215,11 @@
 
                     {{-- Jenis --}}
                     <div
-                        class="grid grid-cols-[145px_15px_1fr] items-center"
+                        class="grid grid-cols-[9.0625rem_0.9375rem_1fr] items-center"
                     >
 
                         <span
-                            class="text-[13px] text-slate-500"
+                            class="text-[0.8125rem] text-slate-500"
                         >
                             Jenis Kendaraan
                         </span>
@@ -240,7 +240,7 @@
 
                                 id="vehicleTypeText"
 
-                                class="text-[13px] font-semibold text-slate-900"
+                                class="text-[0.8125rem] font-semibold text-slate-900"
 
                             >
 
@@ -256,7 +256,7 @@
 
                                 id="vehicleTypeInput"
 
-                                class="dynamic-vehicle-type hidden h-10 w-full rounded-xl border border-slate-300 bg-white px-3 text-[13px] font-medium text-slate-900 outline-none transition focus:border-blue-500"
+                                class="dynamic-vehicle-type hidden h-10 w-full rounded-xl border border-slate-300 bg-white px-3 text-[0.8125rem] font-medium text-slate-900 outline-none transition focus:border-blue-500"
 
                             >
 
@@ -290,11 +290,11 @@
 
                     {{-- Icon Marker --}}
                     <div
-                        class="grid grid-cols-[145px_15px_1fr] items-center"
+                        class="grid grid-cols-[9.0625rem_0.9375rem_1fr] items-center"
                     >
 
                         <span
-                            class="text-[13px] text-slate-500"
+                            class="text-[0.8125rem] text-slate-500"
                         >
                             Ikon Penanda
                         </span>
@@ -310,7 +310,7 @@
                             {{-- READ MODE --}}
                             <span
                                 id="vehicleMarkerIconText"
-                                class="text-[13px] font-semibold text-slate-900 capitalize"
+                                class="text-[0.8125rem] font-semibold text-slate-900 capitalize"
                             >
                                 {{ str_replace('-', ' ', $device->vehicle->marker_icon ?? '-') }}
                             </span>
@@ -319,7 +319,7 @@
                             <select
                                 id="vehicleMarkerIconInput"
                                 data-selected-icon="{{ $device->vehicle->marker_icon ?? '' }}"
-                                class="dynamic-marker-icon hidden h-10 w-full rounded-xl border border-slate-300 bg-white px-3 text-[13px] font-medium text-slate-900 outline-none transition focus:border-blue-500"
+                                class="dynamic-marker-icon hidden h-10 w-full rounded-xl border border-slate-300 bg-white px-3 text-[0.8125rem] font-medium text-slate-900 outline-none transition focus:border-blue-500"
                             >
                                 <!-- Opsi diisi otomatis via JS di app.blade.php -->
                             </select>
@@ -330,11 +330,11 @@
 
                     {{-- Warna Marker --}}
                     <div
-                        class="grid grid-cols-[145px_15px_1fr] items-center"
+                        class="grid grid-cols-[9.0625rem_0.9375rem_1fr] items-center"
                     >
 
                         <span
-                            class="text-[13px] text-slate-500"
+                            class="text-[0.8125rem] text-slate-500"
                         >
                             Warna Penanda
                         </span>
@@ -350,7 +350,7 @@
                             {{-- READ MODE --}}
                             <span
                                 id="vehicleMarkerColorText"
-                                class="text-[13px] font-semibold text-slate-900 capitalize"
+                                class="text-[0.8125rem] font-semibold text-slate-900 capitalize"
                             >
                                 {{ $device->vehicle->marker_color ?? '-' }}
                             </span>
@@ -358,7 +358,7 @@
                             {{-- EDIT MODE --}}
                             <select
                                 id="vehicleMarkerColorInput"
-                                class="hidden h-10 w-full rounded-xl border border-slate-300 bg-white px-3 text-[13px] font-medium text-slate-900 outline-none transition focus:border-blue-500"
+                                class="hidden h-10 w-full rounded-xl border border-slate-300 bg-white px-3 text-[0.8125rem] font-medium text-slate-900 outline-none transition focus:border-blue-500"
                             >
                                 <option value="green" @selected(($device->vehicle->marker_color ?? '') == 'green')>🟢 Hijau</option>
                                 <option value="blue" @selected(($device->vehicle->marker_color ?? '') == 'blue')>🔵 Biru</option>
@@ -398,7 +398,7 @@
                         <div class="px-4 py-3">
 
                             <p
-                                class="text-[10px] text-slate-500"
+                                class="text-[0.625rem] text-slate-500"
                             >
                                 Status
                             </p>
@@ -417,7 +417,7 @@
 
                                 <span
                                     id="vehicleStatus"
-                                    class="text-[13px] font-semibold {{ $isOnline ? 'text-emerald-600' : 'text-slate-500' }}"
+                                    class="text-[0.8125rem] font-semibold {{ $isOnline ? 'text-emerald-600' : 'text-slate-500' }}"
                                 >
                                     {{ $isOnline ? 'Terhubung' : 'Terputus' }}
                                 </span>
@@ -433,14 +433,14 @@
 
                             <p
                                 id="vehicleSpeedLabel"
-                                class="text-[10px] text-slate-500"
+                                class="text-[0.625rem] text-slate-500"
                             >
                                 {{ $isOnline ? 'Kecepatan' : 'Terakhir Diperbarui' }}
                             </p>
 
                             <p
                                 id="vehicleSpeed"
-                                class="mt-1 text-[13px] font-semibold text-slate-900"
+                                class="mt-1 text-[0.8125rem] font-semibold text-slate-900"
                             >
                                 @if($isOnline)
                                     {{ isset($latestLocation['speed']) ? round($latestLocation['speed']) : 0 }} km/jam
@@ -457,7 +457,7 @@
                         >
 
                             <p
-                                class="text-[10px] text-slate-500"
+                                class="text-[0.625rem] text-slate-500"
                             >
                                 Arah
                             </p>
@@ -473,7 +473,7 @@
 
                             <p
                                 id="vehicleDirection"
-                                class="mt-1 text-[13px] font-semibold text-slate-900"
+                                class="mt-1 text-[0.8125rem] font-semibold text-slate-900"
                             >
                                 {{ $direction }}
                             </p>
@@ -486,7 +486,7 @@
                         >
 
                             <p
-                                class="text-[10px] text-slate-500"
+                                class="text-[0.625rem] text-slate-500"
                             >
                                 Baterai
                             </p>
@@ -496,12 +496,12 @@
                             >
 
                                 <i
-                                    class="fa-solid fa-battery-three-quarters text-[14px] text-emerald-500"
+                                    class="fa-solid fa-battery-three-quarters text-[0.875rem] text-emerald-500"
                                 ></i>
 
                                 <span
                                     id="vehicleBattery"
-                                    class="text-[13px] font-semibold text-slate-900"
+                                    class="text-[0.8125rem] font-semibold text-slate-900"
                                 >
                                     {{ isset($latestLocation['battery']) ? $latestLocation['battery'] . ' %' : '-' }}
                                 </span>
@@ -522,7 +522,7 @@
         {{-- ===================================================== --}}
 
         <section
-            class="col-span-12 xl:col-span-3 flex h-full min-h-[370px] flex-col overflow-hidden rounded-[20px] border border-slate-200 bg-white vehicle-panel-shadow"
+            class="col-span-12 xl:col-span-3 flex h-full min-h-[23.125rem] flex-col overflow-hidden rounded-[1.25rem] border border-slate-200 bg-white vehicle-panel-shadow"
         >
 
             {{-- ===================================================== --}}
@@ -533,7 +533,7 @@
                 class="border-b border-slate-200 px-6 py-5"
             >
                 <h2
-                    class="mt-2 text-[18px] font-bold text-slate-900"
+                    class="mt-2 text-[1.125rem] font-bold text-slate-900"
                 >
                     Lokasi Terakhir
                 </h2>
@@ -558,14 +558,14 @@
                     >
 
                         <span
-                            class="w-[85px] flex-shrink-0 text-[13px] text-slate-500"
+                            class="w-[5.3125rem] flex-shrink-0 text-[0.8125rem] text-slate-500"
                         >
                             Alamat
                         </span>
 
                         <div
                             id="vehicleAddress"
-                            class="flex-1 text-right text-[13px] font-medium leading-6 text-slate-900"
+                            class="flex-1 text-right text-[0.8125rem] font-medium leading-6 text-slate-900"
                         >
                             -
                         </div>
@@ -578,14 +578,14 @@
                     >
 
                         <span
-                            class="text-[13px] text-slate-500"
+                            class="text-[0.8125rem] text-slate-500"
                         >
                             Lintang
                         </span>
 
                         <span
                             id="vehicleLatitude"
-                            class="text-[13px] font-semibold text-slate-900"
+                            class="text-[0.8125rem] font-semibold text-slate-900"
                         >
                             -
                         </span>
@@ -598,14 +598,14 @@
                     >
 
                         <span
-                            class="text-[13px] text-slate-500"
+                            class="text-[0.8125rem] text-slate-500"
                         >
                             Bujur
                         </span>
 
                         <span
                             id="vehicleLongitude"
-                            class="text-[13px] font-semibold text-slate-900"
+                            class="text-[0.8125rem] font-semibold text-slate-900"
                         >
                             -
                         </span>
@@ -618,14 +618,14 @@
                     >
 
                         <span
-                            class="text-[13px] text-slate-500"
+                            class="text-[0.8125rem] text-slate-500"
                         >
                             Waktu
                         </span>
 
                         <span
                             id="vehicleLastUpdate"
-                            class="text-[13px] font-semibold text-slate-900"
+                            class="text-[0.8125rem] font-semibold text-slate-900"
                         >
                             -
                         </span>
@@ -643,7 +643,7 @@
         {{-- ===================================================== --}}
 
         <section
-            class="col-span-12 xl:col-span-3 flex h-full min-h-[370px] flex-col overflow-hidden rounded-[20px] border border-slate-200 bg-white vehicle-panel-shadow"
+            class="col-span-12 xl:col-span-3 flex h-full min-h-[23.125rem] flex-col overflow-hidden rounded-[1.25rem] border border-slate-200 bg-white vehicle-panel-shadow"
         >
 
             {{-- ===================================================== --}}
@@ -654,7 +654,7 @@
                 class="border-b border-slate-200 px-6 py-5"
             >
                 <h2
-                    class="mt-2 text-[18px] font-bold text-slate-900"
+                    class="mt-2 text-[1.125rem] font-bold text-slate-900"
                 >
                     Ringkasan Hari Ini
                 </h2>
@@ -686,7 +686,7 @@
                         >
 
                             <i
-                                class="fa-solid fa-road text-[13px] text-blue-600"
+                                class="fa-solid fa-road text-[0.8125rem] text-blue-600"
                             ></i>
 
                         </div>
@@ -694,7 +694,7 @@
                         <div>
 
                             <p
-                                class="text-[12px] font-medium text-slate-500"
+                                class="text-[0.75rem] font-medium text-slate-500"
                             >
                                 Jarak Tempuh
                             </p>
@@ -705,7 +705,7 @@
 
                     <span
                         id="todayDistance"
-                        class="text-[14px] font-bold text-slate-900"
+                        class="text-[0.875rem] font-bold text-slate-900"
                     >
                         0 km
                     </span>
@@ -729,13 +729,13 @@
                         >
 
                             <i
-                                class="fa-solid fa-clock text-[13px] text-emerald-600"
+                                class="fa-solid fa-clock text-[0.8125rem] text-emerald-600"
                             ></i>
 
                         </div>
 
                         <p
-                            class="text-[12px] font-medium text-slate-500"
+                            class="text-[0.75rem] font-medium text-slate-500"
                         >
                             Durasi
                         </p>
@@ -744,7 +744,7 @@
 
                     <span
                         id="todayDuration"
-                        class="text-[14px] font-bold text-slate-900"
+                        class="text-[0.875rem] font-bold text-slate-900"
                     >
                         00:00
                     </span>
@@ -768,13 +768,13 @@
                         >
 
                             <i
-                                class="fa-solid fa-gauge-high text-[13px] text-amber-600"
+                                class="fa-solid fa-gauge-high text-[0.8125rem] text-amber-600"
                             ></i>
 
                         </div>
 
                         <p
-                            class="text-[12px] font-medium text-slate-500"
+                            class="text-[0.75rem] font-medium text-slate-500"
                         >
                             Kecepatan Maks
                         </p>
@@ -783,7 +783,7 @@
 
                     <span
                         id="todayMaxSpeed"
-                        class="text-[14px] font-bold text-slate-900"
+                        class="text-[0.875rem] font-bold text-slate-900"
                     >
                         0 km/jam
                     </span>
@@ -807,13 +807,13 @@
                         >
 
                             <i
-                                class="fa-solid fa-circle-stop text-[13px] text-rose-600"
+                                class="fa-solid fa-circle-stop text-[0.8125rem] text-rose-600"
                             ></i>
 
                         </div>
 
                         <p
-                            class="text-[12px] font-medium text-slate-500"
+                            class="text-[0.75rem] font-medium text-slate-500"
                         >
                             Berhenti
                         </p>
@@ -822,7 +822,7 @@
 
                     <span
                         id="todayStop"
-                        class="text-[14px] font-bold text-slate-900"
+                        class="text-[0.875rem] font-bold text-slate-900"
                     >
                         0
                     </span>
@@ -840,7 +840,7 @@
     {{-- ========================================================= --}}
 
     <section
-        class="overflow-hidden rounded-[22px] border border-slate-200 bg-white vehicle-panel-shadow"
+        class="overflow-hidden rounded-[1.375rem] border border-slate-200 bg-white vehicle-panel-shadow"
     >
 
         {{-- ====================================================== --}}
@@ -848,7 +848,7 @@
         {{-- ====================================================== --}}
 
         <section
-            class="overflow-hidden rounded-[22px] border border-slate-200 bg-white vehicle-panel-shadow"
+            class="overflow-hidden rounded-[1.375rem] border border-slate-200 bg-white vehicle-panel-shadow"
         >
 
             {{-- ================================================== --}}
@@ -862,19 +862,19 @@
                 <div>
 
                     <p
-                        class="text-[10px] font-semibold uppercase tracking-[0.30em] text-slate-400"
+                        class="text-[0.625rem] font-semibold uppercase tracking-[0.30em] text-slate-400"
                     >
                         RIWAYAT PERJALANAN
                     </p>
 
                     <h2
-                        class="mt-2 text-[18px] font-bold text-slate-900"
+                        class="mt-2 text-[1.125rem] font-bold text-slate-900"
                     >
                         Perjalanan Terakhir
                     </h2>
 
                     <p
-                        class="mt-1 text-[12px] text-slate-500"
+                        class="mt-1 text-[0.75rem] text-slate-500"
                     >
                         Histori perjalanan GPS kendaraan.
                     </p>
@@ -887,11 +887,11 @@
 
                     type="button"
 
-                    class="inline-flex h-9 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-[12px] font-semibold text-slate-700 transition hover:bg-slate-50"
+                    class="inline-flex h-9 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-[0.75rem] font-semibold text-slate-700 transition hover:bg-slate-50"
 
                 >
 
-                    <i class="fa-solid fa-rotate-right text-[11px]"></i>
+                    <i class="fa-solid fa-rotate-right text-[0.6875rem]"></i>
 
                     Muat Ulang
 
@@ -904,7 +904,7 @@
             {{-- ================================================== --}}
 
             <div
-                class="grid grid-cols-12 border-b border-slate-200 bg-slate-50 px-6 py-3 text-[11px] font-semibold uppercase tracking-wide text-slate-500"
+                class="grid grid-cols-12 border-b border-slate-200 bg-slate-50 px-6 py-3 text-[0.6875rem] font-semibold uppercase tracking-wide text-slate-500"
             >
 
                 <div class="col-span-2">
@@ -966,13 +966,13 @@
                 </div>
 
                 <h3
-                    class="mt-4 text-[15px] font-semibold text-slate-900"
+                    class="mt-4 text-[0.9375rem] font-semibold text-slate-900"
                 >
                     Belum ada riwayat perjalanan
                 </h3>
 
                 <p
-                    class="mt-2 text-[12px] text-slate-500"
+                    class="mt-2 text-[0.75rem] text-slate-500"
                 >
                     Data akan muncul setelah perangkat GPS mengirimkan lokasi.
                 </p>

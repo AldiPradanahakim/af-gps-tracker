@@ -4,12 +4,12 @@
             Aktivasi Perangkat <span class="text-[#2563EB]">GPS Anda</span>
         </x-slot:heading>
 
-        <div class="w-full max-w-[520px] rounded-[24px] bg-white p-8 shadow-xl border border-[#E5E7EB]">
+        <div class="w-full max-w-[32.5rem] rounded-[1.5rem] bg-white p-6 shadow-xl border border-[#E5E7EB]">
             <div class="text-center">
-                <div class="mx-auto mb-4 flex h-[72px] w-[72px] items-center justify-center rounded-full bg-[#EFF6FF] shadow-sm">
-                    <img src="{{ asset('images/logo-gps.png') }}" alt="AF GPS TRACKER" class="h-[42px] w-[42px] object-contain" />
+                <div class="mx-auto mb-4 flex h-[4.5rem] w-[4.5rem] items-center justify-center rounded-full bg-[#EFF6FF] shadow-sm">
+                    <img src="{{ asset('images/logo-gps.png') }}" alt="AF GPS TRACKER" class="h-[2.625rem] w-[2.625rem] object-contain" />
                 </div>
-                <h2 class="text-[28px] font-semibold tracking-[-0.03em] text-slate-950">Aktivasi Perangkat</h2>
+                <h2 class="text-[1.75rem] font-semibold tracking-[-0.03em] text-slate-950">Aktivasi Perangkat</h2>
                 <p class="mt-3 text-sm leading-6 text-slate-500">
                     Masukkan ID Perangkat dan Kata Sandi Perangkat yang terdapat pada perangkat GPS Anda.
                 </p>
@@ -32,7 +32,7 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('devices.store') }}" class="mt-8 space-y-6">
+            <form method="POST" action="{{ route('devices.store') }}" class="mt-5 space-y-4">
                 @csrf
 
                 <div class="space-y-4">
@@ -44,7 +44,7 @@
                             </svg>
                         </span>
                         <input id="device_id" name="device_id" type="text" value="{{ old('device_id') }}" required autofocus placeholder="Masukkan ID Perangkat"
-                            class="h-[52px] w-full rounded-xl border border-slate-300 bg-white pl-14 pr-4 text-sm text-slate-900 outline-none transition focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20" />
+                            class="h-[3.25rem] w-full rounded-xl border border-slate-300 bg-white pl-14 pr-4 text-sm text-slate-900 outline-none transition focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20" />
                     </div>
                     @error('device_id')<p class="mt-2 text-sm text-red-600">{{ $message }}</p>@enderror
                 </div>
@@ -58,16 +58,16 @@
                             </svg>
                         </span>
                         <input id="device_password" name="device_password" type="password" required autocomplete="current-password" placeholder="Masukkan Kata Sandi Perangkat"
-                            class="h-[52px] w-full rounded-xl border border-slate-300 bg-white pl-14 pr-4 text-sm text-slate-900 outline-none transition focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20" />
+                            class="h-[3.25rem] w-full rounded-xl border border-slate-300 bg-white pl-14 pr-4 text-sm text-slate-900 outline-none transition focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20" />
                     </div>
                     @error('device_password')<p class="mt-2 text-sm text-red-600">{{ $message }}</p>@enderror
                 </div>
 
                 <div class="space-y-4">
-                    <button type="submit" class="flex h-[52px] w-full items-center justify-center rounded-xl bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-sm font-semibold text-white shadow-xl transition duration-200 hover:brightness-105">
+                    <button type="submit" class="flex h-[3.25rem] w-full items-center justify-center rounded-xl bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-sm font-semibold text-white shadow-xl transition duration-200 hover:brightness-105">
                         Aktivasi
                     </button>
-                    <a href="{{ route('login') }}" class="inline-flex h-[52px] w-full items-center justify-center rounded-xl border border-[#2563EB] text-sm font-semibold text-[#2563EB] transition duration-200 hover:bg-[#EFF6FF]">
+                    <a href="{{ route('login') }}" class="inline-flex h-[3.25rem] w-full items-center justify-center rounded-xl border border-[#2563EB] text-sm font-semibold text-[#2563EB] transition duration-200 hover:bg-[#EFF6FF]">
                         Kembali ke Halaman Masuk
                     </a>
                 </div>

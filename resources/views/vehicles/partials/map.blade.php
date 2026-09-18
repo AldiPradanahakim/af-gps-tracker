@@ -6,7 +6,7 @@
     {{-- MAP --}}
     <div
         id="vehicleMap"
-        class="h-[620px] w-full"
+        class="h-[38.75rem] w-full"
     ></div>
 
     {{-- ===================================================== --}}
@@ -74,7 +74,7 @@
 
                 <p
                     id="vehicleMapLastUpdate"
-                    class="text-[11px] text-slate-500"
+                    class="text-[0.6875rem] text-slate-500"
                 >
                     -
                 </p>
@@ -134,13 +134,13 @@
         <button
             id="vehicleZoomInButton"
             type="button"
-            class="flex h-[34px] w-[34px] items-center justify-center bg-white text-slate-700 text-xl font-light leading-none transition hover:bg-slate-50 border-b border-slate-200"
+            class="flex h-[2.125rem] w-[2.125rem] items-center justify-center bg-white text-slate-700 text-xl font-light leading-none transition hover:bg-slate-50 border-b border-slate-200"
         >+</button>
 
         <button
             id="vehicleZoomOutButton"
             type="button"
-            class="flex h-[34px] w-[34px] items-center justify-center bg-white text-slate-700 text-xl font-light leading-none transition hover:bg-slate-50"
+            class="flex h-[2.125rem] w-[2.125rem] items-center justify-center bg-white text-slate-700 text-xl font-light leading-none transition hover:bg-slate-50"
         >−</button>
 
     </div>
@@ -165,7 +165,7 @@
 
             <div class="absolute inset-0 bg-black/20"></div>
 
-            <div class="absolute bottom-1 left-0 right-0 flex items-center justify-center gap-1 px-1 text-[11px] font-semibold text-white">
+            <div class="absolute bottom-1 left-0 right-0 flex items-center justify-center gap-1 px-1 text-[0.6875rem] font-semibold text-white">
 
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -184,7 +184,7 @@
 
         <div
             id="vehicleLayerDropdown"
-            class="absolute bottom-0 right-[90px] hidden w-48 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
+            class="absolute bottom-0 right-[5.625rem] hidden w-48 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
         >
 
             <button
@@ -192,7 +192,7 @@
                 class="vehicle-layer-option flex w-full items-center gap-3 px-4 py-3 text-left text-sm hover:bg-slate-50"
                 data-layer="default"
             >
-                🗺️ Default
+                🗺️ Standar
             </button>
 
             <button
